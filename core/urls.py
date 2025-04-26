@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from core import settings
+from django.conf.urls.static import static
 from api.userapp.views import RegisterView, AcceptView, LoginView, UserProfileView, UpdateUserProfileView, \
     ChangePasswordView
 
@@ -29,4 +30,5 @@ urlpatterns = [
     path('profile/', UserProfileView.as_view(), name='user-profile'),
     path('profile/update/', UpdateUserProfileView.as_view(), name='update-profile'),
     path('profile/change-password/', ChangePasswordView.as_view(), name='change-password'),
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
+                                                                                           document_root=settings.MEDIA_ROOT)
