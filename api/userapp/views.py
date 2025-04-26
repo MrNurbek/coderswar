@@ -10,13 +10,15 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from apps.userapp.models import ConfirmCode, User
 from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, UserProfileSerializer, \
     ChangePasswordSerializer
 
 
 class RegisterView(APIView):
+    @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'})
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -27,22 +29,22 @@ class RegisterView(APIView):
             confirm_code.code = code
             confirm_code.save()
 
-
             send_mail(
                 subject='CodersWar: Email tasdiqlash kodi',
                 message=f"Sizning tasdiqlash kodingiz: {code}",
-                from_email='your_email@gmail.com',
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False
             )
 
-            return Response({'message': 'Foydalanuvchi yaratildi. Emailga tasdiqlash kodi yuborildi.'},
-                            status=status.HTTP_201_CREATED)
+            return Response({'message': 'Foydalanuvchi yaratildi. Emailga tasdiqlash kodi yuborildi.'}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class AcceptView(APIView):
+    @swagger_auto_schema(request_body=AcceptSerializer, responses={200: 'Email tasdiqlandi.'})
     def post(self, request):
         serializer = AcceptSerializer(data=request.data)
         if serializer.is_valid():
@@ -63,6 +65,7 @@ class AcceptView(APIView):
 
 
 class LoginView(APIView):
+    @swagger_auto_schema(request_body=LoginSerializer, responses={200: 'Login muvaffaqiyatli.'})
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -84,9 +87,11 @@ class LoginView(APIView):
 
 
 
+
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(responses={200: UserProfileSerializer})
     def get(self, request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
@@ -95,24 +100,25 @@ class UserProfileView(APIView):
 class UpdateUserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(request_body=UserProfileSerializer, responses={200: 'Profil muvaffaqiyatli yangilandi'})
     def patch(self, request):
         serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Profile updated successfully", "data": serializer.data})
+            return Response({"message": "Profil muvaffaqiyatli yangilandi", "data": serializer.data})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(request_body=ChangePasswordSerializer, responses={200: 'Parol muvaffaqiyatli o‘zgartirildi.'})
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
         if serializer.is_valid():
             user = request.user
             if not user.check_password(serializer.validated_data['old_password']):
-                return Response({"error": "Old password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
-            user.password = make_password(serializer.validated_data['new_password'])
+                return Response({"error": "Oldingi parol noto‘g‘ri"}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(serializer.validated_data['new_password'])
             user.save()
-            return Response({"message": "Password changed successfully"})
+            return Response({"message": "Parol muvaffaqiyatli o‘zgartirildi"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

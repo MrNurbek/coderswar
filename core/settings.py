@@ -30,8 +30,6 @@ ALLOWED_HOSTS = [
     "204.48.28.68"
 ]
 
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'drf_yasg',
     'rest_framework_simplejwt',
     'apps.userapp',
 ]
@@ -137,7 +136,6 @@ MEDIA_URL = '/media/'
 # ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
