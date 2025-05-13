@@ -14,7 +14,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from apps.userapp.models import ConfirmCode, User
 from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, UserProfileSerializer, \
-    ChangePasswordSerializer
+    ChangePasswordSerializer, ForgotPasswordSerializer, ResetPasswordSerializer
 
 
 class RegisterView(APIView):
@@ -108,6 +108,8 @@ class UpdateUserProfileView(APIView):
             return Response({"message": "Profil muvaffaqiyatli yangilandi", "data": serializer.data})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -121,4 +123,54 @@ class ChangePasswordView(APIView):
             user.set_password(serializer.validated_data['new_password'])
             user.save()
             return Response({"message": "Parol muvaffaqiyatli o‘zgartirildi"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class ForgotPasswordView(APIView):
+    @swagger_auto_schema(request_body=ForgotPasswordSerializer, responses={200: 'Kod emailga yuborildi.'})
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            try:
+                user = User.objects.get(email=email)
+                code = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+                confirm_code, created = ConfirmCode.objects.get_or_create(user=user)
+                confirm_code.code = code
+                confirm_code.save()
+
+                send_mail(
+                    subject="Parolni tiklash uchun kod",
+                    message=f"Sizning parolni tiklash kodingiz: {code}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[email],
+                    fail_silently=False
+                )
+                return Response({"message": "Kod emailga yuborildi."})
+            except User.DoesNotExist:
+                return Response({"error": "Bunday email topilmadi."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class ResetPasswordView(APIView):
+    @swagger_auto_schema(request_body=ResetPasswordSerializer, responses={200: 'Parol yangilandi.'})
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            code = serializer.validated_data['code']
+            new_password = serializer.validated_data['new_password']
+
+            try:
+                user = User.objects.get(email=email)
+                if user.confirm_code.code != code:
+                    return Response({"error": "Kod noto‘g‘ri."}, status=status.HTTP_400_BAD_REQUEST)
+                user.set_password(new_password)
+                user.save()
+                user.confirm_code.delete()
+                return Response({"message": "Parol yangilandi."})
+            except User.DoesNotExist:
+                return Response({"error": "Foydalanuvchi topilmadi."}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

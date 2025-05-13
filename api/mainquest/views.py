@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.mainquest.models import Topic, UserProgress
-from .serializers import TopicSerializer
+from .serializers import TopicSerializer, TopicShortSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -14,15 +14,16 @@ from django.utils import timezone
 
 class TopicListAPIView(generics.ListAPIView):
     queryset = Topic.objects.all()
-    serializer_class = TopicSerializer
+    serializer_class = TopicShortSerializer
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        operation_description="C# bo‘yicha barcha mavzular ro‘yxatini qaytaradi.",
-        responses={200: TopicSerializer(many=True)}
+        operation_description="C# bo‘yicha barcha mavzular va har bir mavzudagi rejalar ro‘yxatini qaytaradi. Faqat id va title qaytariladi.",
+        responses={200: TopicShortSerializer(many=True)}
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
 
 
 

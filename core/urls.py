@@ -7,7 +7,7 @@ from api.mainquest.views import TopicListAPIView, TopicDetailAPIView, MarkTopicC
 from core import settings
 from django.conf.urls.static import static
 from api.userapp.views import RegisterView, AcceptView, LoginView, UserProfileView, UpdateUserProfileView, \
-    ChangePasswordView
+    ChangePasswordView, ForgotPasswordView, ResetPasswordView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -42,6 +42,8 @@ urlpatterns = [
                   path('register/', RegisterView.as_view(), name='register'),
                   path('accept/', AcceptView.as_view(), name='accept'),
                   path('login/', LoginView.as_view(), name='login'),
+                  path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
+                  path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
                   path('profile/', UserProfileView.as_view(), name='user-profile'),
                   path('profile/update/', UpdateUserProfileView.as_view(), name='update-profile'),
                   path('profile/change-password/', ChangePasswordView.as_view(), name='change-password'),
