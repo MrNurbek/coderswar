@@ -8,8 +8,16 @@ from drf_yasg import openapi
 from apps.content.models import Content
 from .serializers import ContentSerializer
 
-class ContentListAPIView(APIView):
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
+from .filters import ContentFilter
+
+class ContentListAPIView(generics.ListAPIView):
+    queryset = Content.objects.all()
+    serializer_class = ContentSerializer
     permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ContentFilter
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -20,15 +28,10 @@ class ContentListAPIView(APIView):
                 type=openapi.TYPE_STRING
             ),
         ],
-        responses={200: ContentSerializer(many=True)},
-        operation_summary="Barcha kontentlarni olish",
-        operation_description="Ushbu API orqali `Content` modelidagi barcha kontentlar ro'yxati olinadi. "
-                              "Agar `content_type` query parametri berilsa, shunga mos kontentlar qaytariladi.",
+        operation_summary="Content ro'yxati",
+        operation_description="content_type bo‘yicha filterlash imkoniyati mavjud.",
+        responses={200: ContentSerializer(many=True)}
     )
-    def get(self, request):
-        content_type = request.query_params.get('content_type', None)
-        queryset = Content.objects.all()
-        if content_type:
-            queryset = queryset.filter(content_type=content_type)
-        serializer = ContentSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
