@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.userapp',
     'apps.content',
     'apps.mainquest',
+    'apps.comment'
 ]
 
 MIDDLEWARE = [

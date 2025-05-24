@@ -13,7 +13,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = [
             'email', 'middle_name', 'first_name', 'last_name',
             'otm', 'course', 'group', 'direction', 'role',
-            'password'
+            'password','profile_image'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -60,7 +60,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'email', 'username', 'first_name', 'last_name',
             'otm', 'course', 'group', 'direction', 'role', 'rating',
-            'level', 'character'
+            'level', 'character','profile_image'
         ]
         read_only_fields = ['id', 'email', 'rating', 'level', 'character']
 

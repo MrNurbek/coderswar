@@ -2,6 +2,8 @@
 from django.contrib import admin
 from django.urls import path, re_path
 from rest_framework.routers import DefaultRouter
+
+from api.comment.views import CommentListAPIView, CommentCreateAPIView
 from api.content.views import ContentListAPIView
 from api.mainquest.views import TopicListAPIView, TopicDetailAPIView, MarkTopicCompletedAPIView
 from core import settings
@@ -52,6 +54,8 @@ urlpatterns = [
                   path('topics/<int:pk>/', TopicDetailAPIView.as_view(), name='topic-detail'),
                   path('topics/<int:pk>/complete/', MarkTopicCompletedAPIView.as_view(), name='mark-topic-complete'),
                   path('api/topics/', TopicListAPIView.as_view(), name='topic-list'),
+                  path('api/comments/', CommentListAPIView.as_view(), name='comment-list'),
+                  path('api/comments/create/', CommentCreateAPIView.as_view(), name='comment-create'),
 
 
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,

@@ -22,6 +22,7 @@ class User(AbstractUser):
     rating = models.IntegerField(default=0)
     level = models.CharField(max_length=50, default='Rekrut')
     character = models.ImageField(upload_to='characters/', null=True, blank=True)
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
