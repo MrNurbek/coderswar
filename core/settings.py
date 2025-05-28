@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "204.48.28.68"
+    "165.22.75.64"
 ]
 
 INSTALLED_APPS = [
