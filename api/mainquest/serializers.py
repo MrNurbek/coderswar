@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from apps.mainquest.models import Topic, Plan, CodeExample, Assignment
+from apps.mainquest.models import Topic, Plan, CodeExample, Assignment, AssignmentStatus
+
 
 class CodeExampleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,7 +11,16 @@ class CodeExampleSerializer(serializers.ModelSerializer):
 class AssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment
-        fields = ['id', 'task_description', 'sample_solution']
+        fields = ['id', 'plan', 'task_description',  'expected_output', 'order']
+
+
+
+class AssignmentStatusSerializer(serializers.ModelSerializer):
+    assignment = AssignmentSerializer()
+
+    class Meta:
+        model = AssignmentStatus
+        fields = ['id', 'assignment', 'is_completed', 'earned_points', 'submitted_at']
 
 
 class PlanSerializer(serializers.ModelSerializer):
@@ -27,12 +37,13 @@ class PlanShortSerializer(serializers.ModelSerializer):
         model = Plan
         fields = ['id', 'title']
 
+
 class TopicSerializer(serializers.ModelSerializer):
     plans = PlanSerializer(many=True, read_only=True)
 
     class Meta:
         model = Topic
-        fields = ['id', 'title','video_url', 'order','plans']
+        fields = ['id', 'title', 'video_url', 'order', 'plans']
 
 
 class TopicShortSerializer(serializers.ModelSerializer):

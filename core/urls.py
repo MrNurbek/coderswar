@@ -1,22 +1,20 @@
-
 from django.contrib import admin
 from django.urls import path, re_path
 from rest_framework.routers import DefaultRouter
 
 from api.comment.views import CommentListAPIView, CommentCreateAPIView
+from api.contact.views import ContactView
 from api.content.views import ContentListAPIView
+from api.duels.views import CreateDuelView, JoinDuelView, DuelListView
 from api.mainquest.views import TopicListAPIView, TopicDetailAPIView, MarkTopicCompletedAPIView
+from api.sidequest.views import AssignmentSubmitView, DropGearView
 from core import settings
 from django.conf.urls.static import static
 from api.userapp.views import RegisterView, AcceptView, LoginView, UserProfileView, UpdateUserProfileView, \
-    ChangePasswordView, ForgotPasswordView, ResetPasswordView
+    ChangePasswordView, ForgotPasswordView, ResetPasswordView, CharacterListView, TopicListView, UserRatingListView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
-
-
-
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -31,15 +29,12 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
-
-
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0),
                           name='schema-json'),
                   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
                   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
 
                   path('register/', RegisterView.as_view(), name='register'),
                   path('accept/', AcceptView.as_view(), name='accept'),
@@ -57,6 +52,17 @@ urlpatterns = [
                   path('api/comments/', CommentListAPIView.as_view(), name='comment-list'),
                   path('api/comments/create/', CommentCreateAPIView.as_view(), name='comment-create'),
 
+                  path('characters/', CharacterListView.as_view(), name='characters'),
+                  path('topics/', TopicListView.as_view(), name='topics'),
+                  path('assignments/<int:assignment_id>/submit/', AssignmentSubmitView.as_view(),
+                       name='assignment-submit'),
+                  path('gear/drop/', DropGearView.as_view(), name='gear-drop'),
+                  path('contact/', ContactView.as_view(), name='contact'),
+
+                  path('duel/create/', CreateDuelView.as_view(), name='duel-create'),
+                  path('duel/<int:duel_id>/join/', JoinDuelView.as_view(), name='duel-join'),
+                  path('duels/', DuelListView.as_view(), name='duel-list'),
+                  path('users/rating/', UserRatingListView.as_view(), name='user-rating'),
 
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
                                                                                            document_root=settings.MEDIA_ROOT)

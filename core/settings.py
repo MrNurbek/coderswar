@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -45,7 +46,11 @@ INSTALLED_APPS = [
     'apps.userapp',
     'apps.content',
     'apps.mainquest',
-    'apps.comment'
+    'apps.comment',
+    'apps.sidequest',
+    'apps.contact',
+    'apps.duels'
+
 ]
 
 MIDDLEWARE = [
@@ -77,6 +82,7 @@ TEMPLATES = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
@@ -85,7 +91,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ]
 }
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
@@ -151,6 +156,10 @@ MEDIA_URL = '/media/'
 # STATICFILES_DIRS = [
 #     BASE_DIR / "static",
 # ]
+JD_CLIENT_ID = '2d6867c57b226adf3644b0c4b879e4e3'
+JD_CLIENT_SECRET = '41090e328eaf6cc453b1c3e988c80c2f32dd3f93c6a5f183e72ff03f86270a5d'
+JUDGE0_API_KEY = "0aec8801d1msh9e6a1e1a901347ap1ad911jsn249c31bc123e"
+JUDGE0_API_HOST = "judge0-ce.p.rapidapi.com"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
@@ -164,7 +173,10 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'xamrayevnurbek00@gmail.com'
 EMAIL_HOST_PASSWORD = 'bqua grgr amnh oicy'
-
+CORS_ALLOWED_ORIGINS = [
+    "https://204.48.28.68:8002",
+    "http://127.0.0.1:8000",
+]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://coderswar.uz",

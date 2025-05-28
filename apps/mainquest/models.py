@@ -30,11 +30,30 @@ class CodeExample(models.Model):
 
 class Assignment(models.Model):
     plan = models.ForeignKey(Plan, related_name='assignments', on_delete=models.CASCADE)
-    task_description = models.TextField()
-    sample_solution = models.TextField(blank=True, null=True)
+    title = models.CharField(max_length=255, help_text="Masalaning sarlavhasi", null=True, blank=True)
+    task_description = models.TextField(help_text="Masalaning tavsifi", null=True, blank=True)
+    sample_input = models.TextField(help_text="Kiruvchi ma'lumot (stdin)", null=True, blank=True)
+    expected_output = models.TextField(help_text="Kutilayotgan chiqish (stdout)", null=True, blank=True)
+    order = models.PositiveIntegerField(default=1, help_text="Mavzu ichidagi tartib raqami")
+    points = models.PositiveIntegerField(default=10)
 
     def __str__(self):
-        return f"Assignment for {self.plan.title}"
+        return f"{self.title} (Plan: {self.plan.title})"
+
+
+class AssignmentStatus(models.Model):
+    user = models.ForeignKey('userapp.User', on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    is_completed = models.BooleanField(default=False)
+    earned_points = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('user', 'assignment')
+
+    def __str__(self):
+        return f"{self.user.email} - {self.assignment.title} - {'✔' if self.is_completed else '✘'}"
+
+
 
 
 class UserProgress(models.Model):
@@ -42,8 +61,19 @@ class UserProgress(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     is_completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
+    score = models.IntegerField(default=0)
 
     class Meta:
         unique_together = ('user', 'topic')
+
     def __str__(self):
-        return self.user.email + "---" + self.topic.title
+        return f"{self.user.email} - {self.topic.title}"
+
+
+class TestCase(models.Model):
+    assignment = models.ForeignKey(Assignment, related_name='test_cases', on_delete=models.CASCADE)
+    input_data = models.TextField()
+    expected_output = models.TextField()
+
+    def __str__(self):
+        return self.assignment.title

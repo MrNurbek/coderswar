@@ -2,14 +2,20 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 import random
 
+class CharacterClass(models.Model):
+    name = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='character_classes/')
 
+    def __str__(self):
+        return self.name
 
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    middle_name = models.CharField(max_length=50,null=True,blank=True)
+    middle_name = models.CharField(max_length=50, null=True, blank=True)
     otm = models.CharField(max_length=100, verbose_name="Oliy ta'lim muassasasi")
     course = models.PositiveIntegerField(blank=True, null=True)
     group = models.CharField(max_length=20)
@@ -21,7 +27,7 @@ class User(AbstractUser):
     )
     rating = models.IntegerField(default=0)
     level = models.CharField(max_length=50, default='Rekrut')
-    character = models.ImageField(upload_to='characters/', null=True, blank=True)
+    character = models.ForeignKey(CharacterClass, on_delete=models.SET_NULL, null=True ,blank=True)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 
     USERNAME_FIELD = 'email'

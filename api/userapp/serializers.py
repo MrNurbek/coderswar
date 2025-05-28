@@ -1,29 +1,71 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from apps.userapp.models import User, ConfirmCode
+
+from api.mainquest.serializers import TopicSerializer
+from apps.mainquest.models import UserProgress
+from apps.userapp.models import User, ConfirmCode, CharacterClass
 import random
 import string
 from django.db import IntegrityError
 from rest_framework.exceptions import ValidationError
+from django.contrib.auth import get_user_model
 
+UserModel = get_user_model()
+
+
+# class RegisterSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = [
+#             'email', 'middle_name', 'first_name', 'last_name',
+#             'otm', 'course', 'group', 'direction', 'role',
+#             'password','profile_image'
+#         ]
+#         extra_kwargs = {
+#             'password': {'write_only': True}
+#         }
+#
+#     def generate_unique_username(self, base):
+#         """
+#         Bazaviy username'ga 4 ta random raqam qo‘shib, yagona `username` yaratadi.
+#         Kerak bo‘lsa, takrorlanmas bo‘lishi uchun bazada mavjudligini tekshiradi.
+#         """
+#         while True:
+#             username = f"{base}_{''.join(random.choices(string.digits, k=4))}"
+#             if not User.objects.filter(username=username).exists():
+#                 return username
+#
+#     def create(self, validated_data):
+#         validated_data['password'] = make_password(validated_data['password'])
+#
+#         base_username = validated_data['email'].split('@')[0]
+#         validated_data['username'] = self.generate_unique_username(base_username)
+#
+#         try:
+#             user = User.objects.create(**validated_data)
+#             ConfirmCode.objects.create(user=user)
+#             return user
+#         except IntegrityError as e:
+#             raise ValidationError({
+#                                       "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."})
 
 class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
         fields = [
-            'email', 'middle_name', 'first_name', 'last_name',
-            'otm', 'course', 'group', 'direction', 'role',
-            'password','profile_image'
+            'id', 'username', 'email', 'password', 'first_name', 'last_name',
+            'middle_name', 'otm', 'course', 'group', 'direction',
+            'role', 'character', 'profile_image'
         ]
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
+            'username': {'read_only': True},  # avtomatik yaratiladi
         }
 
     def generate_unique_username(self, base):
-        """
-        Bazaviy username'ga 4 ta random raqam qo‘shib, yagona `username` yaratadi.
-        Kerak bo‘lsa, takrorlanmas bo‘lishi uchun bazada mavjudligini tekshiradi.
-        """
+        """ Bazaviy emaildan username yaratish """
         while True:
             username = f"{base}_{''.join(random.choices(string.digits, k=4))}"
             if not User.objects.filter(username=username).exists():
@@ -32,6 +74,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
 
+        # Avtomatik username yaratamiz
         base_username = validated_data['email'].split('@')[0]
         validated_data['username'] = self.generate_unique_username(base_username)
 
@@ -39,9 +82,16 @@ class RegisterSerializer(serializers.ModelSerializer):
             user = User.objects.create(**validated_data)
             ConfirmCode.objects.create(user=user)
             return user
-        except IntegrityError as e:
+        except IntegrityError:
             raise ValidationError({
-                                      "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."})
+                "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."
+            })
+
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'full_name', 'rating', 'level']
 
 
 class AcceptSerializer(serializers.Serializer):
@@ -60,7 +110,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'email', 'username', 'first_name', 'last_name',
             'otm', 'course', 'group', 'direction', 'role', 'rating',
-            'level', 'character','profile_image'
+            'level', 'character', 'profile_image'
         ]
         read_only_fields = ['id', 'email', 'rating', 'level', 'character']
 
@@ -74,7 +124,6 @@ class ChangePasswordSerializer(serializers.Serializer):
         if data['new_password'] != data['confirm_password']:
             raise serializers.ValidationError("New password and confirm password do not match.")
         return data
-
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
@@ -91,3 +140,47 @@ class ResetPasswordSerializer(serializers.Serializer):
         if data['new_password'] != data['confirm_password']:
             raise serializers.ValidationError("Yangi parollar mos emas.")
         return data
+
+
+class CharacterClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterClass
+        fields = ['id', 'name', 'title', 'image']
+
+
+class Register1Serializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = UserModel
+        fields = [
+            'id', 'username', 'email', 'password', 'first_name', 'last_name',
+            'middle_name', 'otm', 'course', 'group', 'direction',
+            'role', 'character', 'profile_image'
+        ]
+
+    def create(self, validated_data):
+        user = UserModel.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            middle_name=validated_data.get('middle_name'),
+            otm=validated_data['otm'],
+            course=validated_data.get('course'),
+            group=validated_data['group'],
+            direction=validated_data['direction'],
+            role=validated_data['role'],
+            character=validated_data['character'],
+            profile_image=validated_data.get('profile_image')
+        )
+        return user
+
+
+class UserProgressSerializer(serializers.ModelSerializer):
+    topic = TopicSerializer()
+
+    class Meta:
+        model = UserProgress
+        fields = ['id', 'topic', 'is_completed', 'completed_at']

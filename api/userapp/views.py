@@ -1,8 +1,6 @@
+from rest_framework import generics, status, permissions
 import random
-
-from django.contrib.auth.hashers import make_password
-from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,20 +10,54 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from apps.userapp.models import ConfirmCode, User
-from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, UserProfileSerializer, \
-    ChangePasswordSerializer, ForgotPasswordSerializer, ResetPasswordSerializer
 
+from apps.mainquest.models import AssignmentStatus, UserProgress, Topic
+from apps.sidequest.models import UserGear
+from apps.userapp.models import ConfirmCode, User, CharacterClass
+from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, UserProfileSerializer, \
+    ChangePasswordSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, UserProgressSerializer, \
+    CharacterClassSerializer, RatingSerializer
+from ..mainquest.serializers import TopicSerializer
+from ..sidequest.serializers import UserGearSerializer
+
+
+# class RegisterView(APIView):
+#     @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'})
+#     def post(self, request):
+#         serializer = RegisterSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.save()
+#
+#             code = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+#             confirm_code = ConfirmCode.objects.get(user=user)
+#             confirm_code.code = code
+#             confirm_code.save()
+#
+#             send_mail(
+#                 subject='CodersWar: Email tasdiqlash kodi',
+#                 message=f"Sizning tasdiqlash kodingiz: {code}",
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 recipient_list=[user.email],
+#                 fail_silently=False
+#             )
+#
+#             return Response({'message': 'Foydalanuvchi yaratildi. Emailga tasdiqlash kodi yuborildi.'}, status=status.HTTP_201_CREATED)
+#
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(APIView):
-    @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'})
+    @swagger_auto_schema(
+        request_body=RegisterSerializer,
+        responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'}
+    )
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
 
+            # ConfirmCode orqali tasdiqlash kodi yangilanadi
             code = ''.join([str(random.randint(0, 9)) for _ in range(4)])
-            confirm_code = ConfirmCode.objects.get(user=user)
+            confirm_code = user.confirm_code
             confirm_code.code = code
             confirm_code.save()
 
@@ -37,14 +69,19 @@ class RegisterView(APIView):
                 fail_silently=False
             )
 
-            return Response({'message': 'Foydalanuvchi yaratildi. Emailga tasdiqlash kodi yuborildi.'}, status=status.HTTP_201_CREATED)
+            return Response(
+                {'message': 'Foydalanuvchi yaratildi. Emailga tasdiqlash kodi yuborildi.'},
+                status=status.HTTP_201_CREATED
+            )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class AcceptView(APIView):
-    @swagger_auto_schema(request_body=AcceptSerializer, responses={200: 'Email tasdiqlandi.'})
+    @swagger_auto_schema(
+        request_body=AcceptSerializer,
+        responses={200: 'Email tasdiqlandi va token qaytarildi.'}
+    )
     def post(self, request):
         serializer = AcceptSerializer(data=request.data)
         if serializer.is_valid():
@@ -56,7 +93,14 @@ class AcceptView(APIView):
                     user.is_active = True
                     user.save()
                     user.confirm_code.delete()
-                    return Response({'message': 'Email tasdiqlandi.'}, status=status.HTTP_200_OK)
+
+                    # Token yaratish
+                    refresh = RefreshToken.for_user(user)
+                    return Response({
+                        'message': 'Email tasdiqlandi.',
+                        'refresh': str(refresh),
+                        'access': str(refresh.access_token)
+                    }, status=status.HTTP_200_OK)
                 else:
                     return Response({'error': 'Kod xato.'}, status=status.HTTP_400_BAD_REQUEST)
             except User.DoesNotExist:
@@ -91,10 +135,22 @@ class LoginView(APIView):
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(responses={200: UserProfileSerializer})
+    @swagger_auto_schema(
+        responses={200: 'Foydalanuvchi profili va statistikasi qaytariladi.'}
+    )
     def get(self, request):
-        serializer = UserProfileSerializer(request.user)
-        return Response(serializer.data)
+        user = request.user
+        gears = UserGear.objects.filter(user=user)
+        completed_assignments = AssignmentStatus.objects.filter(user=user, is_completed=True)
+        progress = UserProgress.objects.filter(user=user)
+
+        return Response({
+            "user": RegisterSerializer(user).data,
+            "gears": UserGearSerializer(gears, many=True).data,
+            "assignments_completed": completed_assignments.count(),
+            "rating": user.rating,
+            "topics_progress": UserProgressSerializer(progress, many=True).data
+        })
 
 
 class UpdateUserProfileView(APIView):
@@ -174,3 +230,26 @@ class ResetPasswordView(APIView):
             except User.DoesNotExist:
                 return Response({"error": "Foydalanuvchi topilmadi."}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CharacterListView(generics.ListAPIView):
+    queryset = CharacterClass.objects.all()
+    serializer_class = CharacterClassSerializer
+
+
+class TopicListView(generics.ListAPIView):
+    queryset = Topic.objects.all().order_by('order')
+    serializer_class = TopicSerializer
+
+
+class UserRatingListView(generics.ListAPIView):
+    queryset = User.objects.filter(is_active=True).order_by('-rating')
+    serializer_class = RatingSerializer
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_description="Umumiy foydalanuvchilar reytingi bo‘yicha saralangan ro‘yxat.",
+        responses={200: RatingSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
