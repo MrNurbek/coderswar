@@ -6,6 +6,7 @@ from api.comment.views import CommentListAPIView, CommentCreateAPIView
 from api.contact.views import ContactView
 from api.content.views import ContentListAPIView
 from api.duels.views import CreateDuelView, JoinDuelView, DuelListView
+from api.initialtest.view import InitialTestListView, InitialTestSubmitView
 from api.mainquest.views import TopicListAPIView, TopicDetailAPIView, MarkTopicCompletedAPIView
 from api.sidequest.views import AssignmentSubmitView, DropGearView
 from core import settings
@@ -63,6 +64,8 @@ urlpatterns = [
                   path('duel/<int:duel_id>/join/', JoinDuelView.as_view(), name='duel-join'),
                   path('duels/', DuelListView.as_view(), name='duel-list'),
                   path('users/rating/', UserRatingListView.as_view(), name='user-rating'),
+                  path('initial-tests/', InitialTestListView.as_view(), name='initial-test-list'),
+                  path('initial-tests/submit/', InitialTestSubmitView.as_view(), name='initial-test-submit'),
 
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
                                                                                            document_root=settings.MEDIA_ROOT)

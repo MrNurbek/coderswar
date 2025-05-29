@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'apps.comment',
     'apps.sidequest',
     'apps.contact',
-    'apps.duels'
+    'apps.duels',
+    'apps.initialtest'
 
 ]
 
