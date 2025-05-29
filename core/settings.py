@@ -28,7 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "165.22.75.64"
+    "165.22.75.64",
+    "api.coderswar.uz"
 ]
 
 INSTALLED_APPS = [
@@ -177,10 +178,12 @@ EMAIL_HOST_PASSWORD = 'bqua grgr amnh oicy'
 CORS_ALLOWED_ORIGINS = [
     "https://165.22.75.64",
     "http://127.0.0.1:8000",
+"https://api.coderswar.uz",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://coderswar.uz",
+    "https://api.coderswar.uz",
     "https://165.22.75.64",
 ]
 
