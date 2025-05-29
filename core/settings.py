@@ -175,13 +175,13 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'xamrayevnurbek00@gmail.com'
 EMAIL_HOST_PASSWORD = 'bqua grgr amnh oicy'
 CORS_ALLOWED_ORIGINS = [
-    "https://204.48.28.68:8002",
+    "https://165.22.75.64",
     "http://127.0.0.1:8000",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://coderswar.uz",
-    "https://204.48.28.68",
+    "https://165.22.75.64",
 ]
 
 CORS_ALLOW_METHODS = [
