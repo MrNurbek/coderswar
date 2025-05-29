@@ -51,18 +51,22 @@ UserModel = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    level = serializers.SerializerMethodField()  # 🔥 Yangi qo‘shilgan maydon
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'password', 'first_name', 'last_name',
             'middle_name', 'otm', 'course', 'group', 'direction',
-            'role', 'character', 'profile_image'
+            'role', 'character', 'profile_image', 'level'  # level ni qo‘shdik
         ]
         extra_kwargs = {
             'password': {'write_only': True},
             'username': {'read_only': True},  # avtomatik yaratiladi
         }
+
+    def get_level(self, obj):
+        return obj.level  # User modelidagi @property level ni chaqiradi
 
     def generate_unique_username(self, base):
         """ Bazaviy emaildan username yaratish """
@@ -86,7 +90,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise ValidationError({
                 "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."
             })
-
 
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:

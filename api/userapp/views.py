@@ -131,12 +131,21 @@ class LoginView(APIView):
 
 
 
-
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        responses={200: 'Foydalanuvchi profili va statistikasi qaytariladi.'}
+        operation_description="Foydalanuvchi profili va statistikasi qaytariladi.",
+        responses={200: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'user': openapi.Schema(type=openapi.TYPE_OBJECT),  # yoki RegisterSerializer.as_schema()
+                'gears': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_OBJECT)),
+                'assignments_completed': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'rating': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'topics_progress': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_OBJECT))
+            }
+        )}
     )
     def get(self, request):
         user = request.user

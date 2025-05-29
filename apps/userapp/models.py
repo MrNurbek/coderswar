@@ -26,7 +26,6 @@ class User(AbstractUser):
         default='talaba'
     )
     rating = models.IntegerField(default=0)
-    level = models.CharField(max_length=50, default='Rekrut')
     character = models.ForeignKey(CharacterClass, on_delete=models.SET_NULL, null=True ,blank=True)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 
@@ -39,6 +38,26 @@ class User(AbstractUser):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def level(self):
+        if self.rating < 1500:
+            return 'Recruit'
+        elif self.rating < 3000:
+            return 'Warden'
+        elif self.rating < 4500:
+            return 'Knight'
+        elif self.rating < 6000:
+            return 'Hero'
+        elif self.rating < 7500:
+            return 'Legend'
+        elif self.rating < 8500:
+            return 'Lord'
+        elif self.rating < 9500:
+            return 'Deity'
+        else:
+            return 'Titan'
+
 
 
 class ConfirmCode(models.Model):
