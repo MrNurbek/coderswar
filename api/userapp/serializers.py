@@ -51,25 +51,28 @@ UserModel = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    level = serializers.SerializerMethodField()  # 🔥 Yangi qo‘shilgan maydon
+    level = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'password', 'first_name', 'last_name',
             'middle_name', 'otm', 'course', 'group', 'direction',
-            'role', 'character', 'profile_image', 'level'  # level ni qo‘shdik
+            'role', 'character', 'profile_image', 'level'
         ]
         extra_kwargs = {
             'password': {'write_only': True},
-            'username': {'read_only': True},  # avtomatik yaratiladi
+            'username': {'read_only': True},
         }
 
     def get_level(self, obj):
-        return obj.level  # User modelidagi @property level ni chaqiradi
+        return obj.level
+
+    def validate(self, data):
+        # Ixtiyoriy validatsiyalar qo‘shishingiz mumkin
+        return data
 
     def generate_unique_username(self, base):
-        """ Bazaviy emaildan username yaratish """
         while True:
             username = f"{base}_{''.join(random.choices(string.digits, k=4))}"
             if not User.objects.filter(username=username).exists():
@@ -77,19 +80,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
-
-        # Avtomatik username yaratamiz
         base_username = validated_data['email'].split('@')[0]
         validated_data['username'] = self.generate_unique_username(base_username)
-
-        try:
-            user = User.objects.create(**validated_data)
-            ConfirmCode.objects.create(user=user)
-            return user
-        except IntegrityError:
-            raise ValidationError({
-                "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."
-            })
+        user = User.objects.create(**validated_data)
+        ConfirmCode.objects.create(user=user)
+        return user
 
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:

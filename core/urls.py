@@ -12,7 +12,8 @@ from api.sidequest.views import AssignmentSubmitView, DropGearView
 from core import settings
 from django.conf.urls.static import static
 from api.userapp.views import RegisterView, AcceptView, LoginView, UserProfileView, UpdateUserProfileView, \
-    ChangePasswordView, ForgotPasswordView, ResetPasswordView, CharacterListView, TopicListView, UserRatingListView
+    ChangePasswordView, ForgotPasswordView, ResetPasswordView, CharacterListView, TopicListView, UserRatingListView, \
+    ChoicesAPIView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -38,6 +39,7 @@ urlpatterns = [
                   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
                   path('register/', RegisterView.as_view(), name='register'),
+                  path('api/choices/', ChoicesAPIView.as_view(), name='choices'),
                   path('accept/', AcceptView.as_view(), name='accept'),
                   path('login/', LoginView.as_view(), name='login'),
                   path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),

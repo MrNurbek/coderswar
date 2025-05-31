@@ -11,15 +11,43 @@ class CharacterClass(models.Model):
         return self.name
 
 
+class University(models.TextChoices):
+    TERDU = 'TerDU', 'TerDU'
+    GULDU = 'GulDU', 'GulDU'
+    FARDU = 'FarDU', 'FarDU'
+
+class Course(models.IntegerChoices):
+    FIRST = 1, '1'
+    SECOND = 2, '2'
+    THIRD = 3, '3'
+    FOURTH = 4, '4'
+
+class Direction(models.TextChoices):
+    AMALIY_MATEMATIKA = 'Amaliy matematika', 'Amaliy matematika'
+
+class Group(models.TextChoices):
+    G101 = '101', '101'
+    G102 = '102', '102'
+    G103 = '103', '103'
+    G201 = '201', '201'
+    G202 = '202', '202'
+    G203 = '203', '203'
+    G301 = '301', '301'
+    G302 = '302', '302'
+    G303 = '303', '303'
+    G401 = '401', '401'
+    G402 = '402', '402'
+    G403 = '403', '403'
+
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, null=True, blank=True)
-    otm = models.CharField(max_length=100, verbose_name="Oliy ta'lim muassasasi")
-    course = models.PositiveIntegerField(blank=True, null=True)
-    group = models.CharField(max_length=20)
-    direction = models.CharField(max_length=100)
+    otm = models.CharField(max_length=10, choices=University.choices)
+    course = models.IntegerField(choices=Course.choices , null=True, blank=True)
+    group = models.CharField(max_length=10, choices=Group.choices)
+    direction = models.CharField(max_length=100, choices=Direction.choices)
     role = models.CharField(
         max_length=10,
         choices=[('talaba', 'Talaba'), ('oqituvchi', 'O‘qituvchi')],

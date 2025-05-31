@@ -13,7 +13,7 @@ from drf_yasg import openapi
 
 from apps.mainquest.models import AssignmentStatus, UserProgress, Topic
 from apps.sidequest.models import UserGear
-from apps.userapp.models import ConfirmCode, User, CharacterClass
+from apps.userapp.models import ConfirmCode, User, CharacterClass, University, Course, Direction, Group
 from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, UserProfileSerializer, \
     ChangePasswordSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, UserProgressSerializer, \
     CharacterClassSerializer, RatingSerializer
@@ -75,6 +75,27 @@ class RegisterView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ChoicesAPIView(APIView):
+    @swagger_auto_schema(
+        operation_description="Ro‘yxatdan o‘tishda kerakli tanlovlar (OTM, kurs, yo‘nalish, guruh) ro‘yxatini qaytaradi",
+        responses={200: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'universities': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+                'courses': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER)),
+                'directions': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+                'groups': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+            }
+        )}
+    )
+    def get(self, request):
+        return Response({
+            "universities": [choice[0] for choice in University.choices],
+            "courses": [choice[0] for choice in Course.choices],
+            "directions": [choice[0] for choice in Direction.choices],
+            "groups": [choice[0] for choice in Group.choices],
+        })
 
 
 class AcceptView(APIView):
@@ -165,13 +186,20 @@ class UserProfileView(APIView):
 class UpdateUserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(request_body=UserProfileSerializer, responses={200: 'Profil muvaffaqiyatli yangilandi'})
+    @swagger_auto_schema(
+        request_body=UserProfileSerializer,
+        responses={200: 'Profil muvaffaqiyatli yangilandi'}
+    )
     def patch(self, request):
         serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Profil muvaffaqiyatli yangilandi", "data": serializer.data})
+            return Response({
+                "message": "Profil muvaffaqiyatli yangilandi",
+                "data": serializer.data
+            })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
