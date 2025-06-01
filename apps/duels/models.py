@@ -13,10 +13,18 @@ class Duel(models.Model):
     winner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='won_duels')
     started_at = models.DateTimeField(null=True, blank=True)
 
+    def has_started(self):
+        return self.started_at is not None
+
     def __str__(self):
         return f"Duel #{self.id} by {self.creator.email}"
 
 
+
 class DuelAssignment(models.Model):
     duel = models.ForeignKey(Duel, on_delete=models.CASCADE, related_name='duel_assignments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='duel_user_assignments', null=True)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Duel #{self.id} by {self.duel.creator.email}"

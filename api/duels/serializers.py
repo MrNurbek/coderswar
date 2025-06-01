@@ -20,11 +20,18 @@ class DuelJoinSerializer(serializers.ModelSerializer):
         model = Duel
         fields = []
 
+
 class DuelSerializer(serializers.ModelSerializer):
     creator_name = serializers.CharField(source='creator.full_name', read_only=True)
     opponent_name = serializers.CharField(source='opponent.full_name', read_only=True)
-    assignments = DuelAssignmentSerializer(source='duel_assignments', many=True, read_only=True)
 
     class Meta:
         model = Duel
-        fields = ['id', 'creator', 'creator_name', 'opponent', 'opponent_name', 'created_at', 'is_active', 'assignments']
+        fields = ['id', 'creator', 'creator_name', 'opponent', 'opponent_name', 'created_at', 'is_active', 'winner', 'started_at']
+
+class DuelAssignmentsForUserSerializer(serializers.ModelSerializer):
+    assignment = AssignmentSerializer()
+
+    class Meta:
+        model = DuelAssignment
+        fields = ['assignment']
