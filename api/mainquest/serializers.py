@@ -7,11 +7,37 @@ class CodeExampleSerializer(serializers.ModelSerializer):
         model = CodeExample
         fields = ['id', 'code']
 
+class PlanShortSerializerForTopic(serializers.ModelSerializer):
+    class Meta:
+        model = Plan
+        fields = ['id', 'title']
+        ref_name = 'PlanShortSerializerForTopic'
+
+class PlanShortSerializerForAssignment(serializers.ModelSerializer):
+    class Meta:
+        model = Plan
+        fields = ['id', 'title']
+        ref_name = 'PlanShortSerializerForAssignment'
+
+class AssignmentListSerializer(serializers.ModelSerializer):
+    plan_title = serializers.CharField(source='plan.title', read_only=True)
+
+    class Meta:
+        model = Assignment
+        fields = ['id', 'title', 'plan_title']
+
 
 class AssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment
         fields = ['id', 'plan', 'task_description',  'expected_output', 'order']
+
+class AssignmentDetailSerializer(serializers.ModelSerializer):
+    plan = PlanShortSerializerForAssignment()
+
+    class Meta:
+        model = Assignment
+        fields = ['id', 'title', 'plan', 'task_description', 'sample_input', 'expected_output', 'order', 'points']
 
 
 

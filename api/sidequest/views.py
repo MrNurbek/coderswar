@@ -8,6 +8,8 @@ from django.db.models import Q
 import random
 from django.conf import settings
 import requests
+
+from api.mainquest.serializers import AssignmentSerializer, AssignmentDetailSerializer, AssignmentListSerializer
 from api.sidequest.serializers import GearItemSerializer, UserGearSerializer, CodeSubmitSerializer
 from api.userapp.serializers import RegisterSerializer, UserProgressSerializer
 from api.utils.jdoodle_runner import run_csharp_jdoodle
@@ -18,6 +20,38 @@ MCS_PATH = r"C:\Program Files\Mono\bin\mcs.bat"
 MONO_PATH = r"C:\Program Files\Mono\bin\mono.exe"
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+
+
+
+class AssignmentListView(generics.ListAPIView):
+    queryset = Assignment.objects.all().order_by('order')
+    serializer_class = AssignmentListSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Barcha topshiriqlar (id, title, plan_title)",
+        operation_description="Foydalanuvchiga faqat topshiriq ID, nomi va unga tegishli rejani ko'rsatadi.",
+        responses={200: AssignmentListSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+
+class AssignmentDetailView(generics.RetrieveAPIView):
+    queryset = Assignment.objects.all()
+    serializer_class = AssignmentDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Bitta topshiriq tafsilotlari",
+        operation_description="Berilgan ID bo'yicha topshiriqni to'liq tafsilotlari bilan qaytaradi.",
+        responses={200: AssignmentDetailSerializer()}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
 
 class AssignmentSubmitView(APIView):
     permission_classes = [IsAuthenticated]

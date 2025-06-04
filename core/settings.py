@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
 ]
 
 INSTALLED_APPS = [
+"jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +52,7 @@ INSTALLED_APPS = [
     'apps.sidequest',
     'apps.contact',
     'apps.duels',
-    'apps.initialtest'
+    'apps.initialtest',
 
 ]
 
@@ -64,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -178,7 +180,7 @@ EMAIL_HOST_PASSWORD = 'bqua grgr amnh oicy'
 CORS_ALLOWED_ORIGINS = [
     "https://165.22.75.64",
     "http://127.0.0.1:8000",
-"https://api.coderswar.uz",
+    "https://api.coderswar.uz",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
@@ -203,3 +205,60 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
+JAZZMIN_SETTINGS = {
+    "site_title": "Coders War Admin",
+    "site_header": "Coders War Boshqaruv Paneli",
+    "site_brand": "Coders War",
+    "welcome_sign": "Coders War tizimiga xush kelibsiz!",
+    "copyright": "© 2025 Coders War",
+
+    "site_logo": "images/logo.png",
+    "site_icon": "images/favicon.ico",
+
+    "search_model": [
+    "auth.User",
+    "userapp.CustomUser",
+    "mainquest.Topic",  
+],
+
+    "topmenu_links": [
+        {"name": "Bosh sahifa", "url": "/", "permissions": ["auth.view_user"]},
+        {"model": "auth.User"},
+        {"model": "userapp.CustomUser"},
+    ],
+
+    "order_with_respect_to": [
+        "userapp",
+        "content",
+        "mainquest",
+        "sidequest",
+        "duels",
+        "comment",
+        "contact",
+        "initialtest",
+    ],
+
+    "show_sidebar": True,
+    "language_chooser": True,
+
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "userapp.CustomUser": "fas fa-user-circle",
+        "content.Content": "fas fa-book",
+        "mainquest.Topic": "fas fa-chalkboard-teacher",
+        "sidequest.Assignment": "fas fa-dumbbell",
+        "duels.Duel": "fas fa-crosshairs",
+        "comment.Comment": "fas fa-comments",
+        "contact.ContactMessage": "fas fa-envelope-open-text",
+        "initialtest.InitialTest": "fas fa-question-circle",
+    },
+}
+
+
+
+USE_I18N = True
+USE_L10N = True
+LANGUAGE_CODE = 'uz'
