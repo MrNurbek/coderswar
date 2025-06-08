@@ -5,7 +5,7 @@ from apps.mainquest.models import Topic, Plan, CodeExample, Assignment, Assignme
 class CodeExampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = CodeExample
-        fields = ['id', 'code']
+        fields = ['id', 'code','result']
 
 class PlanShortSerializerForTopic(serializers.ModelSerializer):
     class Meta:
@@ -51,11 +51,11 @@ class AssignmentStatusSerializer(serializers.ModelSerializer):
 
 class PlanSerializer(serializers.ModelSerializer):
     code_examples = CodeExampleSerializer(many=True, read_only=True)
-    assignments = AssignmentSerializer(many=True, read_only=True)
+    # assignments = AssignmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Plan
-        fields = ['id', 'title', 'text', 'code_examples', 'assignments']
+        fields = ['id', 'title', 'text', 'code_examples']
 
 
 class PlanShortSerializer(serializers.ModelSerializer):

@@ -23,6 +23,7 @@ class Plan(models.Model):
 class CodeExample(models.Model):
     plan = models.ForeignKey(Plan, related_name='code_examples', on_delete=models.CASCADE)
     code = models.TextField()
+    result = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"CodeExample for {self.plan.title}"
