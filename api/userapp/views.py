@@ -10,14 +10,15 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
-from apps.mainquest.models import AssignmentStatus, UserProgress, Topic
+from rest_framework.exceptions import PermissionDenied
+from apps.mainquest.models import AssignmentStatus, UserProgress, Topic, Plan
 from apps.sidequest.models import UserGear
 from apps.userapp.models import ConfirmCode, User, CharacterClass, University, Course, Direction, Group
 from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, UserProfileSerializer, \
     ChangePasswordSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, UserProgressSerializer, \
     CharacterClassSerializer, RatingSerializer
-from ..mainquest.serializers import TopicSerializer
+from ..mainquest.serializers import TopicSerializer, TopicSimpleSerializer, TopicWithPlansSerializer, \
+    PlanDetailSerializer
 from ..sidequest.serializers import UserGearSerializer
 
 
@@ -287,6 +288,59 @@ class UserRatingListView(generics.ListAPIView):
     @swagger_auto_schema(
         operation_description="Umumiy foydalanuvchilar reytingi bo‘yicha saralangan ro‘yxat.",
         responses={200: RatingSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+
+class TopicSimpleListAPIView(generics.ListAPIView):
+    queryset = Topic.objects.all().order_by('order')
+    serializer_class = TopicSimpleSerializer
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_description="Faqat id va title qaytaradi (mavzular ro'yxati uchun).",
+        responses={200: TopicSimpleSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+
+class TopicPlansAPIView(generics.RetrieveAPIView):
+    queryset = Topic.objects.all()
+    serializer_class = TopicWithPlansSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Berilgan topic ID bo‘yicha barcha rejalarni qaytaradi. Agar oldingi mavzu tugallanmagan bo‘lsa, ruxsat berilmaydi.",
+        responses={200: TopicWithPlansSerializer}
+    )
+    def get(self, request, *args, **kwargs):
+        topic = self.get_object()
+        user = request.user
+
+        if topic.order == 1:
+            return super().get(request, *args, **kwargs)
+
+        previous_topics = Topic.objects.filter(order__lt=topic.order).order_by('order')
+        for prev_topic in previous_topics:
+            if not UserProgress.objects.filter(user=user, topic=prev_topic, is_completed=True).exists():
+                raise PermissionDenied(f"Oldingi mavzuni yakunlamasdan bu mavzuga kirish mumkin emas: {prev_topic.title}")
+
+        return super().get(request, *args, **kwargs)
+
+
+
+class PlanDetailAPIView(generics.RetrieveAPIView):
+    queryset = Plan.objects.select_related('topic').prefetch_related('code_examples')
+    serializer_class = PlanDetailSerializer
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_description="Berilgan plan ID bo‘yicha barcha ma'lumotlarni va video urlni qaytaradi.",
+        responses={200: PlanDetailSerializer}
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)

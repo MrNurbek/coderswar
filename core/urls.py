@@ -20,7 +20,7 @@ from api.sidequest.views import AssignmentSubmitView, DropGearView, AssignmentLi
 from api.userapp.views import (
     RegisterView, AcceptView, LoginView, UserProfileView, UpdateUserProfileView,
     ChangePasswordView, ForgotPasswordView, ResetPasswordView, CharacterListView,
-    TopicListView, UserRatingListView, ChoicesAPIView
+    TopicListView, UserRatingListView, ChoicesAPIView, TopicSimpleListAPIView, TopicPlansAPIView, PlanDetailAPIView
 )
 
 # Swagger schema
@@ -71,10 +71,16 @@ urlpatterns += [
     path('content/', ContentListAPIView.as_view(), name='content-list'),
 
     # Topics
-    path('topics/<int:pk>/', TopicDetailAPIView.as_view(), name='topic-detail'),
+    # path('topics/<int:pk>/', TopicDetailAPIView.as_view(), name='topic-detail'),
+
+    # path('api/topics/', TopicListAPIView.as_view(), name='topic-list'),
+    # path('topics/', TopicListView.as_view(), name='topics'),
+
+
+    path('topics/', TopicSimpleListAPIView.as_view(), name='topic-simple-list'),
+    path('topics/<int:pk>/plans/', TopicPlansAPIView.as_view(), name='topic-plans'),
+    path('plans/<int:pk>/', PlanDetailAPIView.as_view(), name='plan-detail'),
     path('topics/<int:pk>/complete/', MarkTopicCompletedAPIView.as_view(), name='mark-topic-complete'),
-    path('api/topics/', TopicListAPIView.as_view(), name='topic-list'),
-    path('topics/', TopicListView.as_view(), name='topics'),
 
     # Comments
     path('api/comments/', CommentListAPIView.as_view(), name='comment-list'),

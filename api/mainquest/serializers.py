@@ -78,3 +78,35 @@ class TopicShortSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = ['id', 'title', 'plans']
+
+
+
+
+
+class TopicSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ['id', 'title']
+
+
+
+
+
+class TopicWithPlansSerializer(serializers.ModelSerializer):
+    plans = PlanShortSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Topic
+        fields = ['id', 'title', 'plans']
+
+
+
+
+
+class PlanDetailSerializer(serializers.ModelSerializer):
+    topic_video_url = serializers.URLField(source='topic.video_url', read_only=True)
+    code_examples = CodeExampleSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Plan
+        fields = ['id', 'title', 'text', 'topic_video_url', 'code_examples']
