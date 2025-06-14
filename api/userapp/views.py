@@ -176,7 +176,7 @@ class UserProfileView(APIView):
         progress = UserProgress.objects.filter(user=user)
 
         return Response({
-            "user": RegisterSerializer(user).data,
+            "user": RegisterSerializer(user, context={"request": request}).data,
             "gears": UserGearSerializer(gears, many=True).data,
             "assignments_completed": completed_assignments.count(),
             "rating": user.rating,

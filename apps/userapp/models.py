@@ -86,6 +86,11 @@ class User(AbstractUser):
         else:
             return 'Titan'
 
+    @property
+    def level_image_url(self):
+        level_name = self.level.lower()  # e.g. 'recruit'
+        return f"/static/images/levels/{level_name}.png"
+
 
 
 class ConfirmCode(models.Model):

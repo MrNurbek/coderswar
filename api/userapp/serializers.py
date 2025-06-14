@@ -49,16 +49,19 @@ UserModel = get_user_model()
 #             raise ValidationError({
 #                                       "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."})
 
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     level = serializers.SerializerMethodField()
+    level_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'password', 'first_name', 'last_name',
             'middle_name', 'otm', 'course', 'group', 'direction',
-            'role', 'character', 'profile_image', 'level'
+            'role', 'character', 'profile_image', 'level', 'level_image_url'
         ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -68,8 +71,15 @@ class RegisterSerializer(serializers.ModelSerializer):
     def get_level(self, obj):
         return obj.level
 
+    def get_level_image_url(self, obj):
+        request = self.context.get('request')
+        url = obj.level_image_url  # This is the property in User model
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
+
     def validate(self, data):
-        # Ixtiyoriy validatsiyalar qo‘shishingiz mumkin
+        # Qo‘shimcha validatsiyalarni bu yerga yozishingiz mumkin
         return data
 
     def generate_unique_username(self, base):
@@ -86,10 +96,25 @@ class RegisterSerializer(serializers.ModelSerializer):
         ConfirmCode.objects.create(user=user)
         return user
 
+
 class RatingSerializer(serializers.ModelSerializer):
+    level = serializers.SerializerMethodField()
+    level_image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'rating', 'level']
+        fields = ['id', 'email', 'full_name', 'rating', 'level', 'level_image_url']
+
+    def get_level(self, obj):
+        return obj.level
+
+    def get_level_image_url(self, obj):
+        request = self.context.get('request')
+        url = obj.level_image_url
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
+
 
 
 class AcceptSerializer(serializers.Serializer):
