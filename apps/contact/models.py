@@ -11,3 +11,11 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"Murojaat: {self.full_name} ({self.email})"
+
+
+class EmailSubmission(models.Model):
+    email = models.EmailField(unique=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email

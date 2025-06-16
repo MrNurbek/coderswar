@@ -11,7 +11,7 @@ from drf_yasg import openapi
 
 # Importlar: viewlar
 from api.comment.views import CommentListAPIView, CommentCreateAPIView
-from api.contact.views import ContactView
+from api.contact.views import ContactView, EmailSubmissionView
 from api.content.views import ContentListAPIView
 from api.duels.views import CreateDuelView, JoinDuelView, DuelListView, DuelAssignmentSubmitView, DuelAssignmentsView
 from api.initialtest.view import InitialTestListView, InitialTestSubmitView
@@ -76,7 +76,6 @@ urlpatterns += [
     # path('api/topics/', TopicListAPIView.as_view(), name='topic-list'),
     # path('topics/', TopicListView.as_view(), name='topics'),
 
-
     path('topics/', TopicSimpleListAPIView.as_view(), name='topic-simple-list'),
     path('topics/<int:pk>/plans/', TopicPlansAPIView.as_view(), name='topic-plans'),
     path('plans/<int:pk>/', PlanDetailAPIView.as_view(), name='plan-detail'),
@@ -98,6 +97,7 @@ urlpatterns += [
 
     # Contact
     path('contact/', ContactView.as_view(), name='contact'),
+    path('submit-email/', EmailSubmissionView.as_view(), name='submit-email'),
 
     # Duel
     path('duel/create/', CreateDuelView.as_view(), name='duel-create'),

@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .serializers import ContactSerializer
+from .serializers import ContactSerializer, EmailSubmissionSerializer
 
 # Telegram konfiguratsiyasi
 TELEGRAM_BOT_TOKEN = '8120112271:AAFt_eO0bsGXlxsd7McY5K_96RRjcZ7lwDE'
@@ -61,3 +61,17 @@ class ContactView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+
+class EmailSubmissionView(APIView):
+    @swagger_auto_schema(
+        request_body=EmailSubmissionSerializer,
+        responses={201: EmailSubmissionSerializer()}
+    )
+    def post(self, request):
+        serializer = EmailSubmissionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -15,6 +15,7 @@ from api.utils.utils import check_duel_end, check_duel_completion
 from apps.duels.models import Duel, DuelAssignment
 from apps.mainquest.models import Assignment, AssignmentStatus
 from apps.userapp.models import User
+
 class CreateDuelView(APIView):
     permission_classes = [IsAuthenticated]
 
