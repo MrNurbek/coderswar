@@ -13,7 +13,8 @@ from drf_yasg import openapi
 from api.comment.views import CommentListAPIView, CommentCreateAPIView
 from api.contact.views import ContactView, EmailSubmissionView
 from api.content.views import ContentListAPIView
-from api.duels.views import CreateDuelView, JoinDuelView, DuelListView, DuelAssignmentSubmitView, DuelAssignmentsView
+from api.duels.views import CreateDuelView, JoinDuelView, DuelListView, DuelAssignmentSubmitView, DuelAssignmentsView, \
+    DuelStatusView
 from api.initialtest.view import InitialTestListView, InitialTestSubmitView
 from api.mainquest.views import TopicListAPIView, TopicDetailAPIView, MarkTopicCompletedAPIView
 from api.sidequest.views import AssignmentSubmitView, DropGearView, AssignmentListView, AssignmentDetailView
@@ -105,6 +106,8 @@ urlpatterns += [
     path('duel/available/', DuelListView.as_view(), name='duel-available-list'),
     path('duel/<int:duel_id>/assignments/', DuelAssignmentsView.as_view(), name='duel-assignments'),
     path('duel/<int:duel_id>/submit/', DuelAssignmentSubmitView.as_view(), name='duel-assignment-submit'),
+    path('duel/<int:duel_id>/status/', DuelStatusView.as_view(), name='duel-status'),
+
 
     # Rating
     path('users/rating/', UserRatingListView.as_view(), name='user-rating'),

@@ -10,6 +10,7 @@ from drf_yasg import openapi
 
 from api.duels.serializers import DuelSerializer, DuelJoinSerializer, DuelCreateSerializer, \
     DuelAssignmentsForUserSerializer
+from api.duels.utils import check_duel_expired
 from api.utils.judge0_runner import run_code_judge0
 from api.utils.utils import check_duel_end, check_duel_completion
 from apps.duels.models import Duel, DuelAssignment
@@ -104,6 +105,7 @@ class DuelAssignmentSubmitView(APIView):
             return Response({"error": "assignment_id va code majburiy."}, status=400)
 
         duel = get_object_or_404(Duel, id=duel_id, is_active=True)
+        check_duel_expired(duel)
         if user not in [duel.creator, duel.opponent]:
             return Response({"error": "Siz bu duel ishtirokchisi emassiz."}, status=403)
 
@@ -118,11 +120,120 @@ class DuelAssignmentSubmitView(APIView):
         if response.get("status", {}).get("description") != "Accepted":
             return Response({"message": "Kod noto‘g‘ri."}, status=400)
 
-        status_obj, created = AssignmentStatus.objects.get_or_create(user=user, assignment=assignment)
-        if not status_obj.is_completed:
-            status_obj.is_completed = True
-            status_obj.save()
+        duel_assignment = DuelAssignment.objects.get(duel=duel, user=user, assignment=assignment)
+        if not duel_assignment.is_completed:
+            duel_assignment.is_completed = True
+            duel_assignment.save()
 
         check_duel_completion(duel)
 
         return Response({"message": "Topshiriq bajarildi", "output": response.get("stdout")}, status=200)
+
+class DuelStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Duel holatini ko‘rish: foydalanuvchilar, ishlangan topshiriqlar va vaqt holati bilan.",
+        manual_parameters=[
+            openapi.Parameter(
+                'duel_id',
+                openapi.IN_PATH,
+                description="Duel ID raqami",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={
+            200: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "duel_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                    "started_at": openapi.Schema(type=openapi.FORMAT_DATETIME),
+                    "elapsed_time_seconds": openapi.Schema(type=openapi.TYPE_INTEGER, description="Duel boshlanganidan beri o‘tgan vaqt (sekundlarda)"),
+                    "is_active": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                    "winner_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="G‘olib foydalanuvchi ID si (agar mavjud bo‘lsa)"),
+                    "creator": openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                            "full_name": openapi.Schema(type=openapi.TYPE_STRING),
+                            "profile_image": openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_URI),
+                            "assignments": openapi.Schema(
+                                type=openapi.TYPE_ARRAY,
+                                items=openapi.Schema(
+                                    type=openapi.TYPE_OBJECT,
+                                    properties={
+                                        "assignment_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                        "title": openapi.Schema(type=openapi.TYPE_STRING),
+                                        "is_completed": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                    }
+                                )
+                            )
+                        }
+                    ),
+                    "opponent": openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        nullable=True,
+                        properties={
+                            "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                            "full_name": openapi.Schema(type=openapi.TYPE_STRING),
+                            "profile_image": openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_URI),
+                            "assignments": openapi.Schema(
+                                type=openapi.TYPE_ARRAY,
+                                items=openapi.Schema(
+                                    type=openapi.TYPE_OBJECT,
+                                    properties={
+                                        "assignment_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                        "title": openapi.Schema(type=openapi.TYPE_STRING),
+                                        "is_completed": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                    }
+                                )
+                            )
+                        }
+                    ),
+                }
+            ),
+            403: openapi.Response(description="Siz bu duel ishtirokchisi emassiz."),
+            404: openapi.Response(description="Duel topilmadi."),
+        }
+    )
+    def get(self, request, duel_id):
+        duel = get_object_or_404(Duel, id=duel_id)
+
+        if request.user not in [duel.creator, duel.opponent]:
+            return Response({"error": "Siz bu duel ishtirokchisi emassiz."}, status=403)
+
+        # Duel 15 daqiqa o'tgan bo‘lsa avtomatik yopamiz
+        check_duel_expired(duel)
+
+        def get_user_data(user):
+            assignments = DuelAssignment.objects.filter(duel=duel, user=user)
+            result = []
+            for da in assignments:
+                is_done = da.is_completed
+                result.append({
+                    "assignment_id": da.assignment.id,
+                    "title": da.assignment.title,
+                    "is_completed": is_done
+                })
+            return {
+                "id": user.id,
+                "full_name": user.full_name,
+                "profile_image": request.build_absolute_uri(user.profile_image.url) if user.profile_image else None,
+                "assignments": result
+            }
+
+        # Vaqt hisoblash
+        now = timezone.now()
+        start_time = duel.started_at or duel.created_at
+        elapsed_seconds = int((now - start_time).total_seconds())
+
+        return Response({
+            "duel_id": duel.id,
+            "started_at": duel.started_at,
+            "elapsed_time_seconds": elapsed_seconds,
+            "is_active": duel.is_active,
+            "creator": get_user_data(duel.creator),
+            "opponent": get_user_data(duel.opponent) if duel.opponent else None,
+            "winner_id": duel.winner.id if duel.winner else None
+        })

@@ -29,6 +29,7 @@ def check_duel_end(duel):
             duel.is_active = False
             duel.save()
 
+
 def declare_winner(duel, winner, loser):
     duel.winner = winner
     duel.is_active = False
@@ -47,8 +48,7 @@ def check_duel_completion(duel):
     def completed_count(user):
         return DuelAssignment.objects.filter(
             duel=duel, user=user,
-            assignment__assignmentstatus__user=user,
-            assignment__assignmentstatus__is_completed=True
+            is_completed=True
         ).count()
 
     creator_completed = completed_count(duel.creator)
@@ -69,7 +69,7 @@ def check_duel_completion(duel):
         winner, loser = duel.creator, duel.opponent
     elif opponent_completed == 3 and creator_completed < 3:
         winner, loser = duel.opponent, duel.creator
-    # 2. 15 daqiqa o‘tib ketgan va biror biri ko‘proq bajargan bo‘lsa
+    # 2. 15 daqiqa o‘tib ketgan va kimdir ko‘proq topshiriq bajargan bo‘lsa
     elif time_over:
         if creator_completed > opponent_completed:
             winner, loser = duel.creator, duel.opponent
@@ -84,15 +84,19 @@ def check_duel_completion(duel):
 
     # G‘olib va mag‘lub aniqlangan bo‘lsa
     if winner and loser:
-        # 1% hisoblash va qo‘shish
-        loser_total = AssignmentStatus.objects.filter(user=loser).aggregate(total=Sum('earned_points'))['total'] or 0
+        # Mag‘lubning umumiy earned_points ni topamiz
+        loser_total = AssignmentStatus.objects.filter(
+            user=loser
+        ).aggregate(total=Sum('earned_points'))['total'] or 0
+
         bonus = round(loser_total * 0.01)
 
-        # G‘olibga qo‘shish
-        status_obj, created = AssignmentStatus.objects.get_or_create(user=winner, assignment=None)
-        status_obj.earned_points += bonus
-        status_obj.save()
+        # G‘olibga qo‘shamiz
+        winner.rating += bonus
+        winner.save()
 
+        # Duelni yopamiz
         duel.is_active = False
         duel.ended_at = timezone.now()
+        duel.winner = winner
         duel.save()

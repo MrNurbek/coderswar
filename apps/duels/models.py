@@ -25,6 +25,7 @@ class DuelAssignment(models.Model):
     duel = models.ForeignKey(Duel, on_delete=models.CASCADE, related_name='duel_assignments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='duel_user_assignments', null=True)
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    is_completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Duel #{self.id} by {self.duel.creator.email}"
