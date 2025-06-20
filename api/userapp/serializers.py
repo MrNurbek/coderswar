@@ -55,6 +55,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     level = serializers.SerializerMethodField()
     level_image_url = serializers.SerializerMethodField()
+    profile_image = serializers.ImageField(
+        required=False, allow_null=True, write_only=True
+    )
 
     class Meta:
         model = User

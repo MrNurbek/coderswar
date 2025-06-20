@@ -20,7 +20,7 @@ from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, 
 from ..mainquest.serializers import TopicSerializer, TopicSimpleSerializer, TopicWithPlansSerializer, \
     PlanDetailSerializer
 from ..sidequest.serializers import UserGearSerializer
-
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # class RegisterView(APIView):
 #     @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'})
@@ -47,8 +47,10 @@ from ..sidequest.serializers import UserGearSerializer
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
     @swagger_auto_schema(
         request_body=RegisterSerializer,
+        consumes=['multipart/form-data'],
         responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'}
     )
     def post(self, request):
