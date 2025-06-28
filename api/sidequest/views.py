@@ -1,18 +1,14 @@
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, status, permissions
+
+from rest_framework import generics, status, permissions ,filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils import timezone
-from django.db.models import Q
 import random
-from django.conf import settings
-import requests
 
 from api.mainquest.serializers import AssignmentSerializer, AssignmentDetailSerializer, AssignmentListSerializer
+from api.sidequest.pagination import AssignmentPagination
 from api.sidequest.serializers import GearItemSerializer, UserGearSerializer, CodeSubmitSerializer
 from api.userapp.serializers import RegisterSerializer, UserProgressSerializer
-from api.utils.jdoodle_runner import run_csharp_jdoodle
 from api.utils.judge0_runner import run_code_judge0
 from apps.mainquest.models import Assignment, AssignmentStatus, UserProgress
 from apps.sidequest.models import GearItem, UserGear
@@ -22,15 +18,26 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-
 class AssignmentListView(generics.ListAPIView):
     queryset = Assignment.objects.all().order_by('order')
     serializer_class = AssignmentListSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = AssignmentPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
     @swagger_auto_schema(
-        operation_summary="Barcha topshiriqlar (id, title, plan_title)",
-        operation_description="Foydalanuvchiga faqat topshiriq ID, nomi va unga tegishli rejani ko'rsatadi.",
+        operation_summary="Barcha topshiriqlar (id, title, plan_title) [paginatsiya, qidiruv bilan]",
+        operation_description=(
+            "Foydalanuvchiga faqat topshiriq ID, nomi va unga tegishli rejani ko'rsatadi.\n\n"
+            "**Search qilish uchun:** `?search=so'z`\n"
+            "**Paginatsiya uchun:** `?page=1&page_size=10`"
+        ),
+        manual_parameters=[
+            openapi.Parameter('search', openapi.IN_QUERY, description="Topshiriq nomi bo‘yicha qidirish", type=openapi.TYPE_STRING),
+            openapi.Parameter('page', openapi.IN_QUERY, description="Sahifa raqami", type=openapi.TYPE_INTEGER),
+            openapi.Parameter('page_size', openapi.IN_QUERY, description="Sahifadagi elementlar soni", type=openapi.TYPE_INTEGER),
+        ],
         responses={200: AssignmentListSerializer(many=True)}
     )
     def get(self, request, *args, **kwargs):
