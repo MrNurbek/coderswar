@@ -154,22 +154,138 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# --- Swagger uchun faqat hujjatlashtirish maqsadida javob serializerlari ---
+from rest_framework import serializers
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+class UserProfileResponseSerializer(serializers.Serializer):
+    """
+    Faqat Swagger hujjatlashtirish uchun:
+    GET /profile/ javobi qanday bo‘lishini aniq ko‘rsatadi.
+    """
+    user = RegisterSerializer()
+    gears = UserGearSerializer(many=True)
+    assignments_completed = serializers.IntegerField()
+    rating = serializers.IntegerField()
+    topics_progress = UserProgressSerializer(many=True)
+
+# --- Swagger parametri: Authorization header (JWT Bearer) ---
+AUTH_HEADER = openapi.Parameter(
+    name='Authorization',
+    in_=openapi.IN_HEADER,
+    description="Bearer token. Masalan: `Authorization: Bearer <access_token>`",
+    type=openapi.TYPE_STRING,
+    required=True,
+)
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="Foydalanuvchi profili va statistikasi qaytariladi.",
-        responses={200: openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'user': openapi.Schema(type=openapi.TYPE_OBJECT),  # yoki RegisterSerializer.as_schema()
-                'gears': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_OBJECT)),
-                'assignments_completed': openapi.Schema(type=openapi.TYPE_INTEGER),
-                'rating': openapi.Schema(type=openapi.TYPE_INTEGER),
-                'topics_progress': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_OBJECT))
-            }
-        )}
+        operation_id="GetUserProfile",
+        tags=["Profile"],
+        manual_parameters=[AUTH_HEADER],
+        operation_description=(
+            "Joriy foydalanuvchining **profil maʼlumotlari** va **o‘yin statistikasi**ni qaytaradi.\n\n"
+            "**Qaytadigan tarkib:**\n"
+            "- `user`: Foydalanuvchi profili (RegisterSerializer)\n"
+            "- `gears`: Foydalanuvchida mavjud jihozlar ro‘yxati (UserGearSerializer)\n"
+            "- `assignments_completed`: Yakunlangan topshiriqlar soni (int)\n"
+            "- `rating`: Foydalanuvchi reyting bali (int)\n"
+            "- `topics_progress`: Mavzular bo‘yicha progress (UserProgressSerializer)\n\n"
+            "**Eslatma:** Bu endpoint faqat autentifikatsiyadan o‘tgan foydalanuvchi uchun "
+            "va `Authorization: Bearer <token>` bilan chaqiriladi."
+        ),
+        responses={
+            200: openapi.Response(
+                description="Muvaffaqiyatli",
+                schema=UserProfileResponseSerializer(),
+                examples={
+                    "application/json": {
+                        "user": {
+                            "id": 12,
+                            "username": "user_8421",
+                            "email": "student@example.com",
+                            "first_name": "Ali",
+                            "last_name": "Valiyev",
+                            "middle_name": "X.",
+                            "otm": "TerDU",
+                            "course": 2,
+                            "group": "220-19",
+                            "direction": "Informatika o‘qitish metodikasi",
+                            "role": "student",
+                            "character": "Knight",
+                            # RegisterSerializer dan keladigan computed maydonlar:
+                            "level": 3,
+                            "level_image_url": "https://example.com/media/levels/level3.png"
+                            # `password` va `profile_image` bu yerda qaytmaydi (write_only)
+                        },
+                        "gears": [
+                            {
+                                "id": 5,
+                                "gear": {
+                                    "id": 101,
+                                    "name": "Steel Sword",
+                                    "type": "sword",
+                                    "rarity": "medium",
+                                    "price": 250
+                                },
+                                "obtained_at": "2025-08-10T14:22:33Z",
+                                "is_equipped": True
+                            },
+                            {
+                                "id": 6,
+                                "gear": {
+                                    "id": 117,
+                                    "name": "Round Shield",
+                                    "type": "shield",
+                                    "rarity": "basic",
+                                    "price": 120
+                                },
+                                "obtained_at": "2025-08-12T09:05:10Z",
+                                "is_equipped": False
+                            }
+                        ],
+                        "assignments_completed": 18,
+                        "rating": 3560,
+                        "topics_progress": [
+                            {
+                                "id": 41,
+                                "topic": {
+                                    "id": 16,
+                                    "title": "C# – Variables & Types",
+                                    # TopicSerializer qanday maydon qaytarsa, shular bo‘ladi
+                                },
+                                "is_completed": True,
+                                "completed_at": "2025-08-08T12:00:00Z"
+                            },
+                            {
+                                "id": 42,
+                                "topic": {
+                                    "id": 17,
+                                    "title": "C# – Control Flow",
+                                },
+                                "is_completed": False,
+                                "completed_at": None
+                            }
+                        ]
+                    }
+                },
+            ),
+            401: openapi.Response(
+                description="Autentifikatsiya xatosi",
+                examples={
+                    "application/json": {"detail": "Authentication credentials were not provided."}
+                }
+            ),
+            403: openapi.Response(
+                description="Ruxsat etilmagan",
+                examples={
+                    "application/json": {"detail": "You do not have permission to perform this action."}
+                }
+            ),
+        }
     )
     def get(self, request):
         user = request.user
