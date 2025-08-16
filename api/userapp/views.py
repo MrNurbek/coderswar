@@ -21,7 +21,7 @@ from ..mainquest.serializers import TopicSerializer, TopicSimpleSerializer, Topi
     PlanDetailSerializer
 from ..sidequest.serializers import UserGearSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework import status, parsers
 # class RegisterView(APIView):
 #     @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'})
 #     def post(self, request):
@@ -189,8 +189,24 @@ class UserProfileView(APIView):
 class UpdateUserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+
     @swagger_auto_schema(
-        request_body=UserProfileSerializer,
+        consumes=['multipart/form-data'],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "first_name": openapi.Schema(type=openapi.TYPE_STRING),
+                "last_name": openapi.Schema(type=openapi.TYPE_STRING),
+                "username": openapi.Schema(type=openapi.TYPE_STRING),
+                "otm": openapi.Schema(type=openapi.TYPE_STRING),
+                "course": openapi.Schema(type=openapi.TYPE_INTEGER),
+                "group": openapi.Schema(type=openapi.TYPE_STRING),
+                "direction": openapi.Schema(type=openapi.TYPE_STRING),
+                "role": openapi.Schema(type=openapi.TYPE_STRING),
+                "profile_image": openapi.Schema(type=openapi.TYPE_STRING, format="binary"),  # MUHIM
+            }
+        ),
         responses={200: 'Profil muvaffaqiyatli yangilandi'}
     )
     def patch(self, request):

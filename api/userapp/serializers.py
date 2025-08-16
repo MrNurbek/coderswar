@@ -131,14 +131,14 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    profile_image = serializers.ImageField(required=False, allow_null=True, use_url=True)
     class Meta:
         model = User
-        fields = [
-            'id', 'email', 'username', 'first_name', 'last_name',
-            'otm', 'course', 'group', 'direction', 'role', 'rating',
-            'level', 'character', 'profile_image'
-        ]
-        read_only_fields = ['id', 'email', 'rating', 'level', 'character']
+        fields = ['id','email','username','first_name','last_name',
+                  'otm','course','group','direction','role','rating',
+                  'level','character','profile_image']
+        read_only_fields = ['id','email','rating','level','character']
+
 
 
 class ChangePasswordSerializer(serializers.Serializer):
