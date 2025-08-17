@@ -160,16 +160,11 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 class UserProfileResponseSerializer(serializers.Serializer):
-    """
-    Faqat Swagger hujjatlashtirish uchun:
-    GET /profile/ javobi qanday bo‘lishini aniq ko‘rsatadi.
-    """
-    user = RegisterSerializer()
+    user = UserProfileSerializer()
     gears = UserGearSerializer(many=True)
     assignments_completed = serializers.IntegerField()
     rating = serializers.IntegerField()
     topics_progress = UserProgressSerializer(many=True)
-
 # --- Swagger parametri: Authorization header (JWT Bearer) ---
 AUTH_HEADER = openapi.Parameter(
     name='Authorization',
@@ -189,8 +184,8 @@ class UserProfileView(APIView):
         operation_description=(
             "Joriy foydalanuvchining **profil maʼlumotlari** va **o‘yin statistikasi**ni qaytaradi.\n\n"
             "**Qaytadigan tarkib:**\n"
-            "- `user`: Foydalanuvchi profili (UserProfileSerializer)\n"
-            "- `gears`: Foydalanuvchida mavjud jihozlar ro‘yxati (UserGearSerializer)\n"
+            "- `user`: Foydalanuvchi profili (UserProfileSerializer — character to‘liq obyekt)\n"
+            "- `gears`: Foydalanuvchi jihozlari (UserGearSerializer)\n"
             "- `assignments_completed`: Yakunlangan topshiriqlar soni (int)\n"
             "- `rating`: Foydalanuvchi reyting bali (int)\n"
             "- `topics_progress`: Mavzular bo‘yicha progress (UserProgressSerializer)\n\n"
@@ -223,7 +218,7 @@ class UserProfileView(APIView):
                                 "id": 2,
                                 "name": "Knight",
                                 "title": "Ritser",
-                                "image": "https://api.coderswar.uz/media/characters/knight.png"
+                                "image": "/media/characters/knight.png"
                             }
                         },
                         "gears": [],
