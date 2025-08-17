@@ -21,7 +21,8 @@ from api.sidequest.views import AssignmentSubmitView, DropGearView, AssignmentLi
 from api.userapp.views import (
     RegisterView, AcceptView, LoginView, UserProfileView, UpdateUserProfileView,
     ChangePasswordView, ForgotPasswordView, ResetPasswordView, CharacterListView,
-    TopicListView, UserRatingListView, ChoicesAPIView, TopicSimpleListAPIView, TopicPlansAPIView, PlanDetailAPIView
+    TopicListView, UserRatingListView, ChoicesAPIView, TopicSimpleListAPIView, TopicPlansAPIView, PlanDetailAPIView,
+    UserRatingDetailView
 )
 
 # Swagger schema
@@ -111,12 +112,13 @@ urlpatterns += [
 
     # Rating
     path('users/rating/', UserRatingListView.as_view(), name='user-rating'),
+    path('users/rating/<int:user_id>/', UserRatingDetailView.as_view(), name='user-rating-detail'),
 
     # Initial test
     path('initial-tests/', InitialTestListView.as_view(), name='initial-test-list'),
     path('initial-tests/submit/', InitialTestSubmitView.as_view(), name='initial-test-submit'),
 ]
 
-# 📁 Statik va media fayllar
+
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

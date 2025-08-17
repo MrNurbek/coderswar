@@ -456,6 +456,89 @@ class UserRatingListView(generics.ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
+
+class UserRatingDetailView(generics.RetrieveAPIView):
+    """
+    Bitta foydalanuvchining reyting ma'lumotlari (character + gears)ni qaytaradi.
+    """
+    permission_classes = [AllowAny]
+    serializer_class = UserRatingItemSerializer
+    lookup_field = 'pk'
+    lookup_url_kwarg = 'user_id'
+
+    queryset = (
+        User.objects.filter(is_active=True)
+        .select_related('character')  # Character FK
+        .prefetch_related(
+            Prefetch(
+                'usergear_set',
+                queryset=UserGear.objects.select_related('gear').order_by('-obtained_at')
+            )
+        )
+    )
+
+    @swagger_auto_schema(
+        operation_id="GetUserRatingById",
+        manual_parameters=[
+            openapi.Parameter(
+                'user_id', openapi.IN_PATH, description="Foydalanuvchi ID (pk)",
+                type=openapi.TYPE_INTEGER, required=True
+            )
+        ],
+        operation_description=(
+            "Foydalanuvchi reyting maʼlumotlarini **ID bo‘yicha** qaytaradi.\n\n"
+            "**Tarkib:**\n"
+            "- `id`, `email`, `full_name`, `rating`\n"
+            "- `level`, `level_image_url`\n"
+            "- `character`: (to‘liq obyekt) `id`, `name`, `title`, `image` yoki `image_url`\n"
+            "- `gears`: foydalanuvchining jihozlari ro‘yxati"
+        ),
+        responses={
+            200: openapi.Response(
+                description="Muvaffaqiyatli",
+                schema=UserRatingItemSerializer(),
+                examples={
+                    "application/json": {
+                        "id": 20,
+                        "email": "xamrayevnurbek00@gmail.com",
+                        "full_name": "nurbek sadasd",
+                        "rating": 3560,
+                        "level": "Recruit",
+                        "level_image_url": "https://api.coderswar.uz/static/images/levels/recruit.png",
+                        "character": {
+                            "id": 2,
+                            "name": "Knight",
+                            "title": "Ritser",
+                            "image": "/media/character_classes/knight.png"
+                            # yoki agar image_url maydonidan foydalansangiz:
+                            # "image_url": "https://api.coderswar.uz/media/character_classes/knight.png"
+                        },
+                        "gears": [
+                            {
+                                "id": 5,
+                                "gear": {
+                                    "id": 101,
+                                    "name": "Steel Sword",
+                                    "type": "sword",
+                                    "rarity": "medium",
+                                    "price": 250
+                                },
+                                "obtained_at": "2025-08-10T14:22:33Z",
+                                "is_equipped": True
+                            }
+                        ]
+                    }
+                }
+            ),
+            404: openapi.Response(
+                description="Topilmadi",
+                examples={"application/json": {"detail": "Not found."}}
+            ),
+        }
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 class TopicSimpleListAPIView(generics.ListAPIView):
     queryset = Topic.objects.all().order_by('order')
     serializer_class = TopicSimpleSerializer
