@@ -48,7 +48,10 @@ UserModel = get_user_model()
 #         except IntegrityError as e:
 #             raise ValidationError({
 #                                       "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."})
-
+class CharacterClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterClass
+        fields = ['id', 'name', 'title', 'image']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -191,10 +194,7 @@ class ResetPasswordSerializer(serializers.Serializer):
         return data
 
 
-class CharacterClassSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CharacterClass
-        fields = ['id', 'name', 'title', 'image']
+
 
 
 class Register1Serializer(serializers.ModelSerializer):
