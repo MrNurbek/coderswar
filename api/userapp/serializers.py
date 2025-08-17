@@ -132,12 +132,33 @@ class LoginSerializer(serializers.Serializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     profile_image = serializers.ImageField(required=False, allow_null=True, use_url=True)
+    level_image_url = serializers.SerializerMethodField()
+    profile_image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id','email','username','first_name','last_name',
-                  'otm','course','group','direction','role','rating',
-                  'level','character','profile_image']
+        fields = [
+            'id','email','username','first_name','last_name',
+            'otm','course','group','direction','role','rating',
+            'level','character','profile_image',
+            'level_image_url','profile_image_url'
+        ]
         read_only_fields = ['id','email','rating','level','character']
+
+    def get_level_image_url(self, obj):
+        request = self.context.get('request')
+        url = getattr(obj, 'level_image_url', None)
+        if not url:
+            return None
+        return request.build_absolute_uri(url) if request else url
+
+    def get_profile_image_url(self, obj):
+        if not obj.profile_image:
+            return None
+        request = self.context.get('request')
+        url = obj.profile_image.url
+        return request.build_absolute_uri(url) if request else url
+
 
 
 
