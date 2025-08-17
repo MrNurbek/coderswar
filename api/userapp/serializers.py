@@ -49,7 +49,10 @@ UserModel = get_user_model()
 #             raise ValidationError({
 #                                       "detail": "Foydalanuvchini yaratishda xatolik yuz berdi. Iltimos, maʼlumotlarni tekshirib qayta urinib ko‘ring."})
 
-
+class CharacterClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterClass
+        fields = ['id', 'name', 'title', 'image']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -99,6 +102,43 @@ class RegisterSerializer(serializers.ModelSerializer):
         ConfirmCode.objects.create(user=user)
         return user
 
+# serializers.py
+
+class UserRatingItemSerializer(serializers.ModelSerializer):
+    level = serializers.SerializerMethodField()
+    level_image_url = serializers.SerializerMethodField()
+    character = CharacterClassSerializer(read_only=True)
+    gears = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'email', 'full_name', 'rating',
+            'level', 'level_image_url',
+            'character', 'gears'
+        ]
+
+    def get_level(self, obj):
+        return getattr(obj, 'level', None)
+
+    def get_level_image_url(self, obj):
+        request = self.context.get('request')
+        url = getattr(obj, 'level_image_url', None)
+        if not url:
+            return None
+        return request.build_absolute_uri(url) if request else url
+
+    def get_gears(self, obj):
+        """
+        Prefetch bo‘lsa -> obj.usergear_set.all() bitta query bilan keladi.
+        Aks holda ham ishlaydi (fallback).
+        """
+        qs = getattr(obj, 'usergear_set', None)
+        if qs is None:
+            qs = UserGear.objects.filter(user=obj).select_related('gear')
+        else:
+            qs = qs.all()
+        return UserGearSerializer(qs, many=True, context=self.context).data
 
 class RatingSerializer(serializers.ModelSerializer):
     level = serializers.SerializerMethodField()
@@ -129,10 +169,7 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
 
-class CharacterClassSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CharacterClass
-        fields = ['id', 'name', 'title', 'image']
+
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

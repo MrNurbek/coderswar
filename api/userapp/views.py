@@ -16,12 +16,15 @@ from apps.sidequest.models import UserGear
 from apps.userapp.models import ConfirmCode, User, CharacterClass, University, Course, Direction, Group
 from .serializers import RegisterSerializer, AcceptSerializer, LoginSerializer, UserProfileSerializer, \
     ChangePasswordSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, UserProgressSerializer, \
-    CharacterClassSerializer, RatingSerializer
+    CharacterClassSerializer, UserRatingItemSerializer
 from ..mainquest.serializers import TopicSerializer, TopicSimpleSerializer, TopicWithPlansSerializer, \
     PlanDetailSerializer
 from ..sidequest.serializers import UserGearSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status, parsers
+from django.db.models import Prefetch
+
+
 # class RegisterView(APIView):
 #     @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'})
 #     def post(self, request):
@@ -48,6 +51,7 @@ from rest_framework import status, parsers
 
 class RegisterView(APIView):
     parser_classes = (MultiPartParser, FormParser)
+
     @swagger_auto_schema(
         request_body=RegisterSerializer,
         consumes=['multipart/form-data'],
@@ -78,6 +82,7 @@ class RegisterView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ChoicesAPIView(APIView):
     @swagger_auto_schema(
@@ -159,12 +164,15 @@ from rest_framework import serializers
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+
 class UserProfileResponseSerializer(serializers.Serializer):
     user = UserProfileSerializer()
     gears = UserGearSerializer(many=True)
     assignments_completed = serializers.IntegerField()
     rating = serializers.IntegerField()
     topics_progress = UserProgressSerializer(many=True)
+
+
 # --- Swagger parametri: Authorization header (JWT Bearer) ---
 AUTH_HEADER = openapi.Parameter(
     name='Authorization',
@@ -174,6 +182,7 @@ AUTH_HEADER = openapi.Parameter(
     required=True,
 )
 
+
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -182,15 +191,15 @@ class UserProfileView(APIView):
         tags=["Profile"],
         manual_parameters=[AUTH_HEADER],
         operation_description=(
-            "Joriy foydalanuvchining **profil maʼlumotlari** va **o‘yin statistikasi**ni qaytaradi.\n\n"
-            "**Qaytadigan tarkib:**\n"
-            "- `user`: Foydalanuvchi profili (UserProfileSerializer — character to‘liq obyekt)\n"
-            "- `gears`: Foydalanuvchi jihozlari (UserGearSerializer)\n"
-            "- `assignments_completed`: Yakunlangan topshiriqlar soni (int)\n"
-            "- `rating`: Foydalanuvchi reyting bali (int)\n"
-            "- `topics_progress`: Mavzular bo‘yicha progress (UserProgressSerializer)\n\n"
-            "**Eslatma:** Faqat autentifikatsiyadan o‘tgan foydalanuvchi uchun. "
-            "`Authorization: Bearer <token>` talab etiladi."
+                "Joriy foydalanuvchining **profil maʼlumotlari** va **o‘yin statistikasi**ni qaytaradi.\n\n"
+                "**Qaytadigan tarkib:**\n"
+                "- `user`: Foydalanuvchi profili (UserProfileSerializer — character to‘liq obyekt)\n"
+                "- `gears`: Foydalanuvchi jihozlari (UserGearSerializer)\n"
+                "- `assignments_completed`: Yakunlangan topshiriqlar soni (int)\n"
+                "- `rating`: Foydalanuvchi reyting bali (int)\n"
+                "- `topics_progress`: Mavzular bo‘yicha progress (UserProgressSerializer)\n\n"
+                "**Eslatma:** Faqat autentifikatsiyadan o‘tgan foydalanuvchi uchun. "
+                "`Authorization: Bearer <token>` talab etiladi."
         ),
         responses={
             200: openapi.Response(
@@ -254,7 +263,6 @@ class UserProfileView(APIView):
         return Response(payload)
 
 
-
 class UpdateUserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -289,8 +297,6 @@ class UpdateUserProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -305,7 +311,6 @@ class ChangePasswordView(APIView):
             user.save()
             return Response({"message": "Parol muvaffaqiyatli o‘zgartirildi"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class ForgotPasswordView(APIView):
@@ -332,7 +337,6 @@ class ForgotPasswordView(APIView):
             except User.DoesNotExist:
                 return Response({"error": "Bunday email topilmadi."}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class ResetPasswordView(APIView):
@@ -368,17 +372,88 @@ class TopicListView(generics.ListAPIView):
 
 
 class UserRatingListView(generics.ListAPIView):
-    queryset = User.objects.filter(is_active=True).order_by('-rating')
-    serializer_class = RatingSerializer
     permission_classes = [AllowAny]
+    serializer_class = UserRatingItemSerializer
+
+    # N+1 ni oldini olish:
+    queryset = (
+        User.objects.filter(is_active=True)
+        .select_related('character')  # FK character
+        .prefetch_related(
+            Prefetch(
+                'usergear_set',
+                queryset=UserGear.objects.select_related('gear').order_by('-obtained_at')
+            )
+        )
+        .order_by('-rating')
+    )
 
     @swagger_auto_schema(
-        operation_description="Umumiy foydalanuvchilar reytingi bo‘yicha saralangan ro‘yxat.",
-        responses={200: RatingSerializer(many=True)}
+        operation_id="GetUserRatingList",
+        operation_description=(
+                "Umumiy foydalanuvchilar reytingi bo‘yicha saralangan ro‘yxatni qaytaradi.\n\n"
+                "**Har bir element tarkibi:**\n"
+                "- `id`, `email`, `full_name`, `rating`\n"
+                "- `level`, `level_image_url`\n"
+                "- `character`: (to‘liq obyekt) `id`, `name`, `title`, `image`\n"
+                "- `gears`: foydalanuvchining jihozlari ro‘yxati (UserGearSerializer)\n"
+        ),
+        responses={
+            200: openapi.Response(
+                description="Muvaffaqiyatli",
+                schema=UserRatingItemSerializer(many=True),
+                examples={
+                    "application/json": [
+                        {
+                            "id": 20,
+                            "email": "xamrayevnurbek00@gmail.com",
+                            "full_name": "nurbek sadasd",
+                            "rating": 3560,
+                            "level": "Recruit",
+                            "level_image_url": "https://api.coderswar.uz/static/images/levels/recruit.png",
+                            "character": {
+                                "id": 2,
+                                "name": "Knight",
+                                "title": "Ritser",
+                                "image": "/media/character_classes/knight.png"
+                            },
+                            "gears": [
+                                {
+                                    "id": 5,
+                                    "gear": {
+                                        "id": 101,
+                                        "name": "Steel Sword",
+                                        "type": "sword",
+                                        "rarity": "medium",
+                                        "price": 250
+                                    },
+                                    "obtained_at": "2025-08-10T14:22:33Z",
+                                    "is_equipped": True
+                                }
+                            ]
+                        },
+                        {
+                            "id": 21,
+                            "email": "student2@example.com",
+                            "full_name": "Ali Valiyev",
+                            "rating": 2710,
+                            "level": "Recruit",
+                            "level_image_url": "https://api.coderswar.uz/static/images/levels/recruit.png",
+                            "character": {
+                                "id": 1,
+                                "name": "Warrior",
+                                "title": "Jangchi",
+                                "image": "/media/character_classes/warrior.png"
+                            },
+                            "gears": []
+                        }
+                    ]
+                }
+            )
+        }
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
-
 
 
 class TopicSimpleListAPIView(generics.ListAPIView):
@@ -392,7 +467,6 @@ class TopicSimpleListAPIView(generics.ListAPIView):
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
-
 
 
 class TopicPlansAPIView(generics.RetrieveAPIView):
@@ -414,10 +488,10 @@ class TopicPlansAPIView(generics.RetrieveAPIView):
         previous_topics = Topic.objects.filter(order__lt=topic.order).order_by('order')
         for prev_topic in previous_topics:
             if not UserProgress.objects.filter(user=user, topic=prev_topic, is_completed=True).exists():
-                raise PermissionDenied(f"Oldingi mavzuni yakunlamasdan bu mavzuga kirish mumkin emas: {prev_topic.title}")
+                raise PermissionDenied(
+                    f"Oldingi mavzuni yakunlamasdan bu mavzuga kirish mumkin emas: {prev_topic.title}")
 
         return super().get(request, *args, **kwargs)
-
 
 
 class PlanDetailAPIView(generics.RetrieveAPIView):
