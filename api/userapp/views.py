@@ -189,13 +189,13 @@ class UserProfileView(APIView):
         operation_description=(
             "Joriy foydalanuvchining **profil maʼlumotlari** va **o‘yin statistikasi**ni qaytaradi.\n\n"
             "**Qaytadigan tarkib:**\n"
-            "- `user`: Foydalanuvchi profili (RegisterSerializer)\n"
+            "- `user`: Foydalanuvchi profili (UserProfileSerializer)\n"
             "- `gears`: Foydalanuvchida mavjud jihozlar ro‘yxati (UserGearSerializer)\n"
             "- `assignments_completed`: Yakunlangan topshiriqlar soni (int)\n"
             "- `rating`: Foydalanuvchi reyting bali (int)\n"
             "- `topics_progress`: Mavzular bo‘yicha progress (UserProgressSerializer)\n\n"
-            "**Eslatma:** Bu endpoint faqat autentifikatsiyadan o‘tgan foydalanuvchi uchun "
-            "va `Authorization: Bearer <token>` bilan chaqiriladi."
+            "**Eslatma:** Faqat autentifikatsiyadan o‘tgan foydalanuvchi uchun. "
+            "`Authorization: Bearer <token>` talab etiladi."
         ),
         responses={
             200: openapi.Response(
@@ -204,86 +204,42 @@ class UserProfileView(APIView):
                 examples={
                     "application/json": {
                         "user": {
-                            "id": 12,
-                            "username": "user_8421",
-                            "email": "student@example.com",
-                            "first_name": "Ali",
-                            "last_name": "Valiyev",
-                            "middle_name": "X.",
+                            "id": 20,
+                            "username": "xamrayevnurbek00_1090",
+                            "email": "xamrayevnurbek00@gmail.com",
+                            "first_name": "nurbek",
+                            "last_name": "sadasd",
+                            "middle_name": "asdas",
                             "otm": "TerDU",
-                            "course": 2,
-                            "group": "220-19",
-                            "direction": "Informatika o‘qitish metodikasi",
-                            "role": "student",
-                            "character": "Knight",
-                            # RegisterSerializer dan keladigan computed maydonlar:
-                            "level": 3,
-                            "level_image_url": "https://example.com/media/levels/level3.png"
-                            # `password` va `profile_image` bu yerda qaytmaydi (write_only)
+                            "course": 1,
+                            "group": "101",
+                            "direction": "Amaliy matematika",
+                            "role": "talaba",
+                            "level": "Recruit",
+                            "level_image_url": "https://api.coderswar.uz/static/images/levels/recruit.png",
+                            "profile_image": "/media/profiles/20.png",
+                            "profile_image_url": "https://api.coderswar.uz/media/profiles/20.png",
+                            "character": {
+                                "id": 2,
+                                "name": "Knight",
+                                "title": "Ritser",
+                                "image": "https://api.coderswar.uz/media/characters/knight.png"
+                            }
                         },
-                        "gears": [
-                            {
-                                "id": 5,
-                                "gear": {
-                                    "id": 101,
-                                    "name": "Steel Sword",
-                                    "type": "sword",
-                                    "rarity": "medium",
-                                    "price": 250
-                                },
-                                "obtained_at": "2025-08-10T14:22:33Z",
-                                "is_equipped": True
-                            },
-                            {
-                                "id": 6,
-                                "gear": {
-                                    "id": 117,
-                                    "name": "Round Shield",
-                                    "type": "shield",
-                                    "rarity": "basic",
-                                    "price": 120
-                                },
-                                "obtained_at": "2025-08-12T09:05:10Z",
-                                "is_equipped": False
-                            }
-                        ],
-                        "assignments_completed": 18,
-                        "rating": 3560,
-                        "topics_progress": [
-                            {
-                                "id": 41,
-                                "topic": {
-                                    "id": 16,
-                                    "title": "C# – Variables & Types",
-                                    # TopicSerializer qanday maydon qaytarsa, shular bo‘ladi
-                                },
-                                "is_completed": True,
-                                "completed_at": "2025-08-08T12:00:00Z"
-                            },
-                            {
-                                "id": 42,
-                                "topic": {
-                                    "id": 17,
-                                    "title": "C# – Control Flow",
-                                },
-                                "is_completed": False,
-                                "completed_at": None
-                            }
-                        ]
+                        "gears": [],
+                        "assignments_completed": 0,
+                        "rating": 0,
+                        "topics_progress": []
                     }
                 },
             ),
             401: openapi.Response(
                 description="Autentifikatsiya xatosi",
-                examples={
-                    "application/json": {"detail": "Authentication credentials were not provided."}
-                }
+                examples={"application/json": {"detail": "Authentication credentials were not provided."}}
             ),
             403: openapi.Response(
                 description="Ruxsat etilmagan",
-                examples={
-                    "application/json": {"detail": "You do not have permission to perform this action."}
-                }
+                examples={"application/json": {"detail": "You do not have permission to perform this action."}}
             ),
         }
     )
@@ -293,13 +249,15 @@ class UserProfileView(APIView):
         completed_assignments = AssignmentStatus.objects.filter(user=user, is_completed=True)
         progress = UserProgress.objects.filter(user=user)
 
-        return Response({
+        payload = {
             "user": UserProfileSerializer(user, context={"request": request}).data,
-            "gears": UserGearSerializer(gears, many=True).data,
+            "gears": UserGearSerializer(gears, many=True, context={"request": request}).data,
             "assignments_completed": completed_assignments.count(),
             "rating": user.rating,
-            "topics_progress": UserProgressSerializer(progress, many=True).data
-        })
+            "topics_progress": UserProgressSerializer(progress, many=True, context={"request": request}).data
+        }
+        return Response(payload)
+
 
 
 class UpdateUserProfileView(APIView):

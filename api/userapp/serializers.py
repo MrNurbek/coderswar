@@ -134,6 +134,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_image = serializers.ImageField(required=False, allow_null=True, use_url=True)
     level_image_url = serializers.SerializerMethodField()
     profile_image_url = serializers.SerializerMethodField()
+    character = CharacterClassSerializer(read_only=True)
 
     class Meta:
         model = User
@@ -158,6 +159,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         url = obj.profile_image.url
         return request.build_absolute_uri(url) if request else url
+
 
 
 
