@@ -9,7 +9,7 @@ import string
 from django.db import IntegrityError
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-
+from api.sidequest.serializers import GearItemSerializer, UserGearSerializer, CodeSubmitSerializer
 UserModel = get_user_model()
 
 
