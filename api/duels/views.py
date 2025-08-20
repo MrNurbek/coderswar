@@ -17,6 +17,16 @@ from apps.duels.models import Duel, DuelAssignment
 from apps.mainquest.models import Assignment, AssignmentStatus
 from apps.userapp.models import User
 
+# class CreateDuelView(APIView):
+#     permission_classes = [IsAuthenticated]
+#
+#     @swagger_auto_schema(
+#         operation_description="Duel yaratish (faqat duel obyektini yaratadi, topshiriq bermaydi)",
+#         responses={201: DuelSerializer()}
+#     )
+#     def post(self, request):
+#         duel = Duel.objects.create(creator=request.user)
+#         return Response(DuelSerializer(duel).data, status=201)
 class CreateDuelView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -25,9 +35,20 @@ class CreateDuelView(APIView):
         responses={201: DuelSerializer()}
     )
     def post(self, request):
-        duel = Duel.objects.create(creator=request.user)
-        return Response(DuelSerializer(duel).data, status=201)
+        has_unfinished = Duel.objects.filter(
+            creator=request.user,
+            is_active=True,
+            winner__isnull=True,
+        ).exists()
 
+        if has_unfinished:
+            return Response(
+                {"detail": "Sizda tugallanmagan 1 ta duel bor. Yangi duel yaratishdan avval uni yakunlang."},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        duel = Duel.objects.create(creator=request.user)
+        return Response(DuelSerializer(duel).data, status=status.HTTP_201_CREATED)
 
 class JoinDuelView(APIView):
     permission_classes = [IsAuthenticated]
