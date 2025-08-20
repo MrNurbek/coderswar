@@ -169,10 +169,38 @@ class DuelStatusView(APIView):
                 type=openapi.TYPE_OBJECT,
                 properties={
                     "duel_id": openapi.Schema(type=openapi.TYPE_INTEGER),
-                    "started_at": openapi.Schema(type=openapi.FORMAT_DATETIME),
-                    "elapsed_time_seconds": openapi.Schema(type=openapi.TYPE_INTEGER, description="Duel boshlanganidan beri o‘tgan vaqt (sekundlarda)"),
+
+                    # Vaqtlar — frontendga qulay formatlar:
+                    "started_at_iso": openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        format=openapi.FORMAT_DATETIME,
+                        description="Boshlanish vaqti (local time, ISO 8601, masalan: 2025-08-20T14:32:10+05:00)"
+                    ),
+                    "started_at_text": openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        description="Boshlanish vaqti matn ko‘rinishida (dd.mm.yyyy HH:MM), masalan: 20.08.2025 14:32"
+                    ),
+                    "started_at_unix": openapi.Schema(
+                        type=openapi.TYPE_INTEGER,
+                        description="Boshlanish vaqti UNIX timestamp (soniyada)"
+                    ),
+
+                    # Orqaga moslik uchun (xohlasangiz olib tashlashingiz mumkin):
+                    "started_at": openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        format=openapi.FORMAT_DATETIME,
+                        description="(Legacy) boshlanish vaqti; avval qaytarilgan raw datetime/ISO"
+                    ),
+
+                    "elapsed_time_seconds": openapi.Schema(
+                        type=openapi.TYPE_INTEGER,
+                        description="Duel boshlanganidan beri o‘tgan vaqt (sekundlarda)"
+                    ),
                     "is_active": openapi.Schema(type=openapi.TYPE_BOOLEAN),
-                    "winner_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="G‘olib foydalanuvchi ID si (agar mavjud bo‘lsa)"),
+                    "winner_id": openapi.Schema(
+                        type=openapi.TYPE_INTEGER,
+                        description="G‘olib foydalanuvchi ID si (agar mavjud bo‘lsa)"
+                    ),
                     "creator": openapi.Schema(
                         type=openapi.TYPE_OBJECT,
                         properties={
@@ -224,23 +252,22 @@ class DuelStatusView(APIView):
         if request.user not in [duel.creator, duel.opponent]:
             return Response({"error": "Siz bu duel ishtirokchisi emassiz."}, status=403)
 
-        # Duel 15 daqiqa o'tgan bo‘lsa avtomatik yopamiz
+        # Duel 15 daqiqa o'tgan bo‘lsa avtomatik yopamiz (ichki qoidangizga ko‘ra)
         check_duel_expired(duel)
 
         def get_user_data(user):
             assignments = DuelAssignment.objects.filter(duel=duel, user=user)
             result = []
             for da in assignments:
-                is_done = da.is_completed
                 result.append({
                     "assignment_id": da.assignment.id,
                     "title": da.assignment.title,
-                    "is_completed": is_done
+                    "is_completed": da.is_completed
                 })
             return {
                 "id": user.id,
                 "full_name": user.full_name,
-                "profile_image": request.build_absolute_uri(user.profile_image.url) if user.profile_image else None,
+                "profile_image": request.build_absolute_uri(user.profile_image.url) if getattr(user, "profile_image", None) else None,
                 "assignments": result
             }
 
@@ -249,8 +276,18 @@ class DuelStatusView(APIView):
         start_time = duel.started_at or duel.created_at
         elapsed_seconds = int((now - start_time).total_seconds())
 
+        # Frontendga qulay formatlar (Django TIME_ZONE bo‘yicha)
+        local_start = timezone.localtime(start_time)
+        started_at_iso = local_start.isoformat()                 # 2025-08-20T14:32:10+05:00
+        started_at_text = local_start.strftime('%d.%m.%Y %H:%M') # 20.08.2025 14:32
+        started_at_unix = int(local_start.timestamp())           # 1692525130
+
         return Response({
             "duel_id": duel.id,
+            "started_at_iso": started_at_iso,
+            "started_at_text": started_at_text,
+            "started_at_unix": started_at_unix,
+            # Orqaga moslik: avval bo‘lgani kabi raw datetime/ISO (agar serializer/renderer ISOga aylantirsa)
             "started_at": duel.started_at,
             "elapsed_time_seconds": elapsed_seconds,
             "is_active": duel.is_active,
