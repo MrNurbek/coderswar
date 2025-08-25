@@ -118,10 +118,8 @@ class UserRatingItemSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'email', 'full_name', 'rating',
-            'level', 'level_image_url',
+            'level', 'level_image_url','profile_image', 'profile_image_url'
             'character', 'gears',
-            # YANGI:
-            'profile_image', 'profile_image_url',
         ]
 
     def get_level(self, obj):
