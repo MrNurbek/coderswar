@@ -110,12 +110,18 @@ class UserRatingItemSerializer(serializers.ModelSerializer):
     character = CharacterClassSerializer(read_only=True)
     gears = serializers.SerializerMethodField()
 
+    # YANGI MAYDONLAR:
+    profile_image = serializers.SerializerMethodField()
+    profile_image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
             'id', 'email', 'full_name', 'rating',
             'level', 'level_image_url',
-            'character', 'gears'
+            'character', 'gears',
+            # YANGI:
+            'profile_image', 'profile_image_url',
         ]
 
     def get_level(self, obj):
@@ -139,6 +145,29 @@ class UserRatingItemSerializer(serializers.ModelSerializer):
         else:
             qs = qs.all()
         return UserGearSerializer(qs, many=True, context=self.context).data
+
+    # --- YANGI: Profil rasmi helperlari ---
+    def get_profile_image(self, obj):
+        """
+        Nisbiy yo'l (MEDIA ichidagi) kerak bo‘lsa.
+        Masalan: "/media/users/avatars/u_20.png"
+        """
+        img = getattr(obj, 'profile_image', None)
+        try:
+            return img.url if img else None
+        except Exception:
+            return None
+
+    def get_profile_image_url(self, obj):
+        """
+        To‘liq absolute URL (domain bilan).
+        """
+        request = self.context.get('request')
+        rel = self.get_profile_image(obj)
+        if not rel:
+            return None
+        return request.build_absolute_uri(rel) if request else rel
+
 
 class RatingSerializer(serializers.ModelSerializer):
     level = serializers.SerializerMethodField()
