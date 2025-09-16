@@ -29,11 +29,12 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "165.22.75.64",
-    "api.coderswar.uz"
+    "api.coderswar.uz",
+    "*"
 ]
 
 INSTALLED_APPS = [
-"jazzmin",
+    "jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -150,13 +151,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-MEDIA_URL = '/media/'
-STATIC_URL = '/static/'
-
-MEDIA_URL = '/media/'
-
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+#
+# MEDIA_URL = '/media/'
+# STATIC_URL = '/static/'
+#
+# MEDIA_URL = '/media/'
+#
 # STATICFILES_DIRS = [
 #     BASE_DIR / "static",
 # ]
@@ -165,8 +166,13 @@ JD_CLIENT_SECRET = '41090e328eaf6cc453b1c3e988c80c2f32dd3f93c6a5f183e72ff03f8627
 JUDGE0_API_KEY = "0aec8801d1msh9e6a1e1a901347ap1ad911jsn249c31bc123e"
 JUDGE0_API_HOST = "judge0-ce.p.rapidapi.com"
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+# STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]  # devda mana shu bo‘lishi shart
+STATIC_ROOT = BASE_DIR / "staticfiles"  # faqat prod uchun
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -206,6 +212,7 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 JAZZMIN_SETTINGS = {
+    "custom_css": "css/custom.css",
     "site_title": "Coders War Admin",
     "site_header": "Coders War Boshqaruv Paneli",
     "site_brand": "Coders War",
@@ -216,10 +223,10 @@ JAZZMIN_SETTINGS = {
     "site_icon": "images/favicon.ico",
 
     "search_model": [
-    "auth.User",
-    "userapp.CustomUser",
-    "mainquest.Topic",  
-],
+        "auth.User",
+        "userapp.CustomUser",
+        "mainquest.Topic",
+    ],
 
     "topmenu_links": [
         {"name": "Bosh sahifa", "url": "/", "permissions": ["auth.view_user"]},
@@ -256,8 +263,6 @@ JAZZMIN_SETTINGS = {
         "initialtest.InitialTest": "fas fa-question-circle",
     },
 }
-
-
 
 USE_I18N = True
 USE_L10N = True
