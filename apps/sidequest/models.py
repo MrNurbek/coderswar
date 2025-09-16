@@ -23,6 +23,11 @@ class GearItem(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=20, choices=GEAR_TYPES)
     quality = models.CharField(max_length=10, choices=QUALITY)
+    image = models.ImageField(
+        upload_to="gear_images/",
+        blank=True,
+        null=True,
+        verbose_name="Rasm")
 
     def __str__(self):
         return f"{self.name} ({self.get_quality_display()})"

@@ -249,13 +249,14 @@ class UserProfileView(APIView):
     )
     def get(self, request):
         user = request.user
-        gears = UserGear.objects.filter(user=user)
+        best_ugs = equip_best_gears_for_user(user)
+        gears_data = UserGearSerializer(best_ugs, many=True, context={"request": request}).data
         completed_assignments = AssignmentStatus.objects.filter(user=user, is_completed=True)
         progress = UserProgress.objects.filter(user=user)
 
         payload = {
             "user": UserProfileSerializer(user, context={"request": request}).data,
-            "gears": UserGearSerializer(gears, many=True, context={"request": request}).data,
+            "gears": gears_data,
             "assignments_completed": completed_assignments.count(),
             "rating": user.rating,
             "topics_progress": UserProgressSerializer(progress, many=True, context={"request": request}).data
