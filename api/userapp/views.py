@@ -23,7 +23,7 @@ from ..sidequest.serializers import UserGearSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status, parsers
 from django.db.models import Prefetch
-
+from api.sidequest.services import equip_best_gears_for_user
 
 # class RegisterView(APIView):
 #     @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'Foydalanuvchi yaratildi. Emailga kod yuborildi.'})
