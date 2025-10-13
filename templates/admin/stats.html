@@ -1,0 +1,120 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Statistika{% endblock %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Bosh sahifa</a> › Statistika
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h1 class="mb-3"><i class="fas fa-chart-line"></i> Statistika</h1>
+
+  <!-- Filtrlar -->
+  <div class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <form method="get" class="row g-2">
+        <div class="col-md-3">
+          <label class="form-label">Qidiruv</label>
+          <input type="text" name="q" value="{{ filter_form.q.value|default_if_none:'' }}" class="form-control" placeholder="email, ism, familiya">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">OTM</label>
+          <input type="text" name="otm" value="{{ filter_form.otm.value|default_if_none:'' }}" class="form-control" placeholder="TerDU">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Kurs</label>
+          <input type="number" name="course" value="{{ filter_form.course.value|default_if_none:'' }}" class="form-control" min="1" max="4">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Guruh</label>
+          <input type="text" name="group" value="{{ filter_form.group.value|default_if_none:'' }}" class="form-control" placeholder="101">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Rol</label>
+          <select name="role" class="form-select">
+            <option value="">---</option>
+            <option value="talaba" {% if filter_form.role.value == 'talaba' %}selected{% endif %}>Talaba</option>
+            <option value="oqituvchi" {% if filter_form.role.value == 'oqituvchi' %}selected{% endif %}>O‘qituvchi</option>
+          </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-primary w-100" type="submit"><i class="fas fa-filter"></i></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="row">
+    {% for c in cards %}
+      <div class="col-xl-4 col-md-6">
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-1">{{ c.title }}</h5>
+            <p class="display-6 mt-2 mb-2">{{ c.value }}</p>
+            <div class="progress" style="height:8px;">
+              <div class="progress-bar" role="progressbar"
+                   style="width: {{ c.pct }}%;"
+                   aria-valuenow="{{ c.pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <small class="text-muted">{{ c.pct }}%</small>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Global bar chart -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Semestr bo‘yicha ball (umumiy)</h5>
+      <div style="height:320px">
+        <canvas id="semChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tables (summary + per-user) -->
+  {% for t in tables %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ t.title }}</h5>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped align-middle">
+            <thead>
+              <tr>
+                {% for h in t.headers %}<th>{{ h }}</th>{% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in t.rows %}
+                <tr>
+                  {% for cell in row %}<td>{{ cell }}</td>{% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const series = {{ series|safe }};
+  const labels = series.map(s => s.label);
+  const values = series.map(s => s.value);
+  const ctx = document.getElementById('semChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Ball (sum)', data: values }] },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display:false } } }
+  });
+</script>
+{% endblock %}
+

@@ -18,6 +18,7 @@ from api.duels.views import CreateDuelView, JoinDuelView, DuelListView, DuelAssi
 from api.initialtest.view import InitialTestListView, InitialTestSubmitView
 from api.mainquest.views import TopicListAPIView, TopicDetailAPIView, MarkTopicCompletedAPIView
 from api.sidequest.views import AssignmentSubmitView, DropGearView, AssignmentListView, AssignmentDetailView
+from api.stats.views import admin_stats_view
 from api.userapp.views import (
     RegisterView, AcceptView, LoginView, UserProfileView, UpdateUserProfileView,
     ChangePasswordView, ForgotPasswordView, ResetPasswordView, CharacterListView,
@@ -51,7 +52,7 @@ urlpatterns += i18n_patterns(
 
 # 📡 API va boshqa yo'llar (i18n bilan bog‘liq emas)
 urlpatterns += [
-
+    path("admin/stats/", admin.site.admin_view(admin_stats_view), name="admin-stats"),
     # Swagger
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

@@ -74,7 +74,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -229,7 +229,8 @@ JAZZMIN_SETTINGS = {
     ],
 
     "topmenu_links": [
-        {"name": "Bosh sahifa", "url": "/", "permissions": ["auth.view_user"]},
+        {"name": "Bosh sahifa", "url": "/uz/admin/", "permissions": ["auth.view_user"]},
+        {"name": "Statistika", "url": "admin-stats", "permissions": ["is_staff"], "icon": "fas fa-chart-line"},
         {"model": "auth.User"},
         {"model": "userapp.CustomUser"},
     ],
@@ -262,7 +263,15 @@ JAZZMIN_SETTINGS = {
         "contact.ContactMessage": "fas fa-envelope-open-text",
         "initialtest.InitialTest": "fas fa-question-circle",
     },
+
+    # (Ixtiyoriy, lekin foydali)
+    "custom_links": {
+        "mainquest": [
+            {"name": "Statistika", "url": "admin-stats", "icon": "fas fa-chart-bar"},
+        ],
+    },
 }
+
 
 USE_I18N = True
 USE_L10N = True
