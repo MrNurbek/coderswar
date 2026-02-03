@@ -15,6 +15,7 @@ class University(models.TextChoices):
     TERDU = 'TerDU', 'TerDU'
     GULDU = 'GulDU', 'GulDU'
     FARDU = 'FarDU', 'FarDU'
+    TISU = 'TISU', 'TISU'
 
 class Course(models.IntegerChoices):
     FIRST = 1, '1'
