@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="uz">
 <head>
   <meta charset="UTF-8"/>
@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome/css/rpg-awesome.min.css">
   <style>
     :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -151,7 +151,7 @@
     .fb-reviewer{font-size:.85rem;font-weight:600;flex:1}
     .fb-date{font-size:.72rem;color:var(--muted)}
     .fb-topic{font-size:.78rem;color:var(--accent);margin-bottom:.4rem}
-    .fb-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.6rem}
+    .fb-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.6rem;max-width:280px}
     .fb-score-item{background:rgba(255,255,255,0.03);border-radius:8px;padding:.4rem .6rem;text-align:center}
     .fb-score-label{font-size:.65rem;color:var(--muted)}
     .fb-score-val{font-size:.88rem;font-weight:700}
@@ -287,7 +287,7 @@
               </div>
               <div style="display:flex;gap:.8rem;align-items:flex-start">
                 <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">2</div>
-                <div><strong>Mezon bo'yicha baholash</strong><br><span style="color:var(--muted)">6 ta mezon bo'yicha har birini 0–10 balda baholang</span></div>
+                <div><strong>Mezon bo'yicha baholash</strong><br><span style="color:var(--muted)">3 ta mezon bo'yicha slayderlar yordamida baholang</span></div>
               </div>
               <div style="display:flex;gap:.8rem;align-items:flex-start">
                 <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">3</div>
@@ -303,19 +303,16 @@
             <div class="card-header"><span class="card-title">📊 Baholash mezoni</span></div>
             <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.82rem">
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(108,99,255,0.06);border-radius:8px">
-                <span>🧠 Kognitiv (Ko)</span><span style="color:#a78bfa;font-weight:700">20 ball</span>
+                <span>🧠 Kognitiv (Ko)</span><span style="color:#a78bfa;font-weight:700">30 ball</span>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(67,233,123,0.05);border-radius:8px">
-                <span>⚙️ Faoliyat (Fa)</span><span style="color:#43e97b;font-weight:700">30 ball</span>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,215,0,0.05);border-radius:8px">
-                <span>🎯 Adaptiv (Ad)</span><span style="color:var(--gold);font-weight:700">15 ball</span>
+                <span>⚙️ Faoliyat (Fa)</span><span style="color:#43e97b;font-weight:700">35 ball</span>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,101,132,0.05);border-radius:8px">
-                <span>💡 Kreativ (Kr)</span><span style="color:#ff6584;font-weight:700">15 ball</span>
+                <span>💬 Reflektiv (Re)</span><span style="color:#fb923c;font-weight:700">20 ball</span>
               </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,255,255,0.04);border-radius:8px">
-                <span>💬 Reflektiv (Re)</span><span style="color:var(--muted);font-weight:700">10 ball</span>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:.4rem;margin-top:.2rem">
+                <span style="color:var(--muted)">Jami maksimal</span><span style="color:var(--text);font-weight:800">85 ball</span>
               </div>
             </div>
           </div>
@@ -441,7 +438,7 @@
     <textarea class="comment-area" id="reviewComment" placeholder="Kodni o'qib chiqgach, nima yaxshi, nima yaxshilanishi mumkin — konstruktiv fikr yozing..."></textarea>
 
     <div style="display:flex;align-items:center;justify-content:space-between">
-      <div style="font-size:.82rem;color:var(--muted)">Jami ball: <strong id="totalScore" style="color:#a78bfa">0 / 90</strong></div>
+      <div style="font-size:.82rem;color:var(--muted)">Jami ball: <strong id="totalScore" style="color:#a78bfa">0 / 85</strong></div>
       <div class="review-submit-row">
         <button class="btn btn-outline" onclick="closeModal('reviewModal')">Bekor qilish</button>
         <button class="btn btn-primary" onclick="submitReview()">✅ Yuborish</button>
@@ -510,13 +507,11 @@ let selectedStars = 3;
 
 // ─── Criteria config ─────────────────────────────────────────────────────────
 const criteria = [
-  {name:'Kognitiv (Ko)', max:20, key:'ko_score'},
-  {name:'Faoliyat (Fa)', max:30, key:'fa_score'},
-  {name:'Adaptiv (Ad)',  max:15, key:'ad_score'},
-  {name:'Kreativ (Kr)',  max:15, key:'kr_score'},
-  {name:'Reflektiv (Re)',max:10, key:'re_score'},
+  {name:'Kognitiv (Ko)', max:30, key:'ko_score'},
+  {name:'Faoliyat (Fa)', max:35, key:'fa_score'},
+  {name:'Reflektiv (Re)',max:20, key:'re_score'},
 ];
-const scores = {ko_score:0, fa_score:0, ad_score:0, kr_score:0, re_score:0};
+const scores = {ko_score:0, fa_score:0, re_score:0};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -642,7 +637,7 @@ function renderMyReviews() {
   _myRevData.forEach(r => {
     const stars = r.star_rating || 0;
     const starsHtml = '⭐'.repeat(stars) + '<span class="star-empty">' + '⭐'.repeat(5 - stars) + '</span>';
-    const chips = ['ko_score','fa_score','ad_score','kr_score','re_score']
+    const chips = ['ko_score','fa_score','re_score']
       .map(k => `<span class="score-chip">${k.replace('_score','').toUpperCase()}: ${r[k] || 0}</span>`).join('');
     const reviewee = r.reviewee ? (r.reviewee.full_name || r.reviewee.username || 'Talaba') : 'Talaba';
     el.innerHTML += `<div class="mr-item">
@@ -670,7 +665,7 @@ function renderReceived() {
   _fbData.forEach(f => {
     const reviewer = f.reviewer ? (f.reviewer.full_name || f.reviewer.username || 'Reviewer') : 'Reviewer';
     const init = reviewer[0].toUpperCase();
-    const scoreItems = ['ko_score','fa_score','ad_score','kr_score','re_score']
+    const scoreItems = ['ko_score','fa_score','re_score']
       .map(k => `<div class="fb-score-item"><div class="fb-score-label">${k.replace('_score','').toUpperCase()}</div><div class="fb-score-val" style="color:#a78bfa">${f[k] || 0}</div></div>`).join('');
     el.innerHTML += `<div class="fb-item">
       <div class="fb-header">
@@ -743,7 +738,7 @@ function updateScore(key, val, max) {
   scores[key] = parseInt(val);
   $('val-' + key).textContent = val + '/' + max;
   const total = Object.values(scores).reduce((a, b) => a + b, 0);
-  $('totalScore').textContent = total + ' / 90';
+  $('totalScore').textContent = total + ' / 85';
 }
 
 // ─── Star picker ──────────────────────────────────────────────────────────────
