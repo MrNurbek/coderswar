@@ -1,0 +1,52 @@
+body { display: flex; min-height: 100vh; }
+.main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; }
+.content { padding: 2rem; flex: 1; }
+.podium-wrap { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(108,99,255,0.1) 0%, transparent 70%); border: 1px solid var(--border); border-radius: 24px; padding: 2.5rem 2rem 2rem; margin-bottom: 2rem; text-align: center; }
+.podium-title { font-size: .75rem; font-weight: 700; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem; }
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.podium-slot { display: flex; flex-direction: column; align-items: center; gap: .6rem; min-width: 110px; }
+.pod-avatar { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; border: 3px solid; position: relative; }
+.pod-crown { position: absolute; top: -16px; font-size: 1.1rem; }
+.pod-name { font-size: .88rem; font-weight: 700; } .pod-score { font-size: .8rem; color: var(--muted); }
+.pod-level { font-size: .72rem; font-weight: 600; padding: .15rem .5rem; border-radius: 6px; }
+.pod-bar { width: 100%; border-radius: 12px 12px 0 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: .5rem; font-size: 1.2rem; font-weight: 900; }
+.p1 .pod-avatar { background: rgba(255,215,0,0.15); border-color: var(--gold); } .p1 .pod-bar { height: 100px; background: linear-gradient(180deg,rgba(255,215,0,0.2),rgba(255,215,0,0.05)); border: 1px solid rgba(255,215,0,0.3); } .p1 .pod-level { background: rgba(255,215,0,0.15); color: var(--gold); }
+.p2 .pod-avatar { background: rgba(192,192,192,0.15); border-color: #c0c0c0; } .p2 .pod-bar { height: 70px; background: linear-gradient(180deg,rgba(192,192,192,0.15),rgba(192,192,192,0.03)); border: 1px solid rgba(192,192,192,0.2); } .p2 .pod-level { background: rgba(192,192,192,0.12); color: #c0c0c0; }
+.p3 .pod-avatar { background: rgba(205,127,50,0.15); border-color: #cd7f32; } .p3 .pod-bar { height: 50px; background: linear-gradient(180deg,rgba(205,127,50,0.15),rgba(205,127,50,0.03)); border: 1px solid rgba(205,127,50,0.2); } .p3 .pod-level { background: rgba(205,127,50,0.12); color: #cd7f32; }
+.filter-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+.filter-tabs { display: flex; gap: .5rem; flex: 1; flex-wrap: wrap; }
+.ftab { padding: .5rem 1.1rem; border-radius: 10px; border: 1px solid var(--border); background: var(--card); cursor: pointer; font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600; color: var(--muted); transition: all .2s; }
+.ftab:hover { border-color: var(--accent); color: var(--text); }
+.ftab.active { background: rgba(108,99,255,0.15); border-color: var(--accent); color: #a78bfa; }
+.search-lb { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: .5rem .9rem; display: flex; gap: .5rem; align-items: center; color: var(--muted); font-size: .85rem; }
+.search-lb input { background: none; border: none; outline: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: .85rem; width: 160px; }
+.search-lb input::placeholder { color: var(--muted); }
+.my-rank { background: linear-gradient(135deg,rgba(108,99,255,0.12),rgba(255,101,132,0.06)); border: 1px solid rgba(108,99,255,0.3); border-radius: 18px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+.mr-label { font-size: .72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.mr-rank { font-size: 2rem; font-weight: 900; color: #a78bfa; line-height: 1; }
+.mr-info { flex: 1; } .mr-name { font-size: .95rem; font-weight: 700; } .mr-meta { font-size: .8rem; color: var(--muted); margin-top: .1rem; }
+.mr-score { text-align: right; }
+.mr-score-val { font-size: 1.5rem; font-weight: 900; background: linear-gradient(135deg,#6c63ff,#a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.mr-score-sub { font-size: .72rem; color: var(--muted); }
+.lb-table { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+.lb-thead { display: grid; grid-template-columns: 60px 1fr 120px 120px 100px 80px; padding: .7rem 1.2rem; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.lb-row { display: grid; grid-template-columns: 60px 1fr 120px 120px 100px 80px; padding: .85rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center; transition: background .2s; cursor: pointer; }
+.lb-row:hover { background: rgba(108,99,255,0.06); }
+.lb-row.me { background: rgba(108,99,255,0.08); border-left: 3px solid var(--accent); }
+.lb-row:last-child { border-bottom: none; }
+.rank-num { font-size: 1rem; font-weight: 800; text-align: center; }
+.rank-1 { color: var(--gold); } .rank-2 { color: #c0c0c0; } .rank-3 { color: #cd7f32; } .rank-other { color: var(--muted); }
+.user-cell { display: flex; align-items: center; gap: .8rem; }
+.user-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .95rem; font-weight: 700; flex-shrink: 0; border: 2px solid; }
+.user-name { font-size: .88rem; font-weight: 600; } .user-meta { font-size: .72rem; color: var(--muted); margin-top: .1rem; }
+.score-cell { font-size: .9rem; font-weight: 700; color: var(--accent); }
+.academic-cell { font-size: .9rem; font-weight: 700; }
+.ac-high { color: #43e97b; } .ac-mid { color: #4299e1; } .ac-low { color: #ffa500; }
+.level-badge { font-size: .72rem; font-weight: 700; padding: .2rem .6rem; border-radius: 8px; }
+.trend-cell { font-size: .78rem; font-weight: 600; display: flex; align-items: center; gap: .3rem; }
+.t-up { color: #43e97b; } .t-down { color: #ff6584; } .t-same { color: var(--muted); }
+@media (max-width: 900px) {
+  .lb-thead { grid-template-columns: 50px 1fr 90px 80px; display: none; }
+  .lb-row { grid-template-columns: 50px 1fr 90px 80px; }
+  .lb-row > :nth-child(4), .lb-row > :nth-child(5) { display: none; }
+}

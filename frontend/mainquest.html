@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Darslar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:.8rem .7rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .avatar-sm{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .sb-user .info .name{font-size:.88rem;font-weight:600}
+    .sb-user .info .role{font-size:.72rem;color:var(--muted)}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar h2{font-size:1.05rem;font-weight:700}
+    .topbar .bc{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .content{padding:2rem;flex:1}
+
+    /* ── MODULE TABS ── */
+    .mod-tabs{display:flex;gap:.8rem;margin-bottom:2rem;flex-wrap:wrap}
+    .mod-tab{padding:.6rem 1.4rem;border-radius:12px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);transition:all .2s}
+    .mod-tab.active{background:rgba(108,99,255,0.18);border-color:var(--accent);color:#a78bfa}
+
+    /* ── MODULE HEADER ── */
+    .mod-header{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem 2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+    .mod-icon{font-size:2.5rem}
+    .mod-info h3{font-size:1.2rem;font-weight:800;margin-bottom:.2rem}
+    .mod-info p{color:var(--muted);font-size:.85rem}
+    .mod-progress{margin-left:auto;text-align:right}
+    .mod-pct{font-size:1.6rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .mod-pct-label{font-size:.75rem;color:var(--muted)}
+
+    /* ── TOPIC LIST ── */
+    .topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.2rem}
+    .topic-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+    .topic-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+    .topic-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 30px rgba(108,99,255,0.15)}
+    .topic-card:hover::before{transform:scaleX(1)}
+    .tc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.8rem}
+    .tc-num{font-size:.72rem;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase}
+    .tc-status{font-size:.68rem;font-weight:700;padding:.18rem .55rem;border-radius:8px}
+    .st-done{background:rgba(67,233,123,0.15);color:#43e97b}
+    .st-prog{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .st-open{background:rgba(255,215,0,0.12);color:var(--gold)}
+    .tc-title{font-size:1rem;font-weight:700;margin-bottom:.6rem}
+    .tc-meta{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.9rem}
+    .tc-tag{font-size:.7rem;font-weight:600;padding:.2rem .55rem;border-radius:8px;background:rgba(108,99,255,0.12);color:#a78bfa}
+    .tc-tag.hard{background:rgba(255,101,132,0.12);color:#ff6584}
+    .tc-tag.easy{background:rgba(67,233,123,0.12);color:#43e97b}
+    .tc-tag.medium{background:rgba(255,152,0,0.12);color:#ff9800}
+
+    /* Level pills on topic card */
+    .level-pills{display:flex;gap:.4rem;margin-bottom:.7rem}
+    .lp{font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:20px;border:1px solid transparent;display:flex;align-items:center;gap:.25rem}
+    .lp.b{background:rgba(67,233,123,0.1);border-color:rgba(67,233,123,0.3);color:#43e97b}
+    .lp.o{background:rgba(255,152,0,0.1);border-color:rgba(255,152,0,0.3);color:#ff9800}
+    .lp.y{background:rgba(255,101,132,0.1);border-color:rgba(255,101,132,0.3);color:#ff6584}
+    .lp.locked{opacity:.35}
+
+    /* Progress bar */
+    .prog-row{margin-bottom:.35rem}
+    .prog-label{display:flex;justify-content:space-between;margin-bottom:.25rem}
+    .prog-label span{font-size:.72rem;color:var(--muted)}
+    .prog-label .pval{color:var(--text);font-weight:600}
+    .prog-bar{height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+    .prog-fill{height:100%;border-radius:3px;transition:width .6s ease;background:linear-gradient(90deg,var(--accent),#a78bfa)}
+
+    /* ═══════════════════════════════════════════════════════════
+       DETAIL PANEL
+    ═══════════════════════════════════════════════════════════ */
+    .detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;backdrop-filter:blur(4px)}
+    .detail-overlay.open{display:block}
+    .detail-panel{position:fixed;top:0;right:-100%;width:min(820px,97vw);height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:101;transition:right .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column}
+    .detail-panel.open{right:0}
+    .dp-header{padding:1.5rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem;position:sticky;top:0;background:var(--bg2);z-index:5}
+    .dp-close{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;padding:.3rem;line-height:1;flex-shrink:0}
+    .dp-close:hover{color:var(--text)}
+    .dp-title{font-size:1.15rem;font-weight:800}
+    .dp-sub{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+    .dp-body{padding:1.5rem 2rem;flex:1}
+
+    /* ── Daraja tab'lari ── */
+    .daraja-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.5rem}
+    .daraja-tab{flex:1;padding:.75rem .5rem;text-align:center;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--muted);transition:all .2s;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:.2rem}
+    .daraja-tab:not(:last-child){border-right:1px solid var(--border)}
+    .daraja-tab .dt-icon{font-size:1.15rem}
+    .daraja-tab .dt-score{font-size:.65rem;opacity:.7}
+    .daraja-tab.active-b{background:rgba(67,233,123,0.15);color:#43e97b}
+    .daraja-tab.active-o{background:rgba(255,152,0,0.15);color:#ff9800}
+    .daraja-tab.active-y{background:rgba(255,101,132,0.15);color:#ff6584}
+    .daraja-tab.locked-tab{opacity:.38;cursor:not-allowed}
+
+    /* ── Level content area ── */
+    .level-content{display:none}
+    .level-content.show{display:block}
+
+    /* ── Content sections ── */
+    .content-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;margin-bottom:1rem}
+    .cs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+    .cs-title{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
+    .cs-done-tag{font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:8px;background:rgba(67,233,123,0.15);color:#43e97b}
+
+    .video-wrap{aspect-ratio:16/9;background:rgba(0,0,0,.3);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.7rem;cursor:pointer;border:2px dashed rgba(108,99,255,0.3);transition:all .2s}
+    .video-wrap:hover{border-color:var(--accent);background:rgba(108,99,255,0.05)}
+    .video-wrap.watched{border-style:solid;border-color:rgba(67,233,123,0.4);background:rgba(67,233,123,0.03)}
+    .play-btn{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#a78bfa);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+    .video-wrap p{color:var(--muted);font-size:.82rem}
+
+    .lecture-body{font-size:.87rem;line-height:1.8;color:var(--text);max-height:260px;overflow-y:auto;padding-right:.4rem}
+    .lecture-body h4{font-size:.95rem;font-weight:700;margin:.8rem 0 .4rem;color:#a78bfa}
+    .lecture-body code{background:rgba(108,99,255,0.12);padding:.1rem .4rem;border-radius:6px;font-size:.82rem;font-family:'Courier New',monospace;white-space:pre-wrap}
+    .lecture-body pre{background:rgba(0,0,0,.35);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:.9rem;margin:.6rem 0;overflow-x:auto}
+    .lecture-body pre code{background:none;padding:0}
+
+    .action-row{display:flex;gap:.7rem;margin-top:.9rem}
+    .action-btn{flex:1;padding:.6rem .8rem;border-radius:12px;border:1px solid;font-weight:700;cursor:pointer;font-size:.82rem;transition:all .2s;text-align:center}
+    .action-btn.vid-btn{border-color:rgba(108,99,255,0.4);background:rgba(108,99,255,0.08);color:#a78bfa}
+    .action-btn.vid-btn:hover{background:rgba(108,99,255,0.15)}
+    .action-btn.vid-btn.done{border-color:rgba(67,233,123,0.4);background:rgba(67,233,123,0.08);color:#43e97b;cursor:default}
+    .action-btn.txt-btn{border-color:rgba(255,152,0,0.4);background:rgba(255,152,0,0.08);color:#ff9800}
+    .action-btn.txt-btn:hover{background:rgba(255,152,0,0.15)}
+    .action-btn.txt-btn.done{border-color:rgba(67,233,123,0.4);background:rgba(67,233,123,0.08);color:#43e97b;cursor:default}
+
+    /* ── Test CTA ── */
+    .test-cta{border:2px solid;border-radius:16px;padding:1.2rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem}
+    .test-cta.b{border-color:rgba(67,233,123,0.4);background:rgba(67,233,123,0.05)}
+    .test-cta.o{border-color:rgba(255,152,0,0.4);background:rgba(255,152,0,0.05)}
+    .test-cta.y{border-color:rgba(255,101,132,0.4);background:rgba(255,101,132,0.05)}
+    .tc-left h4{font-size:.9rem;font-weight:700;margin-bottom:.2rem}
+    .tc-left p{font-size:.76rem;color:var(--muted)}
+    .test-btn{padding:.62rem 1.4rem;border-radius:12px;border:none;font-weight:700;font-size:.84rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .test-btn.b{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#0a0e1a}
+    .test-btn.o{background:linear-gradient(135deg,#ff9800,#ffd700);color:#0a0e1a}
+    .test-btn.y{background:linear-gradient(135deg,#ff6584,#ff9a9e);color:#fff}
+    .test-btn:hover:not(:disabled){transform:scale(1.04)}
+    .test-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .test-done-badge{font-size:.75rem;font-weight:700;padding:.35rem .9rem;border-radius:10px;background:rgba(67,233,123,0.15);color:#43e97b;border:1px solid rgba(67,233,123,0.3)}
+
+    /* ── Amaliyot yo'naltiruvchi ── */
+    .sidequest-banner{background:linear-gradient(135deg,rgba(108,99,255,0.12),rgba(255,101,132,0.08));border:1px solid rgba(108,99,255,0.3);border-radius:16px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:all .2s;text-decoration:none}
+    .sidequest-banner:hover{border-color:var(--accent);transform:translateX(4px)}
+    .sq-icon{font-size:1.8rem;flex-shrink:0}
+    .sq-info h4{font-size:.9rem;font-weight:700;margin-bottom:.2rem;color:var(--text)}
+    .sq-info p{font-size:.76rem;color:var(--muted)}
+    .sq-arrow{margin-left:auto;color:var(--muted);font-size:1.2rem}
+
+    /* ── Score summary ── */
+    .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+    .score-cell{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem;text-align:center}
+    .sc-label{font-size:.62rem;color:var(--muted);margin-bottom:.2rem}
+    .sc-val{font-size:1.05rem;font-weight:800}
+    .sc-bar{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:.35rem;overflow:hidden}
+    .sc-fill{height:100%;border-radius:2px}
+    .score-total{background:rgba(108,99,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:.7rem;text-align:center;grid-column:1/-1;margin-top:.2rem}
+
+    /* ═══════════════════════════════════════════════════════════
+       TEST MODAL
+    ═══════════════════════════════════════════════════════════ */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(8px)}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;width:min(680px,95vw);max-height:90vh;overflow-y:auto;display:flex;flex-direction:column}
+    .modal-head{padding:1.5rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;position:sticky;top:0;background:var(--bg2)}
+    .modal-head h3{font-size:1.05rem;font-weight:800}
+    .modal-close{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer}
+    .modal-body{padding:1.5rem 2rem;flex:1}
+    .test-progress{background:rgba(255,255,255,0.07);border-radius:4px;height:6px;margin-bottom:1.5rem;overflow:hidden}
+    .test-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),#a78bfa);transition:width .3s}
+    .question-block{margin-bottom:1.5rem}
+    .q-num{font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem}
+    .q-text{font-size:.95rem;font-weight:600;line-height:1.5;margin-bottom:1rem}
+    .q-options{display:flex;flex-direction:column;gap:.5rem}
+    .q-option{padding:.75rem 1rem;border-radius:12px;border:1px solid var(--border);cursor:pointer;font-size:.87rem;transition:all .2s;display:flex;align-items:center;gap:.75rem}
+    .q-option:hover{border-color:var(--accent);background:rgba(108,99,255,0.08)}
+    .q-option.selected{border-color:var(--accent);background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .opt-letter{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+    .test-nav{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+    .test-nav-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:.78rem;font-weight:700;color:var(--muted);transition:all .2s}
+    .test-nav-btn.answered{background:rgba(108,99,255,0.2);border-color:var(--accent);color:#a78bfa}
+    .test-nav-btn.current{border-color:var(--accent);background:rgba(108,99,255,0.3);color:#fff}
+    .test-footer{display:flex;gap:1rem;justify-content:space-between;padding:1rem 2rem;border-top:1px solid var(--border);background:var(--bg2);position:sticky;bottom:0}
+    .btn-ghost{padding:.65rem 1.4rem;border-radius:12px;border:1px solid var(--border);background:none;color:var(--text);cursor:pointer;font-weight:600;font-size:.87rem}
+    .btn-ghost:hover{border-color:var(--accent)}
+    .btn-primary{padding:.65rem 1.6rem;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),#a78bfa);color:#fff;font-weight:700;font-size:.87rem;cursor:pointer}
+    .btn-primary:hover{transform:scale(1.02)}
+    .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+    /* ── Result modal ── */
+    .result-modal{text-align:center;padding:2rem}
+    .result-score-ring{width:140px;height:140px;border-radius:50%;border:6px solid;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .result-score-ring.pass{border-color:#43e97b;background:rgba(67,233,123,0.08)}
+    .result-score-ring.fail{border-color:#ff6584;background:rgba(255,101,132,0.08)}
+    .result-score{font-size:2.5rem;font-weight:900;line-height:1}
+    .result-label{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+    .result-title{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
+    .result-msg{font-size:.88rem;color:var(--muted);margin-bottom:1.5rem}
+    .reward-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+    .reward-pill{padding:.5rem 1.1rem;border-radius:12px;font-size:.82rem;font-weight:700}
+    .reward-pill.ko{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .reward-pill.ad{background:rgba(255,152,0,0.15);color:#ff9800}
+    .result-actions{display:flex;gap:.8rem;justify-content:center}
+
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(108,99,255,0.3);border-radius:3px}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/mainquest.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+
+<!-- ══════════════════════ SIDEBAR ══════════════════════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <a href="dashboard.html">⚔️ Coders War</a>
+    <div class="sub">Algoritmik tillar va dasturlash</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a href="dashboard.html"   class="nav-item"><span class="icon">📊</span> Dashboard</a>
+    <a href="mainquest.html"   class="nav-item active"><span class="icon">📚</span> Darslar</a>
+    <a href="sidequest.html"   class="nav-item"><span class="icon">💻</span> Amaliyot</a>
+    <a href="trajectory.html"  class="nav-item"><span class="icon">📈</span> Trayektoriya</a>
+    <a href="peer-review.html" class="nav-item"><span class="icon">🔍</span> Peer Review</a>
+    <div class="nav-section">Jamoa</div>
+    <a href="clan.html"        class="nav-item"><span class="icon">🏰</span> Klan</a>
+    <a href="duel.html"        class="nav-item"><span class="icon">⚡</span> Duel</a>
+    <a href="leaderboard.html" class="nav-item"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a href="profile.html"     class="nav-item"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="avatar-sm" data-user-init>?</div>
+      <div class="info">
+        <div class="name" data-user-name>...</div>
+        <div class="role" data-user-role>Student</div>
+      </div>
+      <button onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════ MAIN ══════════════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <h2>📚 Darslar</h2>
+      <div class="bc">45 mavzu · 3 semestr · video dars, maruza materiali va test</div>
+    </div>
+    <div style="display:flex;gap:.6rem;align-items:center">
+      <span style="font-size:.78rem;color:var(--muted)">Darajam:</span>
+      <span id="myLevelBadge" style="font-size:.78rem;font-weight:700;padding:.3rem .8rem;border-radius:10px;background:rgba(67,233,123,0.15);color:#43e97b">Boshlang'ich</span>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Semestr tablar -->
+    <div class="mod-tabs">
+      <div class="mod-tab active" onclick="switchModule(1,this)">📗 1-Semestr</div>
+      <div class="mod-tab" onclick="switchModule(2,this)">📘 2-Semestr</div>
+      <div class="mod-tab" onclick="switchModule(3,this)">📙 3-Semestr</div>
+    </div>
+
+    <!-- Semestr header -->
+    <div class="mod-header">
+      <div class="mod-icon" id="modIcon">📗</div>
+      <div class="mod-info">
+        <h3 id="modTitle">1-Semestr: C# Asoslari va OOP</h3>
+        <p id="modDesc">O'zgaruvchilar, sinflar, meros va polimorfizm asoslari</p>
+      </div>
+      <div class="mod-progress">
+        <div class="mod-pct" id="modPct">0%</div>
+        <div class="mod-pct-label">Semestr bajarilishi</div>
+      </div>
+    </div>
+
+    <!-- Mavzular grid -->
+    <div class="topics-grid" id="topicsGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ DETAIL PANEL ══════════════════════ -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-header">
+    <div>
+      <div class="dp-title" id="dpTitle">Mavzu nomi</div>
+      <div class="dp-sub" id="dpSub">1-Semestr · 3 daraja · video dars + maruza + test</div>
+    </div>
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="dp-body">
+
+    <!-- Daraja tab'lari -->
+    <div class="daraja-tabs" id="darajaTabs">
+      <button class="daraja-tab active-b" id="dtabB" onclick="switchDaraja('beginner')">
+        <span class="dt-icon">🟢</span>
+        <span>Boshlang'ich</span>
+        <span class="dt-score" id="dtscoreB">0–70%</span>
+      </button>
+      <button class="daraja-tab" id="dtabO">
+        <span class="dt-icon">🟠</span>
+        <span>O'rta</span>
+        <span class="dt-score" id="dtscoreO">70–90%</span>
+      </button>
+      <button class="daraja-tab" id="dtabY">
+        <span class="dt-icon">🔴</span>
+        <span>Yuqori</span>
+        <span class="dt-score" id="dtscoreY">90–100%</span>
+      </button>
+    </div>
+
+    <!-- ── Boshlang'ich daraja kontenti ── -->
+    <div class="level-content show" id="lc-beginner">
+      <!-- Video -->
+      <div class="content-section">
+        <div class="cs-header">
+          <div class="cs-title">🎬 Video dars</div>
+          <span class="cs-done-tag" id="vid-done-b" style="display:none">✓ Ko'rildi</span>
+        </div>
+        <div class="video-wrap" id="vidWrap-b" onclick="watchVideo('beginner')">
+          <div class="play-btn">▶</div>
+          <p id="vidLabel-b">Video yuklanmoqda...</p>
+        </div>
+        <div class="action-row">
+          <button class="action-btn vid-btn" id="vidBtn-b" onclick="markVideo('beginner')">✅ Videoni ko'rdim</button>
+        </div>
+      </div>
+      <!-- Maruza -->
+      <div class="content-section">
+        <div class="cs-header">
+          <div class="cs-title">📖 Maruza matni</div>
+          <span class="cs-done-tag" id="txt-done-b" style="display:none">✓ O'qildi</span>
+        </div>
+        <div class="lecture-body" id="lecture-b">Matn yuklanmoqda...</div>
+        <div class="action-row">
+          <button class="action-btn txt-btn" id="txtBtn-b" onclick="markText('beginner')">✅ Matnni o'qidim</button>
+        </div>
+      </div>
+      <!-- Test CTA -->
+      <div id="testCta-beginner"></div>
+      <!-- SideQuest yo'naltiruvchi -->
+      <a href="sidequest.html" class="sidequest-banner" id="sq-b">
+        <div class="sq-icon">💻</div>
+        <div class="sq-info">
+          <h4>Boshlang'ich daraja topshiriqlari</h4>
+          <p>10 ta amaliy mashq + 1 ta loyiha · Amaliyot bo'limida bajarish</p>
+        </div>
+        <div class="sq-arrow">›</div>
+      </a>
+    </div>
+
+    <!-- ── O'rta daraja kontenti ── -->
+    <div class="level-content" id="lc-intermediate">
+      <div class="content-section">
+        <div class="cs-header">
+          <div class="cs-title">🎬 Video dars</div>
+          <span class="cs-done-tag" id="vid-done-o" style="display:none">✓ Ko'rildi</span>
+        </div>
+        <div class="video-wrap" id="vidWrap-o" onclick="watchVideo('intermediate')">
+          <div class="play-btn">▶</div>
+          <p id="vidLabel-o">Video yuklanmoqda...</p>
+        </div>
+        <div class="action-row">
+          <button class="action-btn vid-btn" id="vidBtn-o" onclick="markVideo('intermediate')">✅ Videoni ko'rdim</button>
+        </div>
+      </div>
+      <div class="content-section">
+        <div class="cs-header">
+          <div class="cs-title">📖 Maruza matni</div>
+          <span class="cs-done-tag" id="txt-done-o" style="display:none">✓ O'qildi</span>
+        </div>
+        <div class="lecture-body" id="lecture-o">Matn yuklanmoqda...</div>
+        <div class="action-row">
+          <button class="action-btn txt-btn" id="txtBtn-o" onclick="markText('intermediate')">✅ Matnni o'qidim</button>
+        </div>
+      </div>
+      <div id="testCta-intermediate"></div>
+      <a href="sidequest.html" class="sidequest-banner">
+        <div class="sq-icon">💻</div>
+        <div class="sq-info">
+          <h4>O'rta daraja topshiriqlari</h4>
+          <p>10 ta amaliy mashq + 1 ta loyiha · Amaliyot bo'limida bajarish</p>
+        </div>
+        <div class="sq-arrow">›</div>
+      </a>
+    </div>
+
+    <!-- ── Yuqori daraja kontenti ── -->
+    <div class="level-content" id="lc-advanced">
+      <div class="content-section">
+        <div class="cs-header">
+          <div class="cs-title">🎬 Video dars</div>
+          <span class="cs-done-tag" id="vid-done-y" style="display:none">✓ Ko'rildi</span>
+        </div>
+        <div class="video-wrap" id="vidWrap-y" onclick="watchVideo('advanced')">
+          <div class="play-btn">▶</div>
+          <p id="vidLabel-y">Video yuklanmoqda...</p>
+        </div>
+        <div class="action-row">
+          <button class="action-btn vid-btn" id="vidBtn-y" onclick="markVideo('advanced')">✅ Videoni ko'rdim</button>
+        </div>
+      </div>
+      <div class="content-section">
+        <div class="cs-header">
+          <div class="cs-title">📖 Maruza matni</div>
+          <span class="cs-done-tag" id="txt-done-y" style="display:none">✓ O'qildi</span>
+        </div>
+        <div class="lecture-body" id="lecture-y">Matn yuklanmoqda...</div>
+        <div class="action-row">
+          <button class="action-btn txt-btn" id="txtBtn-y" onclick="markText('advanced')">✅ Matnni o'qidim</button>
+        </div>
+      </div>
+      <div id="testCta-advanced"></div>
+      <a href="sidequest.html" class="sidequest-banner">
+        <div class="sq-icon">💻</div>
+        <div class="sq-info">
+          <h4>Yuqori daraja topshiriqlari</h4>
+          <p>10 ta amaliy mashq + 1 ta loyiha · Amaliyot bo'limida bajarish</p>
+        </div>
+        <div class="sq-arrow">›</div>
+      </a>
+    </div>
+
+    <!-- ── Ball xulosasi ── -->
+    <div class="content-section" style="margin-top:1.2rem">
+      <div class="cs-title" style="margin-bottom:1rem">📊 Mavzu balli</div>
+      <div class="score-grid" id="scoreGrid"></div>
+    </div>
+
+  </div><!-- /dp-body -->
+</div><!-- /detail-panel -->
+
+<!-- ══════════════════════ TEST MODAL ══════════════════════ -->
+<div class="modal-overlay" id="testModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="testModalTitle">Daraja Testi</h3>
+        <div style="font-size:.75rem;color:var(--muted)" id="testModalSub">10 savol · O'tish: 7/10</div>
+      </div>
+      <button class="modal-close" onclick="closeTestModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="test-progress"><div class="test-prog-fill" id="testProgFill" style="width:10%"></div></div>
+      <div class="test-nav" id="testNav"></div>
+      <div id="questionArea"></div>
+    </div>
+    <div class="test-footer">
+      <button class="btn-ghost" id="prevBtn" onclick="prevQuestion()">← Oldingi</button>
+      <div style="display:flex;gap:.6rem">
+        <button class="btn-ghost" onclick="closeTestModal()">Bekor</button>
+        <button class="btn-primary" id="nextBtn" onclick="nextOrSubmit()">Keyingi →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ RESULT MODAL ══════════════════════ -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-body">
+      <div class="result-modal">
+        <div class="result-score-ring" id="resultRing">
+          <div class="result-score" id="resultScore">0</div>
+          <div class="result-label">/ 10</div>
+        </div>
+        <h3 class="result-title" id="resultTitle">Natija</h3>
+        <p class="result-msg" id="resultMsg">...</p>
+        <div class="reward-row" id="rewardRow"></div>
+        <div class="result-actions">
+          <button class="btn-ghost" onclick="retryTest()">🔄 Qayta</button>
+          <button class="btn-primary" onclick="closeResult()">✓ Davom</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+
+// ══════════════════════════════════════════════════════════════
+// REAL API MA'LUMOTLAR
+// ══════════════════════════════════════════════════════════════
+let MODULES = {  // to'ldiriladi API dan
+};
+let TOPICS = {};  // {moduleId: [topic, ...]}
+
+// Test savollar (API dan yuklanadi)
+let activeTestObj = null; // joriy test (LevelTest API obyekti)
+
+const KO_MAP = {beginner:5, intermediate:7, advanced:8};
+const LEVEL_SUFFIX = {beginner:'b', intermediate:'o', advanced:'y'};
+const LEVEL_NAME   = {beginner:"Boshlang'ich", intermediate:"O'rta", advanced:"Yuqori"};
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let curModule  = 1;
+let curTopic   = null;
+let curDaraja  = 'beginner';
+let testQ = [], testAns = {}, testIdx = 0, testLevel = 'beginner';
+
+// ══════════════════════════════════════════════════════════════
+// MODULE SWITCH
+// ══════════════════════════════════════════════════════════════
+function switchModule(num, el) {
+  curModule = num;
+  document.querySelectorAll('.mod-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const m = MODULES[num] || {};
+  document.getElementById('modIcon').textContent  = m.icon  || '📗';
+  document.getElementById('modTitle').textContent = m.title || '';
+  document.getElementById('modDesc').textContent  = m.desc  || '';
+  renderTopics();
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOPIC CARDS
+// ══════════════════════════════════════════════════════════════
+function renderTopics() {
+  const grid   = document.getElementById('topicsGrid');
+  const topics = TOPICS[curModule] || [];
+  let done = 0;
+
+  grid.innerHTML = topics.map(t => {
+    const total = t.score.mo + t.score.ko + t.score.fa + t.score.re;
+    const allDone = t.bPass && t.oPass && t.yPass;
+    if (allDone) done++;
+
+    const [stLabel, stCls] = allDone ? ['Tugatildi','st-done'] :
+                             total > 0 ? ['Davomda','st-prog'] : ['Ochiq','st-open'];
+
+    const diffLabel = {easy:'Oson', medium:"O'rta", hard:'Qiyin'}[t.diff] || t.diff;
+
+    return `<div class="topic-card" onclick="openDetail(${t.id})">
+      <div class="tc-top">
+        <div class="tc-num">Mavzu ${t.num}</div>
+        <div class="tc-status ${stCls}">${stLabel}</div>
+      </div>
+      <div class="tc-title">${t.title}</div>
+      <div class="tc-meta">
+        <span class="tc-tag ${t.diff}">${diffLabel}</span>
+        <span class="tc-tag">📺 ${countContent(t)} kontent</span>
+        <span class="tc-tag">📝 ${countTests(t)}/3 test</span>
+      </div>
+      <div class="level-pills">
+        <span class="lp b">${t.bPass?'✓':''} Boshlang'ich</span>
+        <span class="lp o ${t.bPass?'':'locked'}">${t.oPass?'✓':''} O'rta</span>
+        <span class="lp y ${t.oPass?'':'locked'}">${t.yPass?'✓':''} Yuqori</span>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label"><span>Ball</span><span class="pval">${total}/100</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${total}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('modPct').textContent =
+    topics.length ? Math.round(done / topics.length * 100) + '%' : '0%';
+}
+
+function countContent(t) {
+  return ['beginner','intermediate','advanced'].filter(lv =>
+    t.contents[lv]?.video || t.contents[lv]?.text?.length > 30
+  ).length;
+}
+
+function countTests(t) {
+  return (t.bPass ? 1 : 0) + (t.oPass ? 1 : 0) + (t.yPass ? 1 : 0);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ══════════════════════════════════════════════════════════════
+// openDetail — API versiyasi pastda (initPage dan keyin aniqlanadi)
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+}
+
+// ── Daraja tab'larini chizish ──────────────────────────────
+function renderDarajaTabs() {
+  const levels  = ['beginner','intermediate','advanced'];
+  const ids     = ['dtabB','dtabO','dtabY'];
+  const clsMap  = ['active-b','active-o','active-y'];
+  const locked  = [false, !curTopic.bPass, !curTopic.oPass];
+
+  levels.forEach((lv, i) => {
+    const btn = document.getElementById(ids[i]);
+    btn.className = 'daraja-tab';
+
+    if (locked[i]) {
+      btn.classList.add('locked-tab');
+      btn.onclick = () => showToast('🔒 Bu darajani ochish uchun avvalgi daraja testini topshiring!');
+    } else {
+      btn.onclick = () => switchDaraja(lv);
+      if (lv === curDaraja) btn.classList.add(clsMap[i]);
+    }
+  });
+}
+
+function switchDaraja(level) {
+  if (!curTopic) return;
+  const locked = {intermediate: !curTopic.bPass, advanced: !curTopic.oPass};
+  if (locked[level]) { showToast('🔒 Bu daraja hali qulflanmagan!'); return; }
+
+  curDaraja = level;
+  renderDarajaTabs();
+
+  // Content area'larni show/hide
+  ['beginner','intermediate','advanced'].forEach(lv => {
+    document.getElementById(`lc-${lv}`).classList.toggle('show', lv === level);
+  });
+}
+
+// ── Kontent yuklash (video/matn DOM'ga) ───────────────────
+function loadLevelContent() {
+  const levels = ['beginner','intermediate','advanced'];
+  const sfx    = {beginner:'b', intermediate:'o', advanced:'y'};
+
+  levels.forEach(lv => {
+    const c = curTopic.contents[lv] || {};
+    const p = curTopic.lvProgress[lv] || {};
+    const s = sfx[lv];
+
+    // Video wrap — YouTube iframe yoki placeholder
+    const wrap = document.getElementById(`vidWrap-${s}`);
+    if (wrap) {
+      const ytId = getYoutubeId(c.video);
+      if (ytId) {
+        wrap.innerHTML = `<iframe
+          src="https://www.youtube.com/embed/${ytId}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          style="width:100%;height:100%;border-radius:10px;"></iframe>`;
+        wrap.style.cursor = 'default';
+        wrap.onclick = null;
+      } else {
+        wrap.innerHTML = `<div class="play-btn">▶</div><p>${LEVEL_NAME[lv]} daraja video tez kunda</p>`;
+        wrap.style.cursor = 'default';
+        wrap.onclick = null;
+      }
+    }
+
+    // Matn
+    const lect = document.getElementById(`lecture-${s}`);
+    if (lect) lect.innerHTML = c.text || '<p style="color:var(--muted)">Matn tez kunda qo\'shiladi.</p>';
+
+    // Video holati
+    applyVideoState(s, p.vid);
+    applyTextState(s, p.txt);
+  });
+
+  // Faqat curDaraja ko'rinadi
+  levels.forEach(lv => {
+    document.getElementById(`lc-${lv}`).classList.toggle('show', lv === curDaraja);
+  });
+}
+
+function applyVideoState(s, done) {
+  const wrap = document.getElementById(`vidWrap-${s}`);
+  const btn  = document.getElementById(`vidBtn-${s}`);
+  const tag  = document.getElementById(`vid-done-${s}`);
+  if (done) {
+    wrap?.classList.add('watched');
+    if (btn) { btn.textContent = '✅ Ko\'rildi'; btn.classList.add('done'); }
+    if (tag) tag.style.display = '';
+  } else {
+    wrap?.classList.remove('watched');
+    if (btn) { btn.textContent = '✅ Videoni ko\'rdim'; btn.classList.remove('done'); }
+    if (tag) tag.style.display = 'none';
+  }
+}
+
+function applyTextState(s, done) {
+  const btn = document.getElementById(`txtBtn-${s}`);
+  const tag = document.getElementById(`txt-done-${s}`);
+  if (done) {
+    if (btn) { btn.textContent = "✅ O'qildi"; btn.classList.add('done'); }
+    if (tag) tag.style.display = '';
+  } else {
+    if (btn) { btn.textContent = "✅ Matnni o'qidim"; btn.classList.remove('done'); }
+    if (tag) tag.style.display = 'none';
+  }
+}
+
+// ── YouTube video ID ajratib olish ────────────────────────
+function getYoutubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+// ── Video ko'rish (iframe yo'q bo'lsa fallback) ────────────
+function watchVideo(level) {
+  showToast('🎬 Video tez kunda qo\'shiladi!');
+}
+
+async function markVideo(level) {
+  if (!curTopic) return;
+  try {
+    await api.updateProgress(curTopic.id, { level, video_watched: true });
+    curTopic.lvProgress[level].vid = true;
+    applyVideoState(LEVEL_SUFFIX[level], true);
+    checkAndAwardAD(level);
+    showToast('🎬 Video ko\'rildi!');
+  } catch { showToast('❌ Xatolik yuz berdi'); }
+}
+
+async function markText(level) {
+  if (!curTopic) return;
+  try {
+    await api.updateProgress(curTopic.id, { level, text_read: true });
+    curTopic.lvProgress[level].txt = true;
+    applyTextState(LEVEL_SUFFIX[level], true);
+    checkAndAwardAD(level);
+    renderAllTestCTAs();
+    showToast('📖 Matn o\'qildi!');
+  } catch { showToast('❌ Xatolik yuz berdi'); }
+}
+
+function checkAndAwardAD(level) {
+  const p = curTopic.lvProgress[level];
+  if (p.vid && p.txt && !p.adDone) {
+    p.adDone = true;
+    curTopic.score.ad = Math.min(15, curTopic.score.ad + 5);
+    renderScoreSummary();
+    renderTopics();
+    showToast(`🌟 ${LEVEL_NAME[level]} daraja o'qildi! +5 AD ball`);
+  }
+}
+
+// ── Test CTA ──────────────────────────────────────────────
+function renderAllTestCTAs() {
+  ['beginner','intermediate','advanced'].forEach(lv => renderTestCTA(lv));
+}
+
+function renderTestCTA(level) {
+  const area   = document.getElementById(`testCta-${level}`);
+  if (!area || !curTopic) return;
+  const cls    = {beginner:'b', intermediate:'o', advanced:'y'}[level];
+  const passed = {beginner: curTopic.bPass, intermediate: curTopic.oPass, advanced: curTopic.yPass}[level];
+  const locked = {intermediate: !curTopic.bPass, advanced: !curTopic.oPass}[level] || false;
+  const p      = curTopic.lvProgress[level] || {};
+  const ready  = p.vid && p.txt;
+
+  let btnHtml = '';
+  if (passed) {
+    btnHtml = `<span class="test-done-badge">✓ O'tildi</span>`;
+  } else if (locked) {
+    btnHtml = `<button class="test-btn ${cls}" disabled>🔒 Qulflangan</button>`;
+  } else if (!ready) {
+    btnHtml = `<button class="test-btn ${cls}" disabled title="Avval video va matnni tugatg">📺 Avval kontentni tugatg</button>`;
+  } else {
+    btnHtml = `<button class="test-btn ${cls}" onclick="startTest('${level}')">📝 Test boshlash →</button>`;
+  }
+
+  area.innerHTML = `<div class="test-cta ${cls}">
+    <div class="tc-left">
+      <h4>📝 ${LEVEL_NAME[level]} daraja testi</h4>
+      <p>10 savol · O'tish: 7/10 · +${KO_MAP[level]} KO ball, +5 AD ball</p>
+    </div>
+    ${btnHtml}
+  </div>`;
+}
+
+// ── Score summary ─────────────────────────────────────────
+function renderScoreSummary() {
+  if (!curTopic) return;
+  const s = curTopic.score;
+  const items = [
+    {k:'MO', v:s.mo, max:15,  color:'#60a5fa'},
+    {k:'KO', v:s.ko, max:35,  color:'#a78bfa'},
+    {k:'FA', v:s.fa, max:30,  color:'#43e97b'},
+    {k:'RE', v:s.re, max:20,  color:'#fb923c'},
+  ];
+  const labels = {MO:'Motivatsion',KO:'Kognitiv',FA:'Faoliyatli',RE:'Refleksiv'};
+  const total  = items.reduce((a,x) => a+x.v, 0);
+
+  document.getElementById('scoreGrid').innerHTML =
+    items.map(x => `<div class="score-cell">
+      <div class="sc-label">${labels[x.k]}</div>
+      <div class="sc-val" style="color:${x.color}">${x.v}/${x.max}</div>
+      <div class="sc-bar"><div class="sc-fill" style="width:${Math.round(x.v/x.max*100)}%;background:${x.color}"></div></div>
+    </div>`).join('') +
+    `<div class="score-total">
+      <div style="font-size:.65rem;color:var(--muted);margin-bottom:.2rem">JAMI BALL</div>
+      <div style="font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${total}/100</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TEST MODAL
+// ══════════════════════════════════════════════════════════════
+async function startTest(level) {
+  testLevel = level;
+  testAns   = {};
+  testIdx   = 0;
+
+  // API dan test savollarini yuklash
+  try {
+    const tests = await api.topicTests(curTopic.id);
+    const test  = tests.find(t => t.level === level);
+    if (!test) { showToast('Test topilmadi'); return; }
+
+    activeTestObj = test;
+    const qs = test.questions || [];
+    testQ = qs.map(q => ({
+      id: q.id,
+      q:  q.question,
+      options: q.options,
+      c:  q.correct_answer,
+    }));
+
+    document.getElementById('testModalTitle').textContent = `${LEVEL_NAME[level]} Daraja Testi`;
+    document.getElementById('testModalSub').textContent   = `${testQ.length} savol · O'tish: ${test.pass_score}/${testQ.length} to'g'ri javob`;
+    renderTestNav(); renderQuestion();
+    document.getElementById('testModal').classList.add('open');
+  } catch (err) {
+    showToast('❌ Test yuklanmadi: ' + err.message);
+  }
+}
+
+function renderTestNav() {
+  document.getElementById('testNav').innerHTML = testQ.map((q,i) =>
+    `<button class="test-nav-btn ${testAns[q.id]!==undefined?'answered':''} ${i===testIdx?'current':''}"
+      onclick="goQ(${i})">${i+1}</button>`
+  ).join('');
+}
+
+function renderQuestion() {
+  const q   = testQ[testIdx];
+  const pct = (testIdx+1) / testQ.length * 100;
+  document.getElementById('testProgFill').style.width = pct+'%';
+  document.getElementById('questionArea').innerHTML = `
+    <div class="question-block">
+      <div class="q-num">Savol ${testIdx+1} / ${testQ.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-options">
+        ${q.options.map((opt,i) => `
+          <div class="q-option ${testAns[q.id]===i?'selected':''}" onclick="pickAns(${q.id},${i})">
+            <div class="opt-letter">${'ABCD'[i]}</div>${opt}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  document.getElementById('prevBtn').disabled    = testIdx === 0;
+  document.getElementById('nextBtn').textContent = testIdx === testQ.length-1 ? 'Yakunlash ✓' : 'Keyingi →';
+  renderTestNav();
+}
+
+function pickAns(qId, i) { testAns[qId] = i; renderQuestion(); }
+function goQ(i)           { testIdx = i; renderQuestion(); }
+function prevQuestion()   { if (testIdx > 0) { testIdx--; renderQuestion(); } }
+function nextOrSubmit()   { if (testIdx < testQ.length-1) { testIdx++; renderQuestion(); } else submitTest(); }
+
+async function submitTest() {
+  const unanswered = testQ.length - Object.keys(testAns).length;
+  if (unanswered > 0 && !confirm(`${unanswered} ta savol javobsiz. Yakunlashni xohlaysizmi?`)) return;
+
+  const answers = {};
+  testQ.forEach(q => { if (testAns[q.id] !== undefined) answers[q.id] = testAns[q.id]; });
+
+  try {
+    const res = await api.submitTest(curTopic.id, activeTestObj.id, answers);
+    const score  = res.score ?? 0;
+    const passed = res.passed ?? false;
+    const ko     = passed ? KO_MAP[testLevel] : 0;
+
+    document.getElementById('resultRing').className    = `result-score-ring ${passed?'pass':'fail'}`;
+    document.getElementById('resultScore').textContent  = score;
+    document.getElementById('resultTitle').textContent  = passed ? '🎉 Tabriklaymiz!' : '😔 Muvaffaqiyatsiz';
+    document.getElementById('resultMsg').textContent    = passed
+      ? `${LEVEL_NAME[testLevel]} daraja testi ${score}/${testQ.length} natija bilan o'tildi!`
+      : `${score}/${testQ.length} to'g'ri javob. O'tish uchun kamida ${activeTestObj.pass_score} ta to'g'ri javob kerak.`;
+    document.getElementById('rewardRow').innerHTML = passed
+      ? `<div class="reward-pill ko">+${ko} KO ball</div><div class="reward-pill ad">+5 AD ball</div>` : '';
+
+    if (passed) {
+      if (testLevel==='beginner')     curTopic.bPass = true;
+      if (testLevel==='intermediate') curTopic.oPass = true;
+      if (testLevel==='advanced')     curTopic.yPass = true;
+      curTopic.score.ko = Math.min(20, curTopic.score.ko + ko);
+      curTopic.score.ad = Math.min(15, curTopic.score.ad + 5);
+    }
+
+    closeTestModal();
+    document.getElementById('resultModal').classList.add('open');
+  } catch (err) {
+    showToast('❌ Test yuborishda xatolik: ' + err.message);
+  }
+}
+
+function closeTestModal() { document.getElementById('testModal').classList.remove('open'); }
+
+function closeResult() {
+  document.getElementById('resultModal').classList.remove('open');
+  renderDarajaTabs();
+  renderAllTestCTAs();
+  renderScoreSummary();
+  renderTopics();
+}
+
+function retryTest() {
+  document.getElementById('resultModal').classList.remove('open');
+  setTimeout(() => startTest(testLevel), 200);
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText='position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1f3a;border:1px solid rgba(108,99,255,0.4);border-radius:14px;padding:.75rem 1.2rem;font-size:.85rem;font-weight:600;z-index:999;animation:fi .3s ease;box-shadow:0 8px 30px rgba(0,0,0,.3)';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+const _s = document.createElement('style');
+_s.textContent = '@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
+document.head.appendChild(_s);
+
+// ══════════════════════════════════════════════════════════════
+// API DAN YUKLASH
+// ══════════════════════════════════════════════════════════════
+async function openDetail(topicId) {
+  const all = Object.values(TOPICS).flat();
+  curTopic = all.find(t => t.id === topicId);
+  if (!curTopic) return;
+
+  document.getElementById('dpTitle').textContent = `T${curTopic.num}: ${curTopic.title}`;
+  document.getElementById('dpSub').textContent   = `${curModule}-Semestr · 3 daraja · video dars + maruza + test`;
+
+  curDaraja = !curTopic.bPass ? 'beginner' :
+              !curTopic.oPass ? 'intermediate' : 'advanced';
+
+  // API dan kontent va progress yuklaymiz
+  try {
+    const [contents, progressList] = await Promise.all([
+      api.topicContents(topicId),
+      api.myProgress(topicId),
+    ]);
+
+    contents.forEach(c => {
+      curTopic.contents[c.level] = { video: c.video_url, text: c.lecture_text };
+    });
+    progressList.forEach(p => {
+      curTopic.lvProgress[p.level] = {
+        vid: p.video_watched, txt: p.text_read, adDone: p.ad_awarded
+      };
+    });
+  } catch {}
+
+  loadLevelContent();
+  renderDarajaTabs();
+  renderAllTestCTAs();
+  renderScoreSummary();
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+async function initPage() {
+  Auth.fillUserUI();
+  try {
+    const [modules, topics, scores] = await Promise.all([
+      api.modules(),
+      api.topics(),
+      api.scores(),
+    ]);
+
+    const MOD_ICONS = ['📗','📘','📙','📕','📔','📒','📓','📃','📑'];
+    modules.forEach((m, i) => {
+      MODULES[m.number] = {
+        id: m.id, icon: MOD_ICONS[i % MOD_ICONS.length],
+        title: `${m.number}-Semestr: ${m.title}`, desc: m.description || '',
+      };
+    });
+
+    const scoreMap = {};
+    scores.forEach(s => { scoreMap[s.topic] = s; });
+
+    TOPICS = {};
+    topics.forEach(t => {
+      const mod = t.module?.number || 1;
+      if (!TOPICS[mod]) TOPICS[mod] = [];
+      const sc = scoreMap[t.id] || {};
+      TOPICS[mod].push({
+        id: t.id, num: t.number, title: t.title, diff: t.difficulty,
+        bPass: !!sc.beginner_test_passed,
+        oPass: !!sc.intermediate_test_passed,
+        yPass: !!sc.advanced_test_passed,
+        lvProgress: {
+          beginner:     {vid:false, txt:false, adDone:false},
+          intermediate: {vid:false, txt:false, adDone:false},
+          advanced:     {vid:false, txt:false, adDone:false},
+        },
+        score: {
+          mo:sc.mo_score||0, ko:sc.ko_score||0, fa:sc.fa_score||0, re:sc.re_score||0,
+        },
+        contents: {
+          beginner:     {video:'', text:''},
+          intermediate: {video:'', text:''},
+          advanced:     {video:'', text:''},
+        },
+      });
+    });
+
+    // Module tab'larini yangilash
+    const tabsEl = document.querySelector('.mod-tabs');
+    if (tabsEl) {
+      tabsEl.innerHTML = modules.map((m, i) =>
+        `<div class="mod-tab ${i===0?'active':''}" onclick="switchModule(${m.number}, this)">
+          ${m.number}-Semestr
+        </div>`
+      ).join('');
+    }
+
+    if (modules.length) switchModule(modules[0].number, null);
+  } catch (err) {
+    console.error('Sahifa yuklanmadi:', err);
+  }
+}
+
+initPage();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

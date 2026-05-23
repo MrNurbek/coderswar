@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Personaj Tanlash</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--accent:#6c63ff;--accent2:#ff6584;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,.logo{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    .bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(108,99,255,0.12) 0%,transparent 70%)}
+    .page{max-width:1100px;margin:0 auto;padding:3rem 1.5rem;position:relative;z-index:1}
+    .top{text-align:center;margin-bottom:3rem}
+    .logo{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2rem;display:block;text-decoration:none}
+    .step-badge{display:inline-block;background:rgba(108,99,255,0.15);border:1px solid var(--border);color:#a79fff;font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.35rem 1rem;border-radius:20px;margin-bottom:1rem}
+    .top h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;margin-bottom:.8rem}
+    .top p{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto;line-height:1.7}
+
+    /* CHARACTERS GRID */
+    .chars{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2rem;margin-bottom:2.5rem}
+    @media(max-width:900px){.chars{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:560px){.chars{grid-template-columns:repeat(2,1fr)}}
+    .char-card{background:var(--card);border:2px solid rgba(255,255,255,0.06);border-radius:24px;padding:1.8rem 1.2rem;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+    .char-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;border-radius:22px}
+    .char-card:hover{transform:translateY(-6px)}
+    .char-card.active{border-color:var(--accent);box-shadow:0 0 40px rgba(108,99,255,0.3),inset 0 0 30px rgba(108,99,255,0.05)}
+    /* per-character accent colors */
+    .c-warrior.active{border-color:#ef4444;box-shadow:0 0 40px rgba(239,68,68,0.25)}
+    .c-ranger.active{border-color:#22c55e;box-shadow:0 0 40px rgba(34,197,94,0.25)}
+    .c-sorceress.active{border-color:#a855f7;box-shadow:0 0 40px rgba(168,85,247,0.3)}
+    .c-knight.active{border-color:#3b82f6;box-shadow:0 0 40px rgba(59,130,246,0.25)}
+    .c-ladyknight.active{border-color:#ec4899;box-shadow:0 0 40px rgba(236,72,153,0.25)}
+
+    .char-avatar{font-size:3.8rem;margin-bottom:.8rem;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));transition:transform .3s}
+    .char-card:hover .char-avatar,.char-card.active .char-avatar{transform:scale(1.1) translateY(-4px)}
+    .char-name{font-size:1rem;font-weight:800;margin-bottom:.2rem}
+    .char-en{font-size:.78rem;color:var(--muted);margin-bottom:.7rem}
+    .char-tag{display:inline-block;font-size:.72rem;font-weight:600;padding:.2rem .7rem;border-radius:10px;margin-bottom:.6rem}
+    .tag-warrior{background:rgba(239,68,68,0.15);color:#f87171}
+    .tag-ranger{background:rgba(34,197,94,0.15);color:#4ade80}
+    .tag-sorceress{background:rgba(168,85,247,0.15);color:#c084fc}
+    .tag-knight{background:rgba(59,130,246,0.15);color:#60a5fa}
+    .tag-ladyknight{background:rgba(236,72,153,0.15);color:#f472b6}
+    .char-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
+    .char-stats{display:flex;flex-direction:column;gap:.3rem;margin-top:.8rem}
+    .cstat{display:flex;align-items:center;gap:.5rem;font-size:.72rem}
+    .cstat-label{color:var(--muted);width:48px;flex-shrink:0}
+    .cstat-bar{flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+    .cstat-fill{height:100%;border-radius:3px;transition:width .6s ease}
+    .selected-badge{position:absolute;top:.8rem;right:.8rem;background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:6px;opacity:0;transition:opacity .2s}
+    .char-card.active .selected-badge{opacity:1}
+
+    /* DETAIL PANEL */
+    .detail-panel{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2rem;margin-bottom:2rem;display:none;animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .detail-panel.show{display:block}
+    .dp-inner{display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap}
+    .dp-avatar{font-size:5rem;filter:drop-shadow(0 8px 20px rgba(108,99,255,0.3))}
+    .dp-info{flex:1;min-width:200px}
+    .dp-info h2{font-size:1.5rem;font-weight:900;margin-bottom:.2rem}
+    .dp-info .dp-en{color:var(--muted);font-size:.9rem;margin-bottom:.8rem}
+    .dp-info .dp-desc{color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:1rem}
+    .dp-weapons{display:flex;flex-wrap:wrap;gap:.5rem}
+    .weapon-chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:.25rem .7rem;font-size:.78rem;color:var(--text)}
+    .dp-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-top:1rem}
+    @media(max-width:560px){.dp-stats-grid{grid-template-columns:repeat(2,1fr)}}
+    .dp-stat{background:rgba(255,255,255,0.04);border-radius:12px;padding:.7rem;text-align:center}
+    .dp-stat .dsv{font-size:1.3rem;font-weight:800;margin-bottom:.2rem}
+    .dp-stat .dsl{font-size:.72rem;color:var(--muted)}
+
+    /* CONFIRM BTN */
+    .confirm-wrap{text-align:center}
+    .btn-confirm{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;padding:1rem 3rem;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(108,99,255,0.4);transition:transform .2s,box-shadow .2s;opacity:.5;pointer-events:none}
+    .btn-confirm.ready{opacity:1;pointer-events:auto}
+    .btn-confirm.ready:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,99,255,0.5)}
+    .confirm-hint{color:var(--muted);font-size:.85rem;margin-top:.8rem}
+  </style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="page">
+  <div class="top">
+    <a href="index.html" class="logo">CodersWar</a>
+    <span class="step-badge">3-QADAM · Yakuniy sozlash</span>
+    <h1>O'z qahramoningizni tanlang</h1>
+    <p>Personajingiz vizual identifikatsiya, duel ko'rinishi va motivatsion elementlar uchun ishlatiladi.</p>
+  </div>
+
+  <div class="chars" id="charsGrid">
+    <!-- rendered by JS -->
+  </div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="dp-inner">
+      <div class="dp-avatar" id="dpAvatar"></div>
+      <div class="dp-info">
+        <h2 id="dpName"></h2>
+        <div class="dp-en" id="dpEn"></div>
+        <div class="dp-desc" id="dpDesc"></div>
+        <div class="dp-weapons" id="dpWeapons"></div>
+        <div class="dp-stats-grid" id="dpStats"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirm-wrap">
+    <button class="btn-confirm" id="confirmBtn" onclick="confirm()">
+      Bu personajni tanlash →
+    </button>
+    <div class="confirm-hint" id="confirmHint">Personajni tanlang</div>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+const CHARS=[
+  {id:'warrior',name:'Jangchi',en:'Warrior',avatar:'⚔️',tag:'tag-warrior',
+   desc:'Kuch va qat\'iyat timsoli. Qiyin vazifalardan qo\'rqmaydi. Har qanday muammoni to\'g\'ridan-to\'g\'ri hal qiladi.',
+   weapons:['⚔️ Sword','🏹 Spear','🛡️ Armor'],
+   stats:{strength:95,speed:60,intelligence:65,defense:80}},
+  {id:'ranger',en:'Ranger',name:'Sarguzashtchi',avatar:'🏹',tag:'tag-ranger',
+   desc:'Tezkorlik va aniqlik timsoli. Eng samarali va qisqa yechim topadi. Kodni optimallashtirishda tengsiz.',
+   weapons:['🏹 Spear','👟 Boots','🥋 Light Armor'],
+   stats:{strength:65,speed:95,intelligence:75,defense:55}},
+  {id:'sorceress',name:'Sehrgar Ayol',en:'Sorceress',avatar:'🔮',tag:'tag-sorceress',
+   desc:'Bilim va sehrli tafakkur timsoli. Algoritmlarni sehrga aylantiradi. Kreativ yechimlar topishda ustun.',
+   weapons:['🪄 Wand','💍 Ring'],
+   stats:{strength:45,speed:70,intelligence:98,defense:50}},
+  {id:'knight',name:'Ritsar',en:'Knight',avatar:'🛡️',tag:'tag-knight',
+   desc:'Adolat va himoya timsoli. Jamoani boshqaradi. Murakkab loyihalarni tartibli hal qiladi.',
+   weapons:['⚔️ Sword','🛡️ Shield','🏰 Armor'],
+   stats:{strength:80,speed:55,intelligence:70,defense:95}},
+  {id:'ladyknight',name:'Ayol Ritsar',en:'Lady Knight',avatar:'⚜️',tag:'tag-ladyknight',
+   desc:'Qat\'iyat va himoya timsoli. Barcha cheklovlarni engib o\'tadi. Kuch va aql muvozanatini saqlaydi.',
+   weapons:['⚔️ Sword','🛡️ Shield','🏰 Armor','💍 Ring'],
+   stats:{strength:78,speed:72,intelligence:78,defense:88}}
+];
+
+const STAT_COLORS={strength:'#ef4444',speed:'#22c55e',intelligence:'#a855f7',defense:'#3b82f6'};
+const STAT_LABELS={strength:'Kuch',speed:'Tezlik',intelligence:'Intellekt',defense:'Himoya'};
+
+let chosen=null;
+
+function renderChars(){
+  const grid=document.getElementById('charsGrid');
+  grid.innerHTML=CHARS.map(c=>`
+    <div class="char-card c-${c.id}" id="card-${c.id}" onclick="pick('${c.id}')">
+      <div class="selected-badge">✓ Tanlandi</div>
+      <span class="char-avatar">${c.avatar}</span>
+      <div class="char-name">${c.name}</div>
+      <div class="char-en">${c.en}</div>
+      <span class="char-tag ${c.tag}">${c.en}</span>
+      <div class="char-desc">${c.desc.split('.')[0]}.</div>
+      <div class="char-stats">
+        ${Object.entries(c.stats).map(([k,v])=>`
+          <div class="cstat">
+            <span class="cstat-label">${STAT_LABELS[k].slice(0,4)}</span>
+            <div class="cstat-bar"><div class="cstat-fill" style="width:${v}%;background:${STAT_COLORS[k]}"></div></div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function pick(id){
+  chosen=id;
+  document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('card-'+id).classList.add('active');
+  const c=CHARS.find(x=>x.id===id);
+  // detail panel
+  document.getElementById('dpAvatar').textContent=c.avatar;
+  document.getElementById('dpName').textContent=c.name;
+  document.getElementById('dpEn').textContent=c.en;
+  document.getElementById('dpDesc').textContent=c.desc;
+  document.getElementById('dpWeapons').innerHTML=c.weapons.map(w=>`<span class="weapon-chip">${w}</span>`).join('');
+  document.getElementById('dpStats').innerHTML=Object.entries(c.stats).map(([k,v])=>`
+    <div class="dp-stat">
+      <div class="dsv" style="color:${STAT_COLORS[k]}">${v}</div>
+      <div class="dsl">${STAT_LABELS[k]}</div>
+    </div>`).join('');
+  const panel=document.getElementById('detailPanel');
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const btn=document.getElementById('confirmBtn');
+  btn.classList.add('ready');
+  btn.textContent=`${c.avatar} ${c.name}ni tanlash →`;
+  document.getElementById('confirmHint').textContent=`${c.name} (${c.en}) tanlandi`;
+}
+
+async function confirm(){
+  if(!chosen) return;
+  const c=CHARS.find(x=>x.id===chosen);
+  document.getElementById('confirmBtn').textContent='Saqlanmoqda...';
+  document.getElementById('confirmBtn').classList.remove('ready');
+  try {
+    await api.patch('/auth/me/', { character: chosen });
+    // localStorage dagi user ma'lumotlarini yangilaymiz
+    const user = Auth.getUser();
+    if (user && user.student_profile) {
+      user.student_profile.character = chosen;
+      Auth.setUser(user);
+    }
+  } catch(e) { /* character field optional */ }
+  window.location.href = 'dashboard.html';
+}
+
+renderChars();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

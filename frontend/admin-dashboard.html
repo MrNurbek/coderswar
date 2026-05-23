@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:240px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo .title,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo .title{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sb-logo .role-pill{display:inline-block;background:rgba(255,101,132,0.15);color:#ff6584;font-size:.62rem;font-weight:700;padding:.15rem .55rem;border-radius:6px;margin-top:.3rem;letter-spacing:.5px;white-space:nowrap}
+    .sb-nav{flex:1;padding:.8rem .7rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:.95rem;width:18px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:8px}
+    .nav-item .badge.green{background:rgba(67,233,123,0.2);color:#43e97b}
+    .sb-bottom{padding:.8rem .7rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.7rem}
+    .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff6584,#ff416c);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;flex-shrink:0}
+    .sb-user .info .name{font-size:.85rem;font-weight:600}
+    .sb-user .info .role{font-size:.7rem;color:var(--muted)}
+    .logout-btn{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;transition:color .2s}
+    .logout-btn:hover{color:var(--accent2)}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.85rem 1.8rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-left h2{font-size:1rem;font-weight:700}
+    .topbar-left .breadcrumb{font-size:.76rem;color:var(--muted);margin-top:.1rem}
+    .topbar-right{display:flex;align-items:center;gap:.7rem}
+    .btn{padding:.48rem 1rem;border-radius:9px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,#6c63ff,#8b5cf6);color:#fff}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-danger{background:linear-gradient(135deg,#ff6584,#ff416c);color:#fff}
+    .btn-danger:hover{opacity:.9}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-sm{padding:.32rem .7rem;font-size:.75rem}
+    .search-bar{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.45rem .85rem;display:flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.82rem;min-width:200px}
+    .search-bar input{background:none;border:none;outline:none;color:var(--text);width:100%;font-size:.82rem}
+    .content{padding:1.8rem;flex:1}
+
+    /* CARD */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
+    .card-title{font-size:.92rem;font-weight:700}
+    .card-action{font-size:.78rem;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none;background:none;border:none}
+
+    /* STATS ROW */
+    .stats-row{display:grid;gap:1rem;margin-bottom:1.8rem}
+    .stats-6{grid-template-columns:repeat(6,1fr)}
+    .stats-4{grid-template-columns:repeat(4,1fr)}
+    @media(max-width:1200px){.stats-6{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:900px){.stats-6,.stats-4{grid-template-columns:repeat(2,1fr)}}
+    .stat-box{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:1.1rem 1.2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;cursor:pointer}
+    .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .stat-box::after{content:attr(data-icon);position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.07}
+    .stat-box .label{font-size:.7rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.35rem}
+    .stat-box .value{font-size:1.55rem;font-weight:900;line-height:1;margin-bottom:.2rem}
+    .stat-box .sub{font-size:.73rem;color:var(--muted)}
+    .trend-up{color:#43e97b;font-size:.72rem;margin-top:.15rem}
+    .trend-dn{color:#ff6584;font-size:.72rem;margin-top:.15rem}
+    .stat-box.alert-box{border-color:rgba(255,101,132,0.3);background:rgba(255,101,132,0.04)}
+
+    /* GRID */
+    .grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:1.4rem;margin-bottom:1.4rem}
+    .grid-1-1{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:1.4rem}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-bottom:1.4rem}
+    @media(max-width:1050px){.grid-2-1,.grid-1-1,.grid-3{grid-template-columns:1fr}}
+
+    /* TABS */
+    .tabs{display:flex;gap:.4rem;margin-bottom:1.4rem;border-bottom:1px solid var(--border)}
+    .tab-btn{padding:.58rem 1rem;border-radius:10px 10px 0 0;font-size:.82rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;position:relative;bottom:-1px;border:1px solid transparent;border-bottom:none}
+    .tab-btn.active{background:var(--bg2);color:#a78bfa;border-color:var(--border);border-bottom-color:var(--bg2)}
+    .tab-btn:hover:not(.active){color:var(--text)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* DATA TABLE */
+    .data-table{width:100%;border-collapse:collapse}
+    .data-table th{font-size:.68rem;color:var(--muted);font-weight:600;text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;cursor:pointer;user-select:none}
+    .data-table th:hover{color:var(--text)}
+    .data-table td{padding:.65rem .8rem;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.82rem;vertical-align:middle}
+    .data-table tr:hover td{background:rgba(108,99,255,0.04)}
+    .data-table tr:last-child td{border-bottom:none}
+    .av-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+    .user-info{display:flex;align-items:center;gap:.6rem}
+    .user-name{font-weight:600;font-size:.84rem}
+    .user-meta{font-size:.72rem;color:var(--muted)}
+    .role-tag{font-size:.65rem;font-weight:700;padding:.12rem .45rem;border-radius:6px;text-transform:uppercase;letter-spacing:.3px}
+    .rt-admin{background:rgba(255,101,132,0.12);color:#ff6584}
+    .rt-teacher{background:rgba(108,99,255,0.12);color:#a78bfa}
+    .rt-student{background:rgba(67,233,123,0.1);color:#43e97b}
+    .rt-super{background:rgba(255,215,0,0.12);color:var(--gold)}
+    .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:.4rem}
+    .sd-active{background:#43e97b;box-shadow:0 0 5px rgba(67,233,123,0.5)}
+    .sd-inactive{background:var(--muted)}
+    .sd-suspended{background:#ff6584;box-shadow:0 0 5px rgba(255,101,132,0.5)}
+    .action-btns{display:flex;gap:.4rem}
+    .action-btn{background:rgba(255,255,255,0.05);border:none;border-radius:7px;padding:.3rem .55rem;cursor:pointer;font-size:.8rem;color:var(--muted);transition:all .2s}
+    .action-btn:hover{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .action-btn.danger:hover{background:rgba(255,101,132,0.15);color:#ff6584}
+
+    /* CHART */
+    .chart-wrap{position:relative}
+    canvas.chart{width:100%;display:block}
+
+    /* LOG FEED */
+    .log-feed{display:flex;flex-direction:column;gap:0;max-height:360px;overflow-y:auto}
+    .log-item{display:flex;align-items:flex-start;gap:.8rem;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .log-item:last-child{border-bottom:none}
+    .log-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+    .li-login{background:rgba(108,99,255,0.12)}
+    .li-submit{background:rgba(67,233,123,0.12)}
+    .li-ban{background:rgba(255,101,132,0.12)}
+    .li-register{background:rgba(255,215,0,0.1)}
+    .li-report{background:rgba(251,146,60,0.12)}
+    .li-system{background:rgba(255,255,255,0.07)}
+    .log-body{flex:1}
+    .log-text{font-size:.82rem;line-height:1.4}
+    .log-time{font-size:.7rem;color:var(--muted);margin-top:.1rem}
+    .log-level{font-size:.65rem;font-weight:700;padding:.1rem .38rem;border-radius:5px;margin-right:.4rem}
+    .ll-info{background:rgba(108,99,255,0.12);color:#a78bfa}
+    .ll-warn{background:rgba(255,215,0,0.1);color:var(--gold)}
+    .ll-error{background:rgba(255,101,132,0.12);color:#ff6584}
+    .ll-success{background:rgba(67,233,123,0.1);color:#43e97b}
+
+    /* SETTINGS FORM */
+    .form-group{margin-bottom:1.1rem}
+    .form-label{font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.45rem;display:block;text-transform:uppercase;letter-spacing:.4px}
+    .form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:9px;padding:.6rem .9rem;color:var(--text);font-size:.85rem;outline:none;transition:border-color .2s}
+    .form-input:focus{border-color:var(--accent)}
+    .form-input:disabled{opacity:.5;cursor:not-allowed}
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info .tl{font-size:.85rem;font-weight:600}
+    .toggle-info .ts{font-size:.75rem;color:var(--muted);margin-top:.1rem}
+    .toggle{width:40px;height:22px;border-radius:11px;background:rgba(255,255,255,0.12);position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
+    .toggle.on{background:var(--accent)}
+    .toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .25s}
+    .toggle.on::after{transform:translateX(18px)}
+
+    /* REPORT CARDS */
+    .report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.9rem;margin-bottom:1.4rem}
+    .report-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem;cursor:pointer;transition:all .2s}
+    .report-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .rc-icon{font-size:1.6rem;margin-bottom:.5rem}
+    .rc-name{font-size:.85rem;font-weight:700;margin-bottom:.2rem}
+    .rc-meta{font-size:.72rem;color:var(--muted)}
+    .rc-badge{font-size:.65rem;font-weight:700;padding:.12rem .4rem;border-radius:6px;margin-top:.5rem;display:inline-block}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:22px;padding:1.8rem;width:100%;max-width:520px;position:relative;animation:fadeUp .3s ease;max-height:90vh;overflow-y:auto}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .modal-close{position:absolute;top:.9rem;right:.9rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;border-radius:7px;padding:.3rem;transition:color .2s}
+    .modal-close:hover{color:var(--text)}
+    .modal h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem}
+    .modal p{font-size:.83rem;color:var(--muted);margin-bottom:1.3rem}
+
+    /* PAGINATION */
+    .pagination{display:flex;align-items:center;gap:.4rem;margin-top:1rem;justify-content:flex-end}
+    .page-btn{width:30px;height:30px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .page-btn.active{background:rgba(108,99,255,0.2);border-color:var(--accent);color:#a78bfa;font-weight:700}
+    .page-btn:hover:not(.active){border-color:var(--accent);color:var(--text)}
+
+    /* OVERVIEW CHIPS */
+    .overview-chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.4rem}
+    .ov-chip{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;display:flex;align-items:center;gap:.5rem;font-size:.8rem;cursor:pointer;transition:border-color .2s}
+    .ov-chip:hover{border-color:var(--accent)}
+    .ov-chip .oc-icon{font-size:1rem}
+    .ov-chip .oc-val{font-weight:700}
+    .ov-chip .oc-lbl{color:var(--muted);font-size:.72rem}
+
+    /* SERVER STATUS */
+    .server-status{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+    .ss-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:.9rem;text-align:center}
+    .ss-val{font-size:1.3rem;font-weight:900;margin-bottom:.15rem}
+    .ss-lbl{font-size:.7rem;color:var(--muted)}
+    .ss-bar{height:5px;background:rgba(255,255,255,0.07);border-radius:3px;margin-top:.5rem;overflow:hidden}
+    .ss-fill{height:100%;border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="title">⚔️ Coders War</div>
+    <div class="role-pill">🔐 SUPERADMIN</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">Asosiy</div>
+    <a class="nav-item active" href="#" onclick="showSection('overview')"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="#" onclick="showSection('analytics')"><span class="icon">📈</span> Analitika</a>
+    <a class="nav-item" href="#" onclick="showSection('logs')"><span class="icon">📋</span> Tizim loglari</a>
+
+    <div class="nav-section">Foydalanuvchilar</div>
+    <a class="nav-item" href="#" onclick="showSection('users')"><span class="icon">👥</span> Barcha foydalanuvchilar</a>
+    <a class="nav-item" href="#" onclick="showSection('teachers')"><span class="icon">👨‍🏫</span> O'qituvchilar</a>
+    <a class="nav-item" href="#" onclick="showSection('students')"><span class="icon">🎓</span> Talabalar</a>
+    <a class="nav-item" href="#" onclick="showSection('clans')"><span class="icon">🏰</span> Klanlar</a>
+
+    <div class="nav-section">Platform</div>
+    <a class="nav-item" href="teacher-dashboard.html"><span class="icon">📚</span> O'qituvchi paneli</a>
+    <a class="nav-item" href="#" onclick="showSection('reports')"><span class="icon">🚨</span> Shikoyatlar</a>
+
+    <div class="nav-section">Tizim</div>
+    <a class="nav-item" href="#" onclick="showSection('settings')"><span class="icon">⚙️</span> Sozlamalar</a>
+    <a class="nav-item" href="#" onclick="showSection('server')"><span class="icon">🖥️</span> Server holati</a>
+    <a class="nav-item" href="#" onclick="showSection('export')"><span class="icon">📤</span> Export / Hisobot</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="av" data-user-init>?</div>
+      <div class="info">
+        <div class="name" data-user-name>Admin</div>
+        <div class="role" data-user-role>Superadmin</div>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2 id="topbarTitle">📊 Admin Dashboard</h2>
+      <div class="breadcrumb" id="topbarBreadcrumb">Boshqaruv • Umumiy ko'rinish</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar"><span>🔍</span><input placeholder="Qidiruv..." id="globalSearch"/></div>
+      <button class="btn btn-outline btn-sm">📤 Export</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addUserModal')">+ Foydalanuvchi</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ SECTION: OVERVIEW ═══ -->
+    <div id="sec-overview" class="section">
+      <!-- QUICK CHIPS -->
+      <div class="overview-chips">
+        <div class="ov-chip"><span class="oc-icon">👥</span><span class="oc-val" id="chipUsers">—</span><span class="oc-lbl">Jami foydalanuvchi</span></div>
+        <div class="ov-chip"><span class="oc-icon">🎓</span><span class="oc-val" id="chipStudents">—</span><span class="oc-lbl">Talabalar</span></div>
+        <div class="ov-chip"><span class="oc-icon">📚</span><span class="oc-val" id="chipTopics">45</span><span class="oc-lbl">Jami mavzu</span></div>
+        <div class="ov-chip"><span class="oc-icon">💻</span><span class="oc-val" id="chipSubmissions">—</span><span class="oc-lbl">Jami submission</span></div>
+        <div class="ov-chip"><span class="oc-icon">📊</span><span class="oc-val" id="chipAvgScore">—</span><span class="oc-lbl">O'rt. academic ball</span></div>
+        <div class="ov-chip"><span class="oc-icon">🏆</span><span class="oc-val" id="chipTopRating">—</span><span class="oc-lbl">Eng yuqori reyting</span></div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row stats-6">
+        <div class="stat-box" data-icon="👥">
+          <div class="label">Talabalar</div>
+          <div class="value" id="statStudents" style="color:#a78bfa">—</div>
+          <div class="sub" id="statStudentsSub">Yuklanmoqda...</div>
+          <div class="trend-up" id="statStudentsTrend"></div>
+        </div>
+        <div class="stat-box" data-icon="👨‍🏫">
+          <div class="label">O'qituvchilar</div>
+          <div class="value" id="statTeachers" style="color:#43e97b">—</div>
+          <div class="sub" id="statTeachersSub">Yuklanmoqda...</div>
+          <div class="trend-up"></div>
+        </div>
+        <div class="stat-box" data-icon="📊">
+          <div class="label">O'rt. Academic</div>
+          <div class="value" id="statAvgAcademic" style="color:#60a5fa">—</div>
+          <div class="sub">Barcha talabalar</div>
+          <div class="trend-up" id="statAvgTrend"></div>
+        </div>
+        <div class="stat-box" data-icon="💻">
+          <div class="label">Jami submission</div>
+          <div class="value" id="statSubmissions" style="color:#ffd700">—</div>
+          <div class="sub">Barcha vaqt</div>
+          <div class="trend-up" id="statSubTrend"></div>
+        </div>
+        <div class="stat-box alert-box" data-icon="🚨">
+          <div class="label">Xavf altında</div>
+          <div class="value" id="statAtRisk" style="color:#ff6584">—</div>
+          <div class="sub">Zaif talabalar</div>
+          <div class="trend-dn">↓ ball &lt; 50</div>
+        </div>
+        <div class="stat-box" data-icon="🏆">
+          <div class="label">Faol klanlar</div>
+          <div class="value" id="statClans" style="color:#fb923c">—</div>
+          <div class="sub" id="statClansSub">Yuklanmoqda...</div>
+          <div class="trend-up" id="statClansTrend"></div>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <!-- PLATFORM ACTIVITY CHART -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📈 Haftalik platform faolligi</span>
+            <div style="display:flex;gap:.5rem;font-size:.75rem;color:var(--muted)">
+              <span style="display:flex;align-items:center;gap:.3rem"><span style="width:10px;height:3px;background:#6c63ff;display:inline-block;border-radius:2px"></span>Submissionlar</span>
+              <span style="display:flex;align-items:center;gap:.3rem"><span style="width:10px;height:3px;background:#43e97b;display:inline-block;border-radius:2px"></span>Faol foydalanuvchi</span>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:180px">
+            <canvas id="activityChart" class="chart"></canvas>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">⚡ So'nggi harakatlar</span>
+            <button class="card-action" onclick="showSection('logs')">Barchasi →</button>
+          </div>
+          <div class="log-feed" id="recentLog"></div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <!-- USER DISTRIBUTION -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">👥 Foydalanuvchilar taqsimoti</span></div>
+          <canvas id="pieChart" width="200" height="200" style="display:block;margin:0 auto"></canvas>
+          <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.8rem;font-size:.8rem" id="pieChartLegend">
+            <div style="display:flex;justify-content:space-between"><span style="display:flex;align-items:center;gap:.4rem"><span style="width:10px;height:10px;border-radius:3px;background:#43e97b;display:inline-block"></span>Talabalar</span><span id="pieLblStudent" style="font-weight:700">—</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="display:flex;align-items:center;gap:.4rem"><span style="width:10px;height:10px;border-radius:3px;background:#6c63ff;display:inline-block"></span>O'qituvchilar</span><span id="pieLblTeacher" style="font-weight:700">—</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="display:flex;align-items:center;gap:.4rem"><span style="width:10px;height:10px;border-radius:3px;background:#ff6584;display:inline-block"></span>Adminlar</span><span id="pieLblAdmin" style="font-weight:700">—</span></div>
+          </div>
+        </div>
+
+        <!-- LEVEL DISTRIBUTION -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">🎖️ Daraja taqsimoti</span></div>
+          <div id="levelDist" style="display:flex;flex-direction:column;gap:.5rem"></div>
+        </div>
+
+        <!-- TOP PERFORMERS -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">🏆 Top 5 talaba</span></div>
+          <div id="topStudents" style="display:flex;flex-direction:column;gap:.5rem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION: USERS ═══ -->
+    <div id="sec-users" class="section" style="display:none">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem">
+        <div class="search-bar" style="flex:1"><span>🔍</span><input placeholder="Ism, email yoki ID bo'yicha qidirish..."/></div>
+        <select style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:.48rem .8rem;font-size:.82rem;outline:none">
+          <option>Barcha rollar</option><option>Talaba</option><option>O'qituvchi</option><option>Admin</option>
+        </select>
+        <select style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:.48rem .8rem;font-size:.82rem;outline:none">
+          <option>Barcha holatlar</option><option>Faol</option><option>Nofaol</option><option>Bloklangan</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">👥 Barcha foydalanuvchilar</span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('addUserModal')">+ Yangi qo'shish</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table" id="usersTable">
+            <thead>
+              <tr>
+                <th onclick="sortTable(this)">ID ↕</th>
+                <th onclick="sortTable(this)">Foydalanuvchi ↕</th>
+                <th>Rol</th>
+                <th onclick="sortTable(this)">Rating ↕</th>
+                <th>Daraja</th>
+                <th>Holat</th>
+                <th>Oxirgi kirish</th>
+                <th>Amallar</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="usersPag"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION: REPORTS ═══ -->
+    <div id="sec-reports" class="section" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🚨 Shikoyatlar va xabarlar</span>
+        </div>
+        <div id="reportsList" style="display:flex;flex-direction:column;gap:.8rem"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION: SETTINGS ═══ -->
+    <div id="sec-settings" class="section" style="display:none">
+      <div class="grid-1-1">
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚙️ Platforma sozlamalari</span></div>
+          <div class="form-group">
+            <label class="form-label">Platform nomi</label>
+            <input class="form-input" value="Coders War"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Semestr</label>
+            <input class="form-input" value="2024–2025 / Bahor semestri"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Maksimal Rating Score</label>
+            <input class="form-input" type="number" value="4500"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">AI model (OpenAI)</label>
+            <select class="form-input"><option>gpt-4o</option><option>gpt-4-turbo</option><option>gpt-3.5-turbo</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Judge0 API endpoint</label>
+            <input class="form-input" value="https://judge0.coderswar.uz/api"/>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:.5rem">💾 Saqlash</button>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:1.4rem">
+            <div class="card-header"><span class="card-title">🔧 Funksiyalar</span></div>
+            <div id="featureToggles" style="display:flex;flex-direction:column"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">🔐 Xavfsizlik</span></div>
+            <div class="form-group">
+              <label class="form-label">JWT token muddati (soat)</label>
+              <input class="form-input" type="number" value="24"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Maksimal urinish (login)</label>
+              <input class="form-input" type="number" value="5"/>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="tl">2FA majburiy</div><div class="ts">Adminlar uchun</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="tl">IP bloklash</div><div class="ts">Shubhali faollik</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION: SERVER ═══ -->
+    <div id="sec-server" class="section" style="display:none">
+      <div class="stats-row stats-4" style="margin-bottom:1.4rem">
+        <div class="stat-box" data-icon="💚">
+          <div class="label">API Server</div>
+          <div class="value" style="color:#43e97b;font-size:1.2rem">● Ishlayapti</div>
+          <div class="sub">api.coderswar.uz</div>
+          <div class="trend-up">Uptime: 99.8%</div>
+        </div>
+        <div class="stat-box" data-icon="💚">
+          <div class="label">WebSocket</div>
+          <div class="value" style="color:#43e97b;font-size:1.2rem">● Ishlayapti</div>
+          <div class="sub">ws.coderswar.uz</div>
+          <div class="trend-up">87 ta ulanish</div>
+        </div>
+        <div class="stat-box" data-icon="💚">
+          <div class="label">Judge0</div>
+          <div class="value" style="color:#43e97b;font-size:1.2rem">● Ishlayapti</div>
+          <div class="sub">Kod bajarish</div>
+          <div class="trend-up">O'rt. 1.2s</div>
+        </div>
+        <div class="stat-box" data-icon="🟡">
+          <div class="label">Redis Cache</div>
+          <div class="value" style="color:#ffd700;font-size:1.2rem">● Yuk baland</div>
+          <div class="sub">Kesh server</div>
+          <div class="trend-dn">78% CPU</div>
+        </div>
+      </div>
+
+      <div class="grid-1-1">
+        <div class="card">
+          <div class="card-header"><span class="card-title">🖥️ Server resurslari</span></div>
+          <div class="server-status">
+            <div class="ss-item">
+              <div class="ss-val" style="color:#43e97b">34%</div>
+              <div class="ss-lbl">CPU</div>
+              <div class="ss-bar"><div class="ss-fill" style="width:34%;background:#43e97b"></div></div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-val" style="color:#60a5fa">61%</div>
+              <div class="ss-lbl">RAM</div>
+              <div class="ss-bar"><div class="ss-fill" style="width:61%;background:#60a5fa"></div></div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-val" style="color:#ffd700">45%</div>
+              <div class="ss-lbl">Disk</div>
+              <div class="ss-bar"><div class="ss-fill" style="width:45%;background:#ffd700"></div></div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-val" style="color:#a78bfa">78%</div>
+              <div class="ss-lbl">Cache</div>
+              <div class="ss-bar"><div class="ss-fill" style="width:78%;background:#a78bfa"></div></div>
+            </div>
+          </div>
+          <div style="margin-top:1rem">
+            <div class="chart-wrap" style="height:130px">
+              <canvas id="serverChart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">📋 Tizim ma'lumotlari</span></div>
+          <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.82rem">
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="color:var(--muted)">OS</span><strong>Ubuntu 22.04 LTS</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="color:var(--muted)">Backend</span><strong>Django 4.2 / Python 3.11</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="color:var(--muted)">Database</span><strong>PostgreSQL 16</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="color:var(--muted)">Cache</span><strong>Redis 7.2</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="color:var(--muted)">Web server</span><strong>Nginx 1.24 + Gunicorn</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="color:var(--muted)">Judge0</span><strong>v1.13.0</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="color:var(--muted)">Docker</span><strong>24.0.7</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.45rem 0">
+              <span style="color:var(--muted)">Oxirgi deploy</span><strong style="color:#43e97b">2 soat oldin</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION: LOGS ═══ -->
+    <div id="sec-logs" class="section" style="display:none">
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📋 Tizim loglari</span>
+            <div style="display:flex;gap:.5rem">
+              <select style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.3rem .6rem;font-size:.78rem;outline:none">
+                <option>Barcha darajalar</option><option>INFO</option><option>WARN</option><option>ERROR</option>
+              </select>
+              <button class="btn btn-outline btn-sm">🗑️ Tozalash</button>
+            </div>
+          </div>
+          <div class="log-feed" id="fullLogFeed" style="max-height:500px"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 Log statistikasi</span></div>
+          <div style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem">
+              <span style="color:#a78bfa">INFO</span>
+              <div style="display:flex;align-items:center;gap:.6rem;flex:1;margin-left:1rem">
+                <div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:75%;height:100%;background:#a78bfa;border-radius:3px"></div></div>
+                <span style="font-weight:700;min-width:30px">847</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem">
+              <span style="color:var(--gold)">WARN</span>
+              <div style="display:flex;align-items:center;gap:.6rem;flex:1;margin-left:1rem">
+                <div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:20%;height:100%;background:var(--gold);border-radius:3px"></div></div>
+                <span style="font-weight:700;min-width:30px">142</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem">
+              <span style="color:#ff6584">ERROR</span>
+              <div style="display:flex;align-items:center;gap:.6rem;flex:1;margin-left:1rem">
+                <div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:5%;height:100%;background:#ff6584;border-radius:3px"></div></div>
+                <span style="font-weight:700;min-width:30px">12</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:.82rem;font-weight:600;margin-bottom:.7rem">So'nggi xatolar</div>
+          <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.78rem">
+            <div style="padding:.6rem;background:rgba(255,101,132,0.06);border-radius:8px;border-left:2px solid #ff6584">
+              <div style="font-weight:600;color:#ff6584">Judge0 timeout</div>
+              <div style="color:var(--muted)">submission_id: 48230 • 14:23:05</div>
+            </div>
+            <div style="padding:.6rem;background:rgba(255,101,132,0.06);border-radius:8px;border-left:2px solid #ff6584">
+              <div style="font-weight:600;color:#ff6584">DB connection pool full</div>
+              <div style="color:var(--muted)">max_conn=100 • 12:18:42</div>
+            </div>
+            <div style="padding:.6rem;background:rgba(255,215,0,0.05);border-radius:8px;border-left:2px solid var(--gold)">
+              <div style="font-weight:600;color:var(--gold)">Redis memory warning</div>
+              <div style="color:var(--muted)">78% ishlatildi • 10:05:11</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION: EXPORT ═══ -->
+    <div id="sec-export" class="section" style="display:none">
+      <div class="report-grid" id="reportGrid"></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📊 Hisob-kitob generatsiya</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+          <div class="form-group">
+            <label class="form-label">Hisobot turi</label>
+            <select class="form-input"><option>Talabalar natijasi</option><option>O'qituvchilar faolligi</option><option>Platform statistikasi</option><option>Moliyaviy hisobot</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Davr</label>
+            <select class="form-input"><option>Bu oy</option><option>O'tgan oy</option><option>Bu semestr</option><option>Maxsus</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Format</label>
+            <select class="form-input"><option>PDF</option><option>Excel (.xlsx)</option><option>CSV</option><option>JSON</option></select>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:.5rem">📤 Hisobot yaratish va yuklab olish</button>
+      </div>
+    </div>
+
+    <!-- Placeholder for other sections -->
+    <div id="sec-analytics" class="section" style="display:none">
+      <div class="card"><div style="text-align:center;padding:3rem;color:var(--muted)">📈 Analitika bo'limi — Yaqinda qo'shiladi</div></div>
+    </div>
+    <div id="sec-teachers" class="section" style="display:none">
+      <div class="card"><div style="text-align:center;padding:3rem;color:var(--muted)">👨‍🏫 O'qituvchilar bo'limi — Yaqinda qo'shiladi</div></div>
+    </div>
+    <div id="sec-students" class="section" style="display:none">
+      <div class="card"><div style="text-align:center;padding:3rem;color:var(--muted)">🎓 Talabalar bo'limi — Yaqinda qo'shiladi</div></div>
+    </div>
+    <div id="sec-clans" class="section" style="display:none">
+      <div class="card"><div style="text-align:center;padding:3rem;color:var(--muted)">🏰 Klanlar bo'limi — Yaqinda qo'shiladi</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addUserModal')">✕</button>
+    <h3>+ Yangi foydalanuvchi qo'shish</h3>
+    <p>Platformaga yangi foydalanuvchi qo'lda qo'shing</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="form-group"><label class="form-label">Ism</label><input class="form-input" placeholder="Ism"/></div>
+      <div class="form-group"><label class="form-label">Familiya</label><input class="form-input" placeholder="Familiya"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="email@example.com"/></div>
+    <div class="form-group"><label class="form-label">Rol</label>
+      <select class="form-input"><option>Talaba</option><option>O'qituvchi</option><option>Admin</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Guruh (talaba uchun)</label>
+      <select class="form-input"><option>CS-101</option><option>CS-102</option><option>CS-201</option></select>
+    </div>
+    <div style="display:flex;gap:.7rem;justify-content:flex-end;margin-top:.5rem">
+      <button class="btn btn-outline" onclick="closeModal('addUserModal')">Bekor</button>
+      <button class="btn btn-primary" onclick="closeModal('addUserModal')">✅ Qo'shish</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+// Admin/superadmin rolida bo'lsa ruxsat
+(function() {
+  if (!Auth.requireAuth()) return;
+  const user = Auth.getUser();
+  if (user && !['admin','superadmin'].includes(user.role)) {
+    window.location.href = ROUTES.dashboard;
+  }
+  Auth.fillUserUI();
+})();
+// ── NAVIGATION ─────────────────────────────────────────────
+const sectionMeta={
+  overview:{title:'📊 Admin Dashboard',breadcrumb:'Boshqaruv • Umumiy ko\'rinish'},
+  users:{title:'👥 Foydalanuvchilar',breadcrumb:'Boshqaruv • Barcha foydalanuvchilar'},
+  teachers:{title:'👨‍🏫 O\'qituvchilar',breadcrumb:'Boshqaruv • O\'qituvchilar'},
+  students:{title:'🎓 Talabalar',breadcrumb:'Boshqaruv • Talabalar'},
+  clans:{title:'🏰 Klanlar',breadcrumb:'Jamoa • Klanlar'},
+  reports:{title:'🚨 Shikoyatlar',breadcrumb:'Platform • Shikoyatlar'},
+  settings:{title:'⚙️ Sozlamalar',breadcrumb:'Tizim • Platform sozlamalari'},
+  server:{title:'🖥️ Server holati',breadcrumb:'Tizim • Server resurslari'},
+  logs:{title:'📋 Tizim loglari',breadcrumb:'Tizim • Loglar'},
+  analytics:{title:'📈 Analitika',breadcrumb:'Boshqaruv • Analitika'},
+  export:{title:'📤 Export / Hisobot',breadcrumb:'Tizim • Hisobotlar'},
+};
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const sec = document.getElementById('sec-'+id);
+  if (sec) sec.style.display='block';
+  const meta=sectionMeta[id]||{title:id,breadcrumb:id};
+  document.getElementById('topbarTitle').textContent=meta.title;
+  document.getElementById('topbarBreadcrumb').textContent=meta.breadcrumb;
+  if (event?.target?.closest?.('.nav-item')) event.target.closest('.nav-item').classList.add('active');
+  if(id==='users')renderUsersTable();
+  if(id==='reports')renderReports();
+  if(id==='export')renderExport();
+  if(id==='logs')renderLogs();
+  if(id==='server')drawServerChart();
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function capFirst(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+function gradFor(name){
+  const h=name?name.charCodeAt(0)%6:0;
+  const grads=['linear-gradient(135deg,#6c63ff,#a78bfa)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#f97316,#ffd700)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#ff6584,#ff416c)','linear-gradient(135deg,#fb923c,#ffd700)'];
+  return grads[h];
+}
+
+// ── USERS (real API) ──────────────────────────────────────────
+let ALL_USERS = [];
+async function renderUsersTable() {
+  const body = document.getElementById('usersBody');
+  if (!body) return;
+  body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:1.5rem;color:var(--muted)">⏳ Yuklanmoqda...</td></tr>';
+  try {
+    let users = [];
+    try {
+      // Admin endpoint — returns all users with role field
+      const res = await api.get('/auth/users/?page_size=200');
+      users = res?.results || (Array.isArray(res) ? res : []);
+    } catch {
+      // Fallback: leaderboard (students only)
+      const lb = await api.leaderboard();
+      users = (lb?.results || (Array.isArray(lb) ? lb : [])).map(u => ({...u, role:'student'}));
+    }
+    ALL_USERS = users;
+    _renderUsersBody(users);
+    const hdr = document.querySelector('#sec-users .card-title');
+    if (hdr) hdr.textContent = `👥 Barcha foydalanuvchilar (${users.length})`;
+  } catch(e) {
+    body.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:1.5rem;color:#ff6584">❌ ${e.message||'Xatolik yuz berdi'}</td></tr>`;
+  }
+}
+
+function _renderUsersBody(users) {
+  const body = document.getElementById('usersBody');
+  if (!body) return;
+  body.innerHTML = '';
+  if (!users.length) {
+    body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:1rem;color:var(--muted)">Ma\'lumot topilmadi</td></tr>';
+    return;
+  }
+  users.forEach(u => {
+    const name = u.full_name || u.username || 'Noma\'lum';
+    const email = u.email || u.username || '—';
+    const initials = name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase() || '?';
+    const role = u.role || 'student';
+    const roleClass = {student:'rt-student',teacher:'rt-teacher',admin:'rt-admin',superadmin:'rt-super'}[role] || 'rt-student';
+    const roleLabel = {student:'Talaba',teacher:"O'qituvchi",admin:'Admin',superadmin:'SuperAdmin'}[role] || role;
+    const isBlocked = u.is_active === false;
+    const sdClass = isBlocked ? 'sd-suspended' : 'sd-active';
+    const sdLabel = isBlocked ? 'Bloklangan' : 'Faol';
+    const rating = u.rating_score ?? u.rating ?? '—';
+    const level = u.level ? capFirst(u.level) : '—';
+    body.innerHTML += `<tr>
+      <td style="color:var(--muted);font-size:.75rem">#${u.id}</td>
+      <td><div class="user-info">
+        <div class="av-sm" style="background:${gradFor(name)}">${initials}</div>
+        <div><div class="user-name">${name}</div><div class="user-meta">${email}</div></div>
+      </div></td>
+      <td><span class="role-tag ${roleClass}">${roleLabel}</span></td>
+      <td style="font-weight:700;color:#a78bfa">${rating}</td>
+      <td style="font-size:.8rem">${level}</td>
+      <td><span class="status-dot ${sdClass}"></span><span style="font-size:.8rem">${sdLabel}</span></td>
+      <td style="font-size:.78rem;color:var(--muted)">—</td>
+      <td><div class="action-btns">
+        <button class="action-btn" title="Ko'rish">👁</button>
+        <button class="action-btn danger" title="${isBlocked?'Blokdan chiqarish':'Bloklash'}"
+          onclick="toggleBlock(${u.id},'${isBlocked?'suspended':'active'}',this)">
+          ${isBlocked?'✅':'🚫'}
+        </button>
+      </div></td>
+    </tr>`;
+  });
+  // simple pagination info
+  const pag = document.getElementById('usersPag');
+  if (pag) pag.innerHTML = `<span style="font-size:.75rem;color:var(--muted)">${users.length} ta foydalanuvchi</span>`;
+}
+
+// ── TOPICS (real API) ──────────────────────────────────────────
+let ALL_TOPICS = [];
+async function renderTopicsTable() {
+  const body = document.getElementById('topicsBody');
+  if (!body) return;
+  body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">⏳ Yuklanmoqda...</td></tr>';
+  try {
+    if (!ALL_TOPICS.length) {
+      const res = await api.topics({ page_size: 100 });
+      ALL_TOPICS = res?.results || (Array.isArray(res) ? res : []);
+    }
+    body.innerHTML = '';
+    ALL_TOPICS.forEach((t, i) => {
+      const sem = t.module_number || t.module || '—';
+      const semLabel = sem ? `${sem}-Semestr` : '—';
+      const diff = t.difficulty || 'easy';
+      const diffLabel = {easy:'Oson', medium:"O'rta", hard:'Qiyin'}[diff] || diff;
+      const diffColor = {easy:'#43e97b', medium:'#ffd700', hard:'#ff6584'}[diff] || 'var(--muted)';
+      body.innerHTML += `<tr>
+        <td style="color:var(--muted)">${t.order || (i+1)}</td>
+        <td style="font-weight:600">${t.title || '—'}</td>
+        <td style="font-size:.78rem;color:var(--muted)">${semLabel}</td>
+        <td><span style="font-size:.75rem;font-weight:700;color:${diffColor}">${diffLabel}</span></td>
+        <td style="font-weight:700;color:var(--muted)">—</td>
+        <td><span class="status-dot sd-active"></span><span style="font-size:.78rem">Faol</span></td>
+        <td><div class="action-btns">
+          <button class="action-btn" title="Kontent tahrirlash" onclick="window.open('kontent.html','_blank')">✏️</button>
+          <button class="action-btn" title="Statistika">📊</button>
+        </div></td>
+      </tr>`;
+    });
+    // Update card title
+    const hdr = document.querySelector('#sec-topics .card-title');
+    if (hdr) hdr.textContent = `📚 Mavzular (${ALL_TOPICS.length} ta)`;
+    // Problematic topics placeholder
+    const probEl = document.getElementById('problematicTopics');
+    if (probEl) {
+      probEl.innerHTML = `<div style="padding:.7rem;font-size:.82rem;color:var(--muted);text-align:center">
+        📊 Score statistikasi yo'q (faqat mavzu ro'yxati)
+      </div>
+      <div style="margin-top:.5rem;padding:.7rem;background:rgba(108,99,255,0.06);border-radius:10px;font-size:.8rem">
+        💡 Kontent tahrirlash uchun <a href="kontent.html" style="color:#a78bfa">Mavzular boshqaruvi</a>ga o'ting
+      </div>`;
+    }
+    drawTopicsChart(ALL_TOPICS);
+  } catch(e) {
+    body.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:#ff6584">❌ ${e.message||'Xatolik'}</td></tr>`;
+  }
+}
+
+// ── SUBMISSIONS (real API) ────────────────────────────────────
+async function renderSubmissions() {
+  const body = document.getElementById('submissionsBody');
+  if (!body) return;
+  body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">⏳ Yuklanmoqda...</td></tr>';
+  try {
+    const res = await api.get('/courses/submissions/?ordering=-submitted_at&page_size=30');
+    const subs = res?.results || (Array.isArray(res) ? res : []);
+    body.innerHTML = '';
+    if (!subs.length) {
+      body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1rem;color:var(--muted)">Hali submission yo\'q</td></tr>';
+      return;
+    }
+    subs.forEach(s => {
+      const st = (s.status||'').toLowerCase();
+      const result = st === 'accepted' ? 'pass'
+        : (st === 'pending' || st === 'running' || st === 'processing') ? 'pending'
+        : 'fail';
+      const resColor = {pass:'#43e97b', fail:'#ff6584', pending:'#ffd700'}[result];
+      const resLabel = {pass:"✓ O'tdi", fail:'✗ Xato', pending:'⏳ Kutmoqda'}[result];
+      const studentName = s.student_name || s.user_name || (s.user ? `#${s.user}` : '—');
+      const taskTitle = s.task_title || (s.task ? `Task #${s.task}` : '—');
+      const execTime = s.execution_time ? `${parseFloat(s.execution_time).toFixed(2)}s` : (st==='time_limit_exceeded'?'TLE':'—');
+      const date = s.submitted_at
+        ? new Date(s.submitted_at).toLocaleString('uz-UZ', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+        : '—';
+      body.innerHTML += `<tr>
+        <td style="font-size:.75rem;color:var(--muted)">#${s.id}</td>
+        <td style="font-weight:600">${studentName}</td>
+        <td style="font-size:.8rem">${taskTitle}</td>
+        <td><span style="background:rgba(108,99,255,0.1);color:#a78bfa;font-size:.72rem;font-weight:700;padding:.12rem .4rem;border-radius:5px">C#</span></td>
+        <td><span style="color:${resColor};font-weight:700;font-size:.8rem">${resLabel}</span></td>
+        <td style="font-size:.8rem;color:var(--muted)">${execTime}</td>
+        <td style="font-size:.75rem;color:var(--muted)">${date}</td>
+      </tr>`;
+    });
+    // Count by result from loaded page
+    const passCount = subs.filter(s=>(s.status||'').toLowerCase()==='accepted').length;
+    const failCount = subs.filter(s=>!['accepted','pending','running','processing'].includes((s.status||'').toLowerCase())).length;
+    const pendCount = subs.filter(s=>['pending','running','processing'].includes((s.status||'').toLowerCase())).length;
+    const p = document.getElementById('subStatPass'); if(p) p.textContent = res?.count ? `${passCount}+` : passCount;
+    const f = document.getElementById('subStatFail'); if(f) f.textContent = `${failCount}+`;
+    const pd = document.getElementById('subStatPending'); if(pd) pd.textContent = pendCount;
+    const tot = document.getElementById('subStatTotal'); if(tot && res?.count) tot.textContent = res.count.toLocaleString();
+    // Also update overview stat
+    const statSub = document.getElementById('statSubmissions');
+    if (statSub && res?.count) statSub.textContent = res.count.toLocaleString();
+    const cSub = document.getElementById('chipSubmissions');
+    if (cSub && res?.count) cSub.textContent = res.count.toLocaleString();
+  } catch(e) {
+    body.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:#ff6584">❌ ${e.message||'Xatolik'}</td></tr>`;
+  }
+}
+
+// ── REPORTS ─────────────────────────────────────────────────
+function renderReports(){
+  const el=document.getElementById('reportsList');
+  if(!el)return;
+  const reports=[
+    {type:'spam',user:'Jasur T.',desc:"Klan chatida spam xabarlar yuboryapti",severity:'warn',date:'1 soat oldin'},
+    {type:'cheat',user:'Noma\'lum',desc:"IP 192.168.1.45 dan bir nechta akkount orqali ovoz berish",severity:'error',date:'3 soat oldin'},
+    {type:'abuse',user:'Sardor K.',desc:"Duel paytida haqoratli so'z ishlatish",severity:'warn',date:'Kecha'},
+    {type:'bug',user:'Kamola M.',desc:"Leaderboard sahifasi telefonda to'g'ri ko'rinmayapti",severity:'info',date:'2 kun oldin'},
+    {type:'other',user:'Feruza A.',desc:"Mavzu 7 da savol noto'g'ri tuzilgan, 2-variant ikki to'g'ri javobli",severity:'info',date:'3 kun oldin'},
+  ];
+  el.innerHTML='';
+  const sev={error:{bg:'rgba(255,101,132,0.06)',bc:'rgba(255,101,132,0.2)',col:'#ff6584',lbl:'⚠️ Jiddiy'},warn:{bg:'rgba(255,215,0,0.05)',bc:'rgba(255,215,0,0.15)',col:'#ffd700',lbl:'⚡ Ogohlantirish'},info:{bg:'rgba(108,99,255,0.05)',bc:'rgba(108,99,255,0.15)',col:'#a78bfa',lbl:'ℹ️ Ma\'lumot'}};
+  reports.forEach(r=>{
+    const s=sev[r.severity];
+    el.innerHTML+=`<div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.2rem;background:${s.bg};border:1px solid ${s.bc};border-radius:14px">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem">
+          <span style="font-size:.65rem;font-weight:700;padding:.12rem .45rem;border-radius:5px;background:${s.bg};color:${s.col};border:1px solid ${s.bc}">${s.lbl}</span>
+          <span style="font-size:.78rem;font-weight:600">Foydalanuvchi: ${r.user}</span>
+          <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${r.date}</span>
+        </div>
+        <div style="font-size:.83rem;color:var(--muted)">${r.desc}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        <button class="btn btn-outline btn-sm">Ko'rish</button>
+        <button class="btn btn-sm" style="background:rgba(67,233,123,0.1);color:#43e97b;border:1px solid rgba(67,233,123,0.2)">Hal qilish</button>
+      </div>
+    </div>`;
+  });
+}
+
+// ── EXPORT ──────────────────────────────────────────────────
+function renderExport(){
+  const el=document.getElementById('reportGrid');
+  if(!el||el.children.length)return;
+  const reports=[
+    {name:"Talabalar reytingi",icon:"📊",meta:"Barcha talabalar Rating va Academic Score",badge:"Excel/PDF",bc:'rgba(108,99,255,0.15)',bcolor:'#a78bfa'},
+    {name:"Mavzular tahlili",icon:"📚",meta:"45 ta mavzu bo'yicha to'liq statistika",badge:"Excel",bc:'rgba(67,233,123,0.12)',bcolor:'#43e97b'},
+    {name:"Faollik hisoboti",icon:"⚡",meta:"Haftalik va oylik faollik ko'rsatkichlari",badge:"PDF",bc:'rgba(255,215,0,0.1)',bcolor:'#ffd700'},
+    {name:"Kod topshiriqlar",icon:"💻",meta:"Barcha submission natijalari va statistika",badge:"CSV",bc:'rgba(255,101,132,0.1)',bcolor:'#ff6584'},
+    {name:"Klan reytingi",icon:"🏰",meta:"Klan ball va faollik hisoboti",badge:"Excel",bc:'rgba(251,146,60,0.1)',bcolor:'#fb923c'},
+    {name:"O'qituvchi hisoboti",icon:"👨‍🏫",meta:"O'qituvchilar faoliyati va guruh natijalari",badge:"PDF",bc:'rgba(96,165,250,0.1)',bcolor:'#60a5fa'},
+  ];
+  reports.forEach(r=>{
+    el.innerHTML+=`<div class="report-card">
+      <div class="rc-icon">${r.icon}</div>
+      <div class="rc-name">${r.name}</div>
+      <div class="rc-meta">${r.meta}</div>
+      <span class="rc-badge" style="background:${r.bc};color:${r.bcolor}">${r.badge}</span>
+    </div>`;
+  });
+}
+
+// ── LOGS ────────────────────────────────────────────────────
+const logsData=[
+  {level:'success',icon:'li-login',emoji:'🔐',text:'<strong>Bobur N.</strong> tizimga kirdi (IP: 192.168.1.12)',time:'14:42:15'},
+  {level:'success',icon:'li-submit',emoji:'💻',text:'Submission #48230 muvaffaqiyatli bajarildi (0.8s)',time:'14:41:03'},
+  {level:'info',icon:'li-register',emoji:'🎓',text:'Yangi talaba <strong>Nodira O.</strong> ro\'yxatdan o\'tdi',time:'14:38:22'},
+  {level:'warn',icon:'li-report',emoji:'⚠️',text:'Redis memory 78% dan oshdi — monitoring jarayonida',time:'14:35:10'},
+  {level:'info',icon:'li-login',emoji:'🔐',text:'<strong>Sarvar K.</strong> (o\'qituvchi) tizimga kirdi',time:'14:30:05'},
+  {level:'error',icon:'li-system',emoji:'🔴',text:'Judge0 timeout: submission_id=48228 (TLE)',time:'14:28:44'},
+  {level:'info',icon:'li-submit',emoji:'💻',text:'100 ta yangi submission qayta ishlandi',time:'14:25:00'},
+  {level:'success',icon:'li-badge',emoji:'🏅',text:'<strong>Azizbek T.</strong> "Streak Champion" nishonini oldi',time:'14:20:33'},
+  {level:'warn',icon:'li-report',emoji:'🚨',text:'Shikoyat kelib tushdi: spam (user: jasur_t)',time:'14:15:48'},
+  {level:'info',icon:'li-system',emoji:'⚙️',text:'Avtomatik zaxira nusxa yaratildi (DB backup)',time:'14:00:00'},
+  {level:'success',icon:'li-submit',emoji:'💻',text:'Klan urushi yakunlandi: Alpha Coders vs Beta Devs',time:'13:55:20'},
+  {level:'info',icon:'li-login',emoji:'🔐',text:'87 ta faol sessiya hozir platformada',time:'13:50:00'},
+];
+function renderLogs(){
+  const el=document.getElementById('fullLogFeed');
+  if(!el||el.children.length)return;
+  const llMap={success:'ll-success',info:'ll-info',warn:'ll-warn',error:'ll-error'};
+  const llLabel={success:'SUCCESS',info:'INFO',warn:'WARN',error:'ERROR'};
+  logsData.forEach(l=>{
+    el.innerHTML+=`<div class="log-item">
+      <div class="log-icon ${l.icon}">${l.emoji}</div>
+      <div class="log-body">
+        <div class="log-text"><span class="log-level ${llMap[l.level]}">${llLabel[l.level]}</span>${l.text}</div>
+        <div class="log-time">Bugun ${l.time}</div>
+      </div>
+    </div>`;
+  });
+}
+
+// ── RECENT LOG (overview) ────────────────────────────────────
+function renderRecentLog(){
+  const el=document.getElementById('recentLog');
+  if(!el)return;
+  const llMap={success:'ll-success',info:'ll-info',warn:'ll-warn',error:'ll-error'};
+  logsData.slice(0,7).forEach(l=>{
+    el.innerHTML+=`<div class="log-item">
+      <div class="log-icon ${l.icon}">${l.emoji}</div>
+      <div class="log-body">
+        <div class="log-text" style="font-size:.8rem">${l.text}</div>
+        <div class="log-time">${l.time}</div>
+      </div>
+    </div>`;
+  });
+}
+renderRecentLog();
+
+// ── LEVEL DISTRIBUTION (from leaderboard) ────────────────────
+function renderLevelDist(students) {
+  const ldEl = document.getElementById('levelDist');
+  if (!ldEl) return;
+  const levelColors = {
+    recruit:'#8892b0', warden:'#60a5fa', knight:'#a78bfa',
+    hero:'#ffd700', legend:'#ff6584', lord:'#fb923c', deity:'#f43f5e', titan:'#e11d48'
+  };
+  const levelOrder = ['recruit','warden','knight','hero','legend','lord','deity','titan'];
+  const counts = {};
+  students.forEach(u => {
+    const lv = (u.level||'recruit').toLowerCase();
+    counts[lv] = (counts[lv]||0)+1;
+  });
+  const total = students.length || 1;
+  ldEl.innerHTML = '';
+  levelOrder.forEach(lv => {
+    const cnt = counts[lv] || 0;
+    if (!cnt && lv !== 'recruit') return; // hide empty levels (except recruit)
+    const pct = Math.round(cnt/total*100);
+    const col = levelColors[lv] || '#8892b0';
+    ldEl.innerHTML += `<div style="display:flex;align-items:center;gap:.6rem;font-size:.8rem">
+      <span style="min-width:62px;font-weight:600;color:${col}">${capFirst(lv)}</span>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${col};border-radius:3px"></div>
+      </div>
+      <span style="color:var(--muted);min-width:40px;text-align:right">${cnt}</span>
+    </div>`;
+  });
+}
+
+// ── TOP STUDENTS (from leaderboard) ──────────────────────────
+function renderTopStudents(top5) {
+  const tsEl = document.getElementById('topStudents');
+  if (!tsEl) return;
+  const posEmoji = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+  tsEl.innerHTML = '';
+  top5.forEach((s,i) => {
+    const name = s.full_name || s.username || 'Noma\'lum';
+    const initials = name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
+    tsEl.innerHTML += `<div style="display:flex;align-items:center;gap:.7rem;padding:.45rem 0">
+      <span style="font-size:.9rem;width:20px">${posEmoji[i]||'🔹'}</span>
+      <div class="av-sm" style="background:${gradFor(name)}">${initials}</div>
+      <div style="flex:1">
+        <div style="font-size:.83rem;font-weight:600">${name}</div>
+        <div style="font-size:.7rem;color:var(--muted)">${capFirst(s.level||'recruit')}</div>
+      </div>
+      <span style="font-size:.83rem;font-weight:700;color:#a78bfa">${s.rating_score||0}</span>
+    </div>`;
+  });
+}
+
+// ── OVERVIEW INIT (real API) ──────────────────────────────────
+async function initOverview() {
+  try {
+    // Leaderboard: students with rating_score, level, academic_score
+    const lb = await api.leaderboard();
+    const students = lb?.results || (Array.isArray(lb) ? lb : []);
+
+    const totalStudents = students.length;
+    const avgAcademic = totalStudents
+      ? (students.reduce((s,u)=>s+(u.academic_score||0),0)/totalStudents).toFixed(1)
+      : '—';
+    const sorted = [...students].sort((a,b)=>(b.rating_score||0)-(a.rating_score||0));
+    const topRating = sorted[0]?.rating_score || '—';
+    const atRisk = students.filter(u=>(u.academic_score||0)<50).length;
+
+    // Update chips
+    const cs = document.getElementById('chipStudents');
+    if (cs) cs.textContent = totalStudents;
+    const cavg = document.getElementById('chipAvgScore');
+    if (cavg) cavg.textContent = avgAcademic;
+    const ctr = document.getElementById('chipTopRating');
+    if (ctr) ctr.textContent = topRating;
+
+    // Update stat boxes
+    const ss = document.getElementById('statStudents');
+    if (ss) ss.textContent = totalStudents;
+    const ssub = document.getElementById('statStudentsSub');
+    if (ssub) ssub.textContent = `Liderborddagi talabalar`;
+    const sa = document.getElementById('statAvgAcademic');
+    if (sa) sa.textContent = avgAcademic;
+    const satRisk = document.getElementById('statAtRisk');
+    if (satRisk) satRisk.textContent = atRisk;
+
+    // Render dynamic panels
+    renderLevelDist(students);
+    renderTopStudents(sorted.slice(0,5));
+    drawPieChart(totalStudents, 0, 0); // teachers/admins unknown from leaderboard
+
+    // Try to get teachers count separately
+    try {
+      const res = await api.get('/auth/users/?role=teacher&page_size=1');
+      const tCount = res?.count || 0;
+      const stT = document.getElementById('statTeachers');
+      if (stT) stT.textContent = tCount;
+      const stTs = document.getElementById('statTeachersSub');
+      if (stTs) stTs.textContent = 'Ro\'yxatdagi o\'qituvchilar';
+      const cu = document.getElementById('chipUsers');
+      if (cu) cu.textContent = totalStudents + tCount;
+      drawPieChart(totalStudents, tCount, 0);
+    } catch { /* teachers count unavailable */ }
+
+    // Submissions count
+    try {
+      const res2 = await api.get('/courses/submissions/?page_size=1');
+      const subCount = res2?.count || 0;
+      const csub = document.getElementById('chipSubmissions');
+      if (csub) csub.textContent = subCount.toLocaleString();
+      const ssubs = document.getElementById('statSubmissions');
+      if (ssubs) ssubs.textContent = subCount.toLocaleString();
+    } catch { /* submissions count unavailable */ }
+
+    // Clans
+    try {
+      const res3 = await api.get('/game/clans/?page_size=1');
+      const clanCount = res3?.count || 0;
+      const sclans = document.getElementById('statClans');
+      if (sclans) sclans.textContent = clanCount;
+      const sclansSub = document.getElementById('statClansSub');
+      if (sclansSub) sclansSub.textContent = `Jami: ${clanCount} ta klan`;
+    } catch { /* clans unavailable */ }
+
+  } catch(e) {
+    console.error('Overview init xatosi:', e);
+  }
+}
+
+// ── PIE CHART (dynamic) ───────────────────────────────────────
+function drawPieChart(nStudents, nTeachers, nAdmins) {
+  const c = document.getElementById('pieChart');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const total = (nStudents + nTeachers + nAdmins) || 1;
+  const slices = [
+    {v: nStudents, col:'#43e97b'},
+    {v: nTeachers, col:'#6c63ff'},
+    {v: nAdmins,   col:'#ff6584'},
+  ];
+  ctx.clearRect(0,0,c.width,c.height);
+  let start = -Math.PI/2;
+  const cx=100, cy=95, r=70;
+  slices.forEach(s => {
+    const angle = 2*Math.PI*s.v/total;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,start+angle); ctx.closePath();
+    ctx.fillStyle = s.col; ctx.fill();
+    ctx.strokeStyle = 'rgba(15,22,40,0.8)'; ctx.lineWidth = 2; ctx.stroke();
+    start += angle;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.55,0,Math.PI*2); ctx.fillStyle='#0f1628'; ctx.fill();
+  ctx.fillStyle='var(--text)'; ctx.font='bold 14px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(total, cx, cy-8);
+  ctx.fillStyle='rgba(136,146,176,0.8)'; ctx.font='10px Segoe UI'; ctx.fillText('Jami', cx, cy+10);
+  // Update legend
+  const pct = v => total ? `${v} (${(v/total*100).toFixed(1)}%)` : `${v}`;
+  const plS = document.getElementById('pieLblStudent'); if(plS) plS.textContent = pct(nStudents);
+  const plT = document.getElementById('pieLblTeacher'); if(plT) plT.textContent = pct(nTeachers);
+  const plA = document.getElementById('pieLblAdmin');   if(plA) plA.textContent = pct(nAdmins);
+}
+
+// ── FEATURE TOGGLES ──────────────────────────────────────────
+const toggles=[
+  {name:'Duel rejimi',desc:'Talabalar o\'rtasida duel',on:true},
+  {name:'AI tavsiyalar',desc:'GPT asosida shaxsiy tavsiyalar',on:true},
+  {name:'Peer Review',desc:'O\'zaro baholash moduli',on:true},
+  {name:'Klan urushlar',desc:'Klanlar o\'rtasida musobaqa',on:true},
+  {name:'OTP tasdiqlash',desc:'Email orqali tasdiqlash',on:false},
+  {name:'Diagnostik test',desc:'Kirish testi',on:true},
+];
+const ftEl=document.getElementById('featureToggles');
+if(ftEl){
+  toggles.forEach(t=>{
+    ftEl.innerHTML+=`<div class="toggle-row">
+      <div class="toggle-info"><div class="tl">${t.name}</div><div class="ts">${t.desc}</div></div>
+      <div class="toggle ${t.on?'on':''}" onclick="this.classList.toggle('on')"></div>
+    </div>`;
+  });
+}
+
+// ── MODALS ────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')}));
+
+// ── CANVAS CHARTS ─────────────────────────────────────────────
+// Activity chart
+(function(){
+  const c=document.getElementById('activityChart');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
+  const subs=[820,1240,980,1560,1340,1890,2100,1780,2300,2050,2400,2200,2341];
+  const users=[45,68,52,84,72,95,110,88,120,102,115,108,87];
+  const labels=['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13'];
+  const pad={l:50,r:20,t:20,b:30};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const maxS=2500,minS=0,maxU=130,minU=0;
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=pad.t+iH*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();}
+  // subs bars
+  const bW=iW/labels.length*0.45;
+  subs.forEach((v,i)=>{
+    const x=pad.l+(iW/(labels.length))*(i+0.1);
+    const bH=iH*(v/maxS);
+    const grad=ctx.createLinearGradient(0,pad.t+iH-bH,0,pad.t+iH);
+    grad.addColorStop(0,'rgba(108,99,255,0.7)');grad.addColorStop(1,'rgba(108,99,255,0.15)');
+    ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(x,pad.t+iH-bH,bW,bH,2);ctx.fill();
+  });
+  // users line
+  const uPts=users.map((v,i)=>({x:pad.l+(iW/(labels.length))*(i+0.325),y:pad.t+iH*(1-(v-minU)/(maxU-minU))}));
+  ctx.beginPath();ctx.strokeStyle='#43e97b';ctx.lineWidth=2;
+  uPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
+  uPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle='#43e97b';ctx.fill();});
+  // labels
+  ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='center';
+  labels.forEach((l,i)=>ctx.fillText(l,pad.l+(iW/(labels.length))*(i+0.325),H-6));
+  // y axis
+  ctx.textAlign='right';
+  for(let i=0;i<=4;i++){ctx.fillText(Math.round(maxS*(1-i/4)),pad.l-5,pad.t+iH*i/4+4);}
+})();
+
+// Pie chart is now drawn dynamically by drawPieChart() inside initOverview()
+
+// Topics chart: drawn when topics section is opened and data loaded
+function drawTopicsChart(topics) {
+  const c = document.getElementById('topicsChart');
+  if (!c || !topics?.length) return;
+  const ctx = c.getContext('2d');
+  c.width = c.offsetWidth * devicePixelRatio; c.height = c.offsetHeight * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  const W = c.offsetWidth/devicePixelRatio, H = c.offsetHeight/devicePixelRatio;
+  const semColors = {'1':'#6c63ff','2':'#43e97b','3':'#ff6584'};
+  const semCounts = {};
+  topics.forEach(t => {
+    const sem = String(t.module_number || t.module || 1);
+    semCounts[sem] = (semCounts[sem]||0)+1;
+  });
+  const sems = Object.keys(semCounts).sort();
+  const vals = sems.map(s => semCounts[s]);
+  const labels = sems.map(s => s+'-Sem');
+  const pad = {l:40,r:15,t:15,b:30};
+  const iW = W-pad.l-pad.r, iH = H-pad.t-pad.b;
+  const maxV = Math.max(...vals, 1);
+  ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=pad.t+iH*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();}
+  const bW = iW/sems.length*0.55;
+  sems.forEach((s,i) => {
+    const x = pad.l + (iW/sems.length)*(i+0.2);
+    const bH = iH*(vals[i]/maxV);
+    const col = semColors[s]||'#a78bfa';
+    const grad = ctx.createLinearGradient(0,pad.t+iH-bH,0,pad.t+iH);
+    grad.addColorStop(0,col); grad.addColorStop(1,col+'33');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.roundRect(x,pad.t+iH-bH,bW,bH,3); ctx.fill();
+    ctx.fillStyle='rgba(136,146,176,0.8)'; ctx.font='10px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText(labels[i], x+bW/2, H-5);
+    ctx.fillStyle=col; ctx.font='bold 11px Segoe UI';
+    ctx.fillText(vals[i], x+bW/2, pad.t+iH-bH-5);
+  });
+  ctx.fillStyle='rgba(136,146,176,0.7)'; ctx.font='9px Segoe UI'; ctx.textAlign='right';
+  for(let i=0;i<=4;i++){ctx.fillText(Math.round(maxV*(1-i/4)),pad.l-4,pad.t+iH*i/4+4);}
+}
+
+// Server chart
+function drawServerChart(){
+  const c=document.getElementById('serverChart');
+  if(!c||c.dataset.drawn)return;
+  c.dataset.drawn='1';
+  const ctx=c.getContext('2d');
+  c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
+  const cpu=[28,32,25,40,35,38,34,42,30,36,34,32,34];
+  const ram=[55,58,60,62,59,61,63,65,61,62,60,61,61];
+  const pad={l:25,r:10,t:10,b:25};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const drawLine=(data,col)=>{
+    const pts=data.map((v,i)=>({x:pad.l+iW*i/(data.length-1),y:pad.t+iH*(1-v/100)}));
+    ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=1.5;
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
+  };
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=pad.t+iH*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();}
+  drawLine(cpu,'#43e97b');drawLine(ram,'#60a5fa');
+  ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='9px Segoe UI';ctx.textAlign='left';
+  ctx.fillText('CPU',pad.l+3,pad.t+iH*(1-cpu[0]/100)-5);
+  ctx.fillText('RAM',pad.l+3,pad.t+iH*(1-ram[0]/100)-5);
+}
+
+// ── Block / Unblock ──────────────────────────────────────────────────────────
+async function toggleBlock(userId, currentStatus, btn) {
+  const isBlocked = currentStatus === 'suspended';
+  const action    = isBlocked ? 'unblock' : 'block';
+  const confirm_  = window.confirm(isBlocked
+    ? 'Bu foydalanuvchini blokdan chiqarmoqchimisiz?'
+    : 'Bu foydalanuvchini bloklamoqchimisiz?'
+  );
+  if (!confirm_) return;
+
+  btn.disabled = true;
+  try {
+    if (isBlocked) {
+      await api.unblockUser(userId);
+      btn.textContent = '🚫';
+      btn.title = 'Bloklash';
+      // statusni yangilash
+      const statusSpan = btn.closest('tr')?.querySelector('.status-dot');
+      const statusTxt  = btn.closest('tr')?.querySelector('[class*="sd-"]');
+      if (statusSpan) statusSpan.className = 'status-dot sd-active';
+    } else {
+      await api.blockUser(userId);
+      btn.textContent = '✅';
+      btn.title = 'Blokdan chiqarish';
+      const statusSpan = btn.closest('tr')?.querySelector('.status-dot');
+      if (statusSpan) statusSpan.className = 'status-dot sd-suspended';
+    }
+  } catch(e) {
+    alert('Xatolik: ' + (e.message || 'Noma\'lum'));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+// Load overview on page start (leaderboard, stats, top students, level dist)
+initOverview();
+// Pre-load users for the users section
+renderUsersTable();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

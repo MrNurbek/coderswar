@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title,.topbar-left h2{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;transition:transform .3s}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .sb-user .info .name{font-size:.88rem;font-weight:600}
+    .sb-user .info .role{font-size:.72rem;color:var(--muted)}
+    .logout-btn{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.3rem;border-radius:8px;transition:color .2s}
+    .logout-btn:hover{color:var(--accent2)}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-left h2{font-size:1.05rem;font-weight:700}
+    .topbar-left .breadcrumb{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .topbar-right{display:flex;align-items:center;gap:1rem}
+    .notif-btn{position:relative;background:var(--card);border:1px solid var(--border);border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:border-color .2s}
+    .notif-btn:hover{border-color:var(--accent)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--accent2);border:2px solid var(--bg2)}
+    .search-bar{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;display:flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.85rem;cursor:text;transition:border-color .2s;min-width:180px}
+    .search-bar:hover{border-color:var(--accent)}
+    .content{padding:2rem;flex:1}
+
+    /* ── STATS ROW ── */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem}
+    @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+    .stat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+    .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .stat-box::after{content:attr(data-icon);position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:.08}
+    .stat-box .label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem}
+    .stat-box .value{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:.3rem}
+    .stat-box .sub{font-size:.78rem;color:var(--muted)}
+    .stat-box .trend{font-size:.75rem;font-weight:600;margin-top:.3rem}
+    .trend-up{color:#43e97b}.trend-down{color:#ff6584}
+
+    /* ── GRID LAYOUT ── */
+    .grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    .grid-1-1{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:1000px){.grid-2-1,.grid-1-1{grid-template-columns:1fr}}
+
+    /* ── CARD ── */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+    .card-title{font-size:.95rem;font-weight:700}
+    .card-action{font-size:.8rem;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none}
+    .card-action:hover{text-decoration:underline}
+
+    /* ── TRAJECTORY CHART ── */
+    .chart-wrap{position:relative;height:160px}
+    canvas.chart{width:100%;height:100%}
+
+    /* ── RADAR CHART ── */
+    .radar-wrap{display:flex;align-items:center;justify-content:center;padding:.5rem 0}
+
+    /* ── TOPIC PROGRESS ── */
+    .topic-list{display:flex;flex-direction:column;gap:.6rem}
+    .topic-item{display:flex;align-items:center;gap:.9rem;padding:.7rem .9rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;transition:border-color .2s;cursor:pointer}
+    .topic-item:hover{border-color:var(--accent)}
+    .t-num{width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#a79fff;flex-shrink:0}
+    .t-info{flex:1;min-width:0}
+    .t-name{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .t-bar-wrap{display:flex;align-items:center;gap:.5rem;margin-top:.25rem}
+    .t-bar{flex:1;height:4px;background:rgba(255,255,255,0.07);border-radius:2px}
+    .t-bar-fill{height:100%;border-radius:2px}
+    .t-pct{font-size:.72rem;color:var(--muted);white-space:nowrap}
+    .t-score{font-size:.88rem;font-weight:700;flex-shrink:0}
+    .t-status{font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:6px;flex-shrink:0}
+    .s-completed{background:rgba(67,233,123,0.15);color:#43e97b}
+    .s-inprogress{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .s-locked{background:rgba(255,255,255,0.06);color:var(--muted)}
+    .s-available{background:rgba(255,215,0,0.12);color:var(--gold)}
+
+    /* ── LEVEL CARD ── */
+    .level-display{text-align:center;padding:.5rem 0}
+    .level-badge-big{display:inline-block;font-size:3.5rem;margin-bottom:.5rem;filter:drop-shadow(0 4px 12px rgba(108,99,255,0.4))}
+    .level-name{font-size:1.4rem;font-weight:900;margin-bottom:.3rem;background:linear-gradient(135deg,#ffd700,#ffa500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .level-range{font-size:.8rem;color:var(--muted);margin-bottom:1rem}
+    .xp-track{height:10px;background:rgba(255,255,255,0.07);border-radius:5px;margin-bottom:.5rem;overflow:hidden}
+    .xp-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#ffd700,#ff8c00);transition:width 1s ease}
+    .xp-info{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+    /* ── CHARACTER DISPLAY ── */
+    .char-display{margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border)}
+    .char-row{display:flex;align-items:center;gap:.9rem}
+    .char-ava{font-size:2.4rem;filter:drop-shadow(0 4px 10px rgba(108,99,255,0.35));flex-shrink:0}
+    .char-info .char-nm{font-size:.95rem;font-weight:800;margin-bottom:.3rem}
+    .char-info .char-en{font-size:.72rem;color:var(--muted);margin-bottom:.5rem}
+    .char-weapons{display:flex;flex-wrap:wrap;gap:.3rem}
+    .w-chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:.18rem .55rem;font-size:.72rem;color:var(--text)}
+
+    /* ── BADGES ── */
+    .badges-grid{display:flex;flex-wrap:wrap;gap:.7rem}
+    .badge-chip{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.6rem .8rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;cursor:pointer;transition:border-color .2s;min-width:58px}
+    .badge-chip:hover{border-color:var(--accent)}
+    .badge-chip .bi{font-size:1.6rem}
+    .badge-chip .bn{font-size:.65rem;color:var(--muted);text-align:center}
+    .badge-chip.locked{opacity:.35;filter:grayscale(1)}
+
+    /* ── ACTIVITY FEED ── */
+    .activity-list{display:flex;flex-direction:column;gap:.6rem}
+    .act-item{display:flex;align-items:flex-start;gap:.8rem;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+    .act-item:last-child{border-bottom:none}
+    .act-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .ai-quiz{background:rgba(66,153,225,0.15)}
+    .ai-code{background:rgba(67,233,123,0.15)}
+    .ai-badge{background:rgba(255,215,0,0.15)}
+    .ai-duel{background:rgba(255,101,132,0.15)}
+    .ai-topic{background:rgba(108,99,255,0.15)}
+    .act-info .at{font-size:.83rem;font-weight:500}
+    .act-info .at strong{color:var(--text)}
+    .act-info .time{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+
+    /* ── AI SUGGESTIONS ── */
+    .ai-list{display:flex;flex-direction:column;gap:.7rem}
+    .ai-item{display:flex;gap:.8rem;padding:.8rem;background:rgba(108,99,255,0.05);border:1px solid rgba(108,99,255,0.15);border-radius:12px}
+    .ai-item .ai-ic{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}
+    .ai-item .ai-text{font-size:.83rem;line-height:1.6;color:var(--muted)}
+    .ai-item .ai-text strong{color:var(--text)}
+
+    /* ── STREAK ── */
+    .streak-row{display:flex;gap:.4rem;flex-wrap:wrap}
+    .day-dot{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;transition:transform .2s}
+    .day-dot:hover{transform:scale(1.1)}
+    .dd-active{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff}
+    .dd-today{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#000}
+    .dd-empty{background:rgba(255,255,255,0.06);color:var(--muted)}
+    .dd-miss{background:rgba(255,101,132,0.15);color:#ff8fab}
+
+    /* ── MOBILE ── */
+    .mob-toggle{display:none;position:fixed;top:.9rem;left:1rem;z-index:60;background:var(--bg2);border:1px solid var(--border);border-radius:10px;width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem}
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%)}
+      .sidebar.open{transform:none}
+      .main{margin-left:0}
+      .mob-toggle{display:flex}
+      .content{padding:1rem}
+    }
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:45}
+    .overlay.show{display:block}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/dashboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<button class="mob-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html">⚔️ Coders War</a>
+    <div class="sub">Algoritmik tillar va dasturlash</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item active" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review <span class="badge" id="notifBadge" style="display:none">0</span></a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
+    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="avatar" data-user-init>?</div>
+      <div class="info">
+        <div class="name" data-user-name>...</div>
+        <div class="role" data-user-role>Student</div>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2>Dashboard</h2>
+      <div class="breadcrumb" id="topbarGreet">Xush kelibsiz! · Ma'lumot yuklanmoqda...</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">🔍 <span>Qidirish...</span></div>
+      <div class="notif-btn" onclick="window.location.href='/profile.html'">🔔<div class="notif-dot" id="notifDot" style="display:none"></div></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-box" data-icon="⭐">
+        <div class="label">Rating Score</div>
+        <div class="value" id="statRating" style="background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
+        <div class="sub">/ 4500 maksimal</div>
+      </div>
+      <div class="stat-box" data-icon="📈">
+        <div class="label">Academic Score</div>
+        <div class="value" id="statAcademic" style="background:linear-gradient(135deg,#43e97b,#38f9d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
+        <div class="sub">/ 100 o'rtacha</div>
+      </div>
+      <div class="stat-box" data-icon="📚">
+        <div class="label">Mavzular</div>
+        <div class="value" id="statTopics" style="background:linear-gradient(135deg,#ffd700,#ffa500);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
+        <div class="sub">/ 45 yakunlangan</div>
+      </div>
+      <div class="stat-box" data-icon="🔥">
+        <div class="label">Streak</div>
+        <div class="value" id="statStreak" style="background:linear-gradient(135deg,#ff6584,#ff8fab);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
+        <div class="sub" id="statMaxStreak">kun uzluksiz</div>
+      </div>
+    </div>
+
+    <!-- TRAJECTORY + LEVEL -->
+    <div class="grid-2-1">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📊 O'quv Trayektoriyasi</span>
+          <a class="card-action" href="/trajectory.html">To'liq ko'rish</a>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🏆 Daraja</span>
+        </div>
+        <div class="level-display">
+          <div class="level-badge-big" id="levelIcon">🛡️</div>
+          <div class="level-name" id="levelName">—</div>
+          <div class="level-range" id="levelRange">—</div>
+          <div class="xp-track">
+            <div class="xp-fill" id="xpFill" style="width:0%"></div>
+          </div>
+          <div class="xp-info">
+            <span id="xpCurrent">—</span>
+            <span id="xpLeft">—</span>
+          </div>
+          <!-- Personaj -->
+          <div class="char-display" id="charDisplay" style="display:none">
+            <div class="char-row">
+              <div class="char-ava" id="charAva">⚔️</div>
+              <div class="char-info">
+                <div class="char-nm" id="charName">—</div>
+                <div class="char-en" id="charEn">—</div>
+                <div class="char-weapons" id="charWeapons"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOPICS + RADAR -->
+    <div class="grid-2-1">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📚 Mavzular holati</span>
+          <a class="card-action" href="mainquest.html">Barchasi →</a>
+        </div>
+        <div class="topic-list" id="topicList"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🎯 4 Mezon Tahlili</span>
+        </div>
+        <div class="radar-wrap">
+          <canvas id="radarChart" width="220" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI + ACTIVITY + BADGES -->
+    <div class="grid-1-1">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🤖 AI Tavsiyalar</span>
+        </div>
+        <div class="ai-list">
+          <div class="ai-item"><div class="ai-ic">💡</div><div class="ai-text"><strong>Refleksiv-baholovchi mezon</strong> (max 20 ball) bo'yicha ballingiz pastroq. Har mavzu yakunida refleksiya formasi va peer-review'ni to'ldirishga e'tibor bering.</div></div>
+          <div class="ai-item"><div class="ai-ic">⚡</div><div class="ai-text"><strong>Faoliyatli mezon</strong> (max 30 ball) — amaliy topshiriqlar avtomatik, loyiha esa o'qituvchi tomonidan baholanadi (max 10 ball).</div></div>
+          <div class="ai-item"><div class="ai-ic">🏆</div><div class="ai-text"><strong>Kognitiv mezon</strong> (max 35 ball) uchun barcha 3 darajadagi testlarni yaxshi natija bilan topshiring — boshlang'ich (5), o'rta (15), yuqori va o'sish (15).</div></div>
+          <div class="ai-item"><div class="ai-ic">🎯</div><div class="ai-text">Keyingi mavzuga o'tishdan oldin joriy mavzu <strong>peer-review</strong> va <strong>refleksiya</strong>sini yakunlang — RE mezon 20 ballgacha beradi.</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">⚡ So'nggi Faoliyat</span>
+          <a class="card-action" href="profile.html">Barchasi</a>
+        </div>
+        <div class="activity-list">
+          <div class="act-item"><div class="act-icon ai-code">💻</div><div class="act-info"><div class="at"><strong>9-mavzu</strong> assignment #7 qabul qilindi</div><div class="time">10 daqiqa avval</div></div></div>
+          <div class="act-item"><div class="act-icon ai-quiz">📝</div><div class="act-info"><div class="at"><strong>9-mavzu</strong> quiz 18/20 natija</div><div class="time">1 soat avval</div></div></div>
+          <div class="act-item"><div class="act-icon ai-badge">🏅</div><div class="act-info"><div class="at"><strong>"Code Warrior"</strong> badge olindi</div><div class="time">Bugun, 14:22</div></div></div>
+          <div class="act-item"><div class="act-icon ai-duel">⚔️</div><div class="act-info"><div class="at"><strong>Duel</strong> — Javlon U. ni yutdingiz!</div><div class="time">Kecha, 20:15</div></div></div>
+          <div class="act-item"><div class="act-icon ai-topic">📚</div><div class="act-info"><div class="at"><strong>8-mavzu</strong> yakunlandi · 91 ball</div><div class="time">Kecha, 16:40</div></div></div>
+          <div class="act-item"><div class="act-icon ai-code">💻</div><div class="act-info"><div class="at"><strong>8-mavzu</strong> mini-loyiha topshirildi</div><div class="time">2 kun avval</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BADGES + STREAK -->
+    <div class="grid-1-1">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🏅 Nishonlar (Badges)</span>
+          <a class="card-action" href="profile.html">Barchasi</a>
+        </div>
+        <div class="badges-grid">
+          <div class="badge-chip"><div class="bi">🥇</div><div class="bn">First Blood</div></div>
+          <div class="badge-chip"><div class="bi">💻</div><div class="bn">Code Warrior</div></div>
+          <div class="badge-chip"><div class="bi">⚡</div><div class="bn">Speed Coder</div></div>
+          <div class="badge-chip"><div class="bi">🔥</div><div class="bn">On Fire</div></div>
+          <div class="badge-chip"><div class="bi">🧠</div><div class="bn">Big Brain</div></div>
+          <div class="badge-chip"><div class="bi">⚔️</div><div class="bn">Duelist</div></div>
+          <div class="badge-chip locked"><div class="bi">👑</div><div class="bn">Legend</div></div>
+          <div class="badge-chip locked"><div class="bi">🚀</div><div class="bn">Titan</div></div>
+          <div class="badge-chip locked"><div class="bi">🏰</div><div class="bn">Clan Lord</div></div>
+          <div class="badge-chip locked"><div class="bi">🎯</div><div class="bn">Perfectionist</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📅 Faollik Tarqalishi (30 kun)</span>
+        </div>
+        <div class="streak-row" id="streakRow"></div>
+        <div style="margin-top:1rem;display:flex;gap:1rem;font-size:.78rem;color:var(--muted)">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#6c63ff,#a78bfa);margin-right:4px"></span>Faol kun</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#43e97b,#38f9d7);margin-right:4px"></span>Bugun</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(255,101,132,0.3);margin-right:4px"></span>O'tkazilgan</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+const LEVEL_META = {
+  recruit: {icon:'🗡️', range:'0–300'},   warden: {icon:'🛡️', range:'301–750'},
+  knight:  {icon:'⚔️', range:'751–1300'}, hero:   {icon:'🦸', range:'1301–1900'},
+  legend:  {icon:'🌟', range:'1901–2600'},lord:   {icon:'👑', range:'2601–3350'},
+  deity:   {icon:'✨', range:'3351–4050'},titan:  {icon:'🏔️', range:'4051–4500'},
+};
+const CHAR_DATA = {
+  warrior:    {avatar:'⚔️', name:'Jangchi',      en:'Warrior',    weapons:['⚔️ Qilich','🏹 Nayza','🛡️ Zirh']},
+  ranger:     {avatar:'🏹', name:'Sarguzashtchi', en:'Ranger',     weapons:['🏹 Nayza','👟 Etik','🥋 Engil Zirh']},
+  sorceress:  {avatar:'🔮', name:'Sehrgar Ayol',  en:'Sorceress',  weapons:['🪄 Tayoqcha','💍 Uzuk']},
+  knight:     {avatar:'🛡️', name:'Ritsar',        en:'Knight',     weapons:['⚔️ Qilich','🛡️ Qalqon','🏰 Zirh']},
+  ladyknight: {avatar:'⚜️', name:'Ayol Ritsar',   en:'Lady Knight',weapons:['⚔️ Qilich','🛡️ Qalqon','🏰 Zirh','💍 Uzuk']},
+};
+const SCORE_COLOR = s => s>=85?'#43e97b':s>=70?'#4299e1':s>=60?'#ffa500':'#ff6584';
+const BAR_GRAD    = s => s>=85?'linear-gradient(90deg,#43e97b,#38f9d7)':s>=70?'linear-gradient(90deg,#4299e1,#63b3ed)':'linear-gradient(90deg,#ffa500,#ffd700)';
+
+async function loadDashboard() {
+  Auth.fillUserUI();
+
+  try {
+    // Parallel yuklash
+    const [user, scores, badges, notifs] = await Promise.all([
+      api.me(),
+      api.scores(),
+      api.myBadges().catch(() => []),
+      api.notifications().catch(() => []),
+    ]);
+
+    // localStorage yangilaymiz (personaj o'zgarishi uchun)
+    Auth.setUser(user);
+
+    const sp = user.student_profile || {};
+    const rating  = sp.rating_score  || 0;
+    const streak  = sp.current_streak || 0;
+    const maxStr  = sp.max_streak     || 0;
+    const lvl     = sp.level || 'recruit';
+    const lvlPct  = sp.level_pct || 0;
+    const lm      = LEVEL_META[lvl] || LEVEL_META.recruit;
+
+    // Greeting
+    const name = user.full_name || user.username || 'Talaba';
+    const active = scores.find(s => !s.is_completed && s.total_score > 0);
+    const greetSub = active ? `· "${active.topic_title || 'Mavzu'}" davom etmoqda` : '';
+    setText('topbarGreet', `Xush kelibsiz, ${name}! ${greetSub}`);
+
+    // Bildirishnomalar soni
+    const unread = Array.isArray(notifs) ? notifs.filter(n => !n.is_read).length : 0;
+    if (unread > 0) {
+      const dot  = document.getElementById('notifDot');
+      const badge = document.getElementById('notifBadge');
+      if (dot)  dot.style.display  = '';
+      if (badge){ badge.style.display = ''; badge.textContent = unread > 9 ? '9+' : unread; }
+    }
+
+    // Stats
+    const completed = scores.filter(s => s.is_completed).length;
+    const avgScore  = scores.length
+      ? Math.round(scores.reduce((a,s) => a + s.total_score, 0) / scores.length)
+      : 0;
+
+    setText('statRating',   rating);
+    setText('statAcademic', avgScore);
+    setText('statTopics',   completed);
+    setText('statStreak',   streak);
+    setText('statMaxStreak','Rekord: ' + maxStr + ' kun');
+
+    // Level
+    const LEVEL_NAMES = {
+      recruit:'Yangi Askar', warden:'Navbatchi', knight:'Ritsar',
+      hero:'Qahramon', legend:'Afsona', lord:'Lord', deity:'Imperator', titan:'Titan',
+    };
+    setText('levelName',  LEVEL_NAMES[lvl] || lvl);
+    setText('levelRange',  lm.range + ' Rating Score');
+    setText('levelIcon',   lm.icon);
+    document.getElementById('xpFill').style.width = lvlPct + '%';
+    setText('xpCurrent', rating + ' ball');
+    const hiStr = lm.range.split('–')[1] || '300';
+    const loBound = parseInt(hiStr.replace(/\D/g,'')) || 300;
+    setText('xpLeft', loBound - rating > 0 ? (loBound - rating) + ' qoldi' : 'Maksimal!');
+
+    // Topic ro'yxati (real nomlar bilan)
+    renderTopics(scores);
+
+    // Radar chart — to'liq FA = avtomatik + o'qituvchi (loyiha)
+    //               to'liq RE = avtomatik + o'qituvchi (peer-review)
+    const avgMo = avgField(scores,'mo_score');
+    const avgKo = avgField(scores,'ko_score');
+    const avgFa = avgField(scores,'fa_score') + avgField(scores,'fa_project_score');
+    const avgRe = avgField(scores,'re_score')  + avgField(scores,'re_peer_score');
+    drawRadar([avgMo, avgKo, avgFa, avgRe]);
+    drawLine(scores);
+
+    // Personaj
+    renderCharacter(sp.character);
+
+    // Badges
+    renderBadges(badges);
+
+    // Streak
+    drawStreak(streak);
+
+  } catch (err) {
+    console.error('Dashboard yuklanmadi:', err);
+  }
+}
+
+function renderCharacter(charId) {
+  const c = CHAR_DATA[charId] || CHAR_DATA.warrior;
+  const wrap = document.getElementById('charDisplay');
+  if (!wrap) return;
+  document.getElementById('charAva').textContent     = c.avatar;
+  document.getElementById('charName').textContent    = c.name;
+  document.getElementById('charEn').textContent      = c.en;
+  document.getElementById('charWeapons').innerHTML   =
+    c.weapons.map(w => `<span class="w-chip">${w}</span>`).join('');
+  wrap.style.display = 'block';
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function avgField(scores, field) {
+  if (!scores.length) return 0;
+  return scores.reduce((a, s) => a + (s[field] || 0), 0) / scores.length;
+}
+
+function renderTopics(scores) {
+  const list = document.getElementById('topicList');
+  if (!list) return;
+  if (!scores.length) {
+    list.innerHTML = '<div style="color:var(--muted);padding:1rem;text-align:center">Hali mavzu boshlalmagan</div>';
+    return;
+  }
+  // Faol va jarayondagi mavzularni birinchi, so'ng yakunlanganlar
+  const sorted = [...scores].sort((a, b) => {
+    const pa = !a.is_completed && a.total_score > 0 ? 0 : a.is_completed ? 2 : 1;
+    const pb = !b.is_completed && b.total_score > 0 ? 0 : b.is_completed ? 2 : 1;
+    return pa - pb || (a.topic_number || 0) - (b.topic_number || 0);
+  });
+  const show = sorted.slice(0, 10);
+  list.innerHTML = show.map(t => {
+    const pct   = t.total_score || 0;
+    const done  = t.is_completed;
+    const actv  = !done && pct > 0;
+    const st    = done ? 'completed' : actv ? 'inprogress' : 'available';
+    const label = done ? 'Yakunlandi' : actv ? 'Jarayonda' : 'Ochiq';
+    const num   = t.topic_number || t.topic;
+    const title = t.topic_title  || `Mavzu ${num}`;
+    // O'qituvchi baholanishini kutayotgan mavzu
+    const needsGrading = pct > 0 && ((t.fa_project_score ?? 0) === 0 || (t.re_peer_score ?? 0) === 0);
+    return `<div class="topic-item" onclick="window.location.href='/mainquest.html'">
+      <div class="t-num">${num}</div>
+      <div class="t-info">
+        <div class="t-name">${title}${needsGrading ? ' <span style="font-size:.62rem;color:#ffa500;font-weight:600">⏳ baholanmoqda</span>' : ''}</div>
+        <div class="t-bar-wrap">
+          <div class="t-bar"><div class="t-bar-fill" style="width:${pct}%;background:${pct?BAR_GRAD(pct):'rgba(255,255,255,0.1)'}"></div></div>
+          <div class="t-pct">${pct ? pct + '/100' : ''}</div>
+        </div>
+      </div>
+      ${pct ? `<div class="t-score" style="color:${SCORE_COLOR(pct)}">${pct}</div>` : ''}
+      <div class="t-status s-${st}">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderBadges(badges) {
+  const wrap = document.querySelector('.badges-grid');
+  if (!wrap || !badges.length) return;
+  wrap.innerHTML = badges.map(b => `
+    <div class="badge-chip">
+      <div class="bi">${b.badge?.icon || '🏅'}</div>
+      <div class="bn">${b.badge?.name || 'Badge'}</div>
+    </div>`).join('');
+}
+
+function drawStreak(streak) {
+  const row = document.getElementById('streakRow');
+  if (!row) return;
+  row.innerHTML = Array.from({length:30},(_,i) => {
+    const day = 30 - i;
+    const cls = day === 1 ? 'dd-today' : day <= streak ? 'dd-active' : 'dd-empty';
+    return `<div class="day-dot ${cls}" title="${day}-kun avval">${day}</div>`;
+  }).reverse().join('');
+}
+
+/* ── LINE CHART (real scores) ── */
+function drawLine(scores) {
+  const canvas = document.getElementById('lineChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight; }
+  resize();
+  window.addEventListener('resize', ()=>{resize(); draw();});
+  const data = scores.slice(-10).map(s => s.total_score || 0);
+  const labels = scores.slice(-10).map((_,i) => 'M'+(i+1));
+  function draw(){
+    if (!data.length) return;
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    const pad={t:20,r:20,b:30,l:35};
+    const gw=W-pad.l-pad.r, gh=H-pad.t-pad.b;
+    const min=0, max=100;
+    const xs=data.map((_,i)=>pad.l+(data.length>1?i/(data.length-1):0.5)*gw);
+    const ys=data.map(s=>pad.t+gh-(s-min)/(max-min)*gh);
+    [25,50,75,100].forEach(v=>{
+      const y=pad.t+gh-(v-min)/(max-min)*gh;
+      ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y);
+      ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1; ctx.stroke();
+      ctx.fillStyle='rgba(136,146,176,0.6)'; ctx.font='10px Segoe UI'; ctx.textAlign='right';
+      ctx.fillText(v,pad.l-5,y+4);
+    });
+    const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
+    grad.addColorStop(0,'rgba(108,99,255,0.25)'); grad.addColorStop(1,'rgba(108,99,255,0)');
+    ctx.beginPath(); ctx.moveTo(xs[0],ys[0]);
+    xs.forEach((_,i)=>{ if(i>0) ctx.lineTo(xs[i],ys[i]); });
+    ctx.lineTo(xs[xs.length-1],H-pad.b); ctx.lineTo(xs[0],H-pad.b); ctx.closePath();
+    ctx.fillStyle=grad; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(xs[0],ys[0]);
+    xs.forEach((_,i)=>{ if(i>0) ctx.lineTo(xs[i],ys[i]); });
+    ctx.strokeStyle='#6c63ff'; ctx.lineWidth=2.5; ctx.lineJoin='round'; ctx.stroke();
+    xs.forEach((x,i)=>{
+      ctx.beginPath(); ctx.arc(x,ys[i],5,0,Math.PI*2); ctx.fillStyle='#6c63ff'; ctx.fill();
+      ctx.beginPath(); ctx.arc(x,ys[i],3,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+      ctx.fillStyle='rgba(136,146,176,0.7)'; ctx.font='10px Segoe UI'; ctx.textAlign='center';
+      ctx.fillText(labels[i],x,H-pad.b+14);
+    });
+  }
+  draw();
+}
+
+/* ── RADAR CHART (real mezon) ── */
+function drawRadar(values) {
+  const canvas = document.getElementById('radarChart');
+  if (!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const cx=W/2, cy=H/2, r=Math.min(W,H)/2-30;
+  const labels=['Motivatsion','Kognitiv','Faoliyatli','Refleksiv'];
+  const maxVals=[15,30,35,20];
+  const n=labels.length;
+  const getXY=(i,frac)=>{
+    const a=(-Math.PI/2)+(i/n)*2*Math.PI;
+    return {x:cx+Math.cos(a)*r*frac, y:cy+Math.sin(a)*r*frac};
+  };
+  [.25,.5,.75,1].forEach(f=>{
+    ctx.beginPath();
+    for(let i=0;i<n;i++){const{x,y}=getXY(i,f);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.closePath(); ctx.strokeStyle=f===1?'rgba(108,99,255,0.3)':'rgba(255,255,255,0.06)'; ctx.lineWidth=1; ctx.stroke();
+  });
+  for(let i=0;i<n;i++){
+    const{x,y}=getXY(i,1);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y);
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  const fracs=values.map((v,i)=>Math.min(1,v/maxVals[i]));
+  ctx.beginPath();
+  for(let i=0;i<n;i++){const{x,y}=getXY(i,fracs[i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+  ctx.closePath();
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+  g.addColorStop(0,'rgba(108,99,255,0.4)'); g.addColorStop(1,'rgba(108,99,255,0.1)');
+  ctx.fillStyle=g; ctx.fill();
+  ctx.strokeStyle='#6c63ff'; ctx.lineWidth=2; ctx.stroke();
+  for(let i=0;i<n;i++){
+    const{x,y}=getXY(i,fracs[i]);
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fillStyle='#a78bfa'; ctx.fill();
+  }
+  ctx.font='bold 10px Segoe UI'; ctx.fillStyle='rgba(136,146,176,0.9)'; ctx.textAlign='center';
+  for(let i=0;i<n;i++){
+    const{x,y}=getXY(i,1.22);
+    ctx.fillText(labels[i],x,y+4);
+  }
+}
+
+loadDashboard();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Duel Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--red:#ff6584;--green:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .info .name{font-size:.88rem;font-weight:600}
+    .info .role{font-size:.72rem;color:var(--muted)}
+    /* main */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar h2{font-size:1.05rem;font-weight:700}
+    .topbar .bc{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+
+    /* LOBBY SCREEN */
+    #lobbyScreen{padding:2rem;flex:1}
+    /* arena banner */
+    .arena-banner{background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(255,101,132,0.12) 0%,rgba(108,99,255,0.08) 60%,transparent 100%);border:1px solid rgba(255,101,132,0.2);border-radius:28px;padding:2.5rem 2rem;text-align:center;margin-bottom:2rem;position:relative;overflow:hidden}
+    .arena-banner::before,.arena-banner::after{content:'⚔️';position:absolute;font-size:8rem;opacity:.04;top:50%;transform:translateY(-50%)}
+    .arena-banner::before{left:-1rem}
+    .arena-banner::after{right:-1rem}
+    .arena-banner .tag{display:inline-block;background:rgba(255,101,132,0.15);border:1px solid rgba(255,101,132,0.3);color:#ff8fab;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .9rem;border-radius:20px;margin-bottom:1rem}
+    .arena-banner h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;margin-bottom:.5rem}
+    .arena-banner h1 span{background:linear-gradient(135deg,#ff6584,#6c63ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .arena-banner p{color:var(--muted);font-size:.95rem;max-width:520px;margin:0 auto 1.5rem;line-height:1.7}
+    .arena-stats{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+    .as-item{text-align:center}
+    .as-num{font-size:1.8rem;font-weight:900}
+    .as-label{font-size:.75rem;color:var(--muted)}
+    .btn-find{background:linear-gradient(135deg,#ff6584,#ff8fab);color:#fff;border:none;padding:1rem 2.5rem;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(255,101,132,0.4);transition:transform .2s,box-shadow .2s}
+    .btn-find:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,101,132,0.5)}
+    /* duel types */
+    .duel-types{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-bottom:2rem}
+    @media(max-width:700px){.duel-types{grid-template-columns:1fr}}
+    .dtype-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+    .dtype-card:hover,.dtype-card.chosen{border-color:var(--red);transform:translateY(-3px);background:rgba(255,101,132,0.06)}
+    .dtype-card.chosen::after{content:'✓';position:absolute;top:.7rem;right:.7rem;background:var(--red);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+    .dtype-icon{font-size:2.5rem;margin-bottom:.7rem}
+    .dtype-card h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+    .dtype-card p{font-size:.8rem;color:var(--muted);line-height:1.5}
+    .dtype-tag{display:inline-block;font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:6px;margin-top:.6rem}
+    /* recent duels */
+    .section-title{font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    @media(max-width:700px){.grid-2{grid-template-columns:1fr}}
+    .recent-list{display:flex;flex-direction:column;gap:.7rem}
+    .duel-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:.9rem;cursor:pointer;transition:border-color .2s}
+    .duel-item:hover{border-color:var(--accent)}
+    .di-result{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;flex-shrink:0}
+    .res-win{background:rgba(67,233,123,0.15);color:#43e97b}
+    .res-loss{background:rgba(255,101,132,0.12);color:#ff6584}
+    .res-draw{background:rgba(255,165,0,0.12);color:#ffa500}
+    .di-info{flex:1}
+    .di-name{font-size:.85rem;font-weight:600}
+    .di-meta{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+    .di-score{font-size:.85rem;font-weight:700;flex-shrink:0}
+    /* leaderboard mini */
+    .dlb-list{display:flex;flex-direction:column;gap:.5rem}
+    .dlb-item{display:flex;align-items:center;gap:.8rem;padding:.6rem .8rem;background:rgba(255,255,255,0.03);border-radius:10px}
+    .dlb-rank{font-size:.8rem;font-weight:800;width:20px;text-align:center}
+    .dlb-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.2)}
+    .dlb-name{flex:1;font-size:.82rem;font-weight:500}
+    .dlb-wins{font-size:.78rem;font-weight:700;color:#43e97b}
+
+    /* MATCHMAKING SCREEN */
+    #matchScreen{display:none;flex:1;align-items:center;justify-content:center;padding:2rem;flex-direction:column;text-align:center}
+    .match-card{background:var(--card);border:1px solid var(--border);border-radius:28px;padding:3rem 2.5rem;max-width:500px;width:100%}
+    .match-vs{display:flex;align-items:center;gap:2rem;justify-content:center;margin:2rem 0;flex-wrap:wrap}
+    .match-player{text-align:center}
+    .mp-avatar{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;margin:0 auto .6rem;border:3px solid}
+    .mp-me .mp-avatar{background:rgba(108,99,255,0.15);border-color:var(--accent)}
+    .mp-opp .mp-avatar{background:rgba(255,101,132,0.12);border-color:var(--red);animation:pulse-red 1.5s infinite}
+    @keyframes pulse-red{0%,100%{border-color:var(--red)}50%{border-color:rgba(255,101,132,0.3)}}
+    .mp-name{font-size:.9rem;font-weight:700}
+    .mp-lvl{font-size:.75rem;color:var(--muted)}
+    .vs-badge{font-size:1.4rem;font-weight:900;color:var(--red);padding:.5rem .9rem;background:rgba(255,101,132,0.1);border:1px solid rgba(255,101,132,0.25);border-radius:12px}
+    .match-status{font-size:.9rem;color:var(--muted);margin-bottom.5rem}
+    .match-dots{display:flex;gap:.4rem;justify-content:center;margin:.8rem 0}
+    .match-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:dot-bounce .8s ease-in-out infinite}
+    .match-dot:nth-child(2){animation-delay:.15s}
+    .match-dot:nth-child(3){animation-delay:.3s}
+    @keyframes dot-bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+    .btn-cancel{margin-top:1.5rem;background:transparent;border:1px solid rgba(255,101,132,0.3);color:#ff8fab;padding:.6rem 1.5rem;border-radius:10px;font-size:.85rem;cursor:pointer;transition:all .2s}
+    .btn-cancel:hover{background:rgba(255,101,132,0.08)}
+
+    /* DUEL BATTLE SCREEN */
+    #battleScreen{display:none;flex:1;flex-direction:column;overflow:hidden}
+    .battle-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:.8rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-shrink:0;flex-wrap:wrap}
+    .bh-player{display:flex;align-items:center;gap:.7rem;flex:1}
+    .bh-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;border:2px solid;flex-shrink:0}
+    .bh-name{font-size:.85rem;font-weight:700}
+    .bh-hp{font-size:.72rem;color:var(--muted)}
+    .hp-bar{height:6px;background:rgba(255,255,255,0.07);border-radius:3px;margin-top:.3rem;overflow:hidden;width:100px}
+    .hp-fill{height:100%;border-radius:3px;transition:width .5s}
+    .bh-me .bh-av{background:rgba(108,99,255,0.15);border-color:var(--accent)}
+    .bh-me .hp-fill{background:linear-gradient(90deg,#6c63ff,#a78bfa)}
+    .bh-opp .bh-av{background:rgba(255,101,132,0.12);border-color:var(--red)}
+    .bh-opp .hp-fill{background:linear-gradient(90deg,#ff6584,#ff8fab)}
+    .bh-timer{text-align:center;min-width:80px}
+    .timer-num{font-size:1.6rem;font-weight:900;color:var(--red);line-height:1}
+    .timer-label{font-size:.68rem;color:var(--muted)}
+    .timer-num.warn{animation:pulse-warn .8s infinite}
+    @keyframes pulse-warn{0%,100%{color:var(--red)}50%{color:#ff8fab}}
+    .bh-score{text-align:center;font-size:.9rem;font-weight:800;color:var(--gold);min-width:60px}
+    .bh-opp{flex:1;justify-content:flex-end;text-align:right}
+    /* battle body */
+    .battle-body{flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+    @media(max-width:800px){.battle-body{grid-template-columns:1fr}}
+    .battle-pane{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)}
+    .battle-pane:last-child{border-right:none}
+    .bp-label{background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);padding:.5rem 1rem;font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+    .bp-label .live{background:var(--red);color:#fff;font-size:.6rem;padding:.1rem .4rem;border-radius:4px;animation:blink 1s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+    .task-pane{padding:1.2rem;overflow-y:auto}
+    .duel-task-title{font-size:1rem;font-weight:700;margin-bottom:.6rem}
+    .duel-task-desc{font-size:.87rem;color:var(--muted);line-height:1.7;margin-bottom:.8rem}
+    .duel-code-box{background:rgba(0,0,0,0.4);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:.8rem 1rem;font-family:'Consolas',monospace;font-size:.83rem;color:#a78bfa;line-height:1.7;white-space:pre;margin:.5rem 0;overflow-x:auto}
+    .duel-examples{display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem}
+    .duel-ex{background:rgba(67,233,123,0.05);border:1px solid rgba(67,233,123,0.15);border-radius:8px;padding:.6rem .8rem;font-size:.8rem}
+    .ex-l{font-size:.65rem;font-weight:700;color:#43e97b;margin-bottom:.3rem}
+    .ex-v{font-family:'Consolas',monospace;color:var(--text)}
+    /* code editor pane */
+    .editor-pane{display:flex;flex-direction:column;overflow:hidden}
+    .battle-editor{flex:1;background:#0d1117;display:flex;overflow:hidden}
+    .be-ln{width:36px;background:#0a0f1a;border-right:1px solid rgba(255,255,255,0.05);padding:.6rem 0;display:flex;flex-direction:column;align-items:flex-end;user-select:none;overflow:hidden}
+    .be-ln span{height:20px;line-height:20px;padding-right:.5rem;font-size:.75rem;font-family:'Consolas',monospace;color:rgba(136,146,176,.35)}
+    .be-code{flex:1;background:transparent;border:none;outline:none;color:#e8eaf6;font-family:'Consolas',monospace;font-size:.83rem;line-height:20px;padding:.6rem .5rem;resize:none;tab-size:4;white-space:pre;overflow:auto}
+    .battle-footer{background:var(--bg2);border-top:1px solid var(--border);padding:.6rem 1rem;display:flex;align-items:center;gap:.7rem;flex-shrink:0}
+    .bf-btn{padding:.45rem .9rem;border-radius:9px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .bf-btn:hover{border-color:var(--accent)}
+    .bf-run{background:linear-gradient(135deg,#43e97b,#38f9d7);border-color:transparent;color:#000}
+    .bf-submit{background:linear-gradient(135deg,#ff6584,#ff8fab);border-color:transparent;color:#fff;margin-left:auto}
+    .bf-status{font-size:.75rem;color:var(--muted);margin-left:auto}
+    .opp-status{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted);background:rgba(255,101,132,0.05);border:1px solid rgba(255,101,132,0.15);border-radius:8px;padding:.3rem .7rem}
+    .opp-typing{animation:blink 1.2s infinite}
+
+    /* RESULT SCREEN */
+    #resultScreen{display:none;flex:1;align-items:center;justify-content:center;padding:2rem}
+    .result-wrap{max-width:560px;width:100%;text-align:center}
+    .result-confetti{font-size:3rem;margin-bottom:1rem;animation:bounce 1s ease-in-out infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    .result-card{background:var(--card);border:1px solid var(--border);border-radius:28px;padding:2.5rem;margin-bottom:1rem}
+    .rc-title{font-size:2rem;font-weight:900;margin-bottom:.4rem}
+    .rc-sub{color:var(--muted);margin-bottom:1.5rem}
+    .rc-vs{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+    .rc-player{text-align:center}
+    .rc-av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto .4rem;border:3px solid}
+    .rc-name{font-size:.85rem;font-weight:700}
+    .rc-score{font-size:1.5rem;font-weight:900;margin-top:.3rem}
+    .rc-win .rc-av{border-color:#43e97b;background:rgba(67,233,123,0.1)}
+    .rc-win .rc-score{color:#43e97b}
+    .rc-lose .rc-av{border-color:#ff6584;background:rgba(255,101,132,0.08)}
+    .rc-lose .rc-score{color:#ff6584}
+    .rc-vs-badge{font-size:1.2rem;font-weight:900;color:var(--gold)}
+    .rc-rewards{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+    .rc-reward{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:.7rem 1.2rem;text-align:center}
+    .rc-reward .rv{font-size:1.2rem;font-weight:800;color:#43e97b}
+    .rc-reward .rl{font-size:.7rem;color:var(--muted)}
+    .rc-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+    .rc-btn{padding:.8rem 1.5rem;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;border:none;transition:transform .2s}
+    .rc-btn-main{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;box-shadow:0 4px 18px rgba(108,99,255,.3)}
+    .rc-btn-main:hover{transform:translateY(-2px)}
+    .rc-btn-sec{background:transparent;border:1px solid var(--border)!important;border:1px solid;color:var(--text)}
+
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/duel.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<aside class="sidebar">
+  <div class="sb-logo"><a href="index.html">⚔️ Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
+    <a class="nav-item active" href="duel.html"><span class="icon">⚡</span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="av" data-user-init>?</div>
+      <div class="info"><div class="name" data-user-name>...</div><div class="role" data-user-role>Student</div></div>
+      <button class="logout-btn" onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div><h2>⚔️ Duel Arena</h2><div class="bc">Dashboard › Duel · 12 o'yinchi online</div></div>
+    <div style="display:flex;gap:.6rem;align-items:center">
+      <div style="width:8px;height:8px;border-radius:50%;background:#43e97b;box-shadow:0 0 6px #43e97b"></div>
+      <span style="font-size:.82rem;color:#43e97b;font-weight:600">LIVE</span>
+    </div>
+  </div>
+
+  <!-- LOBBY -->
+  <div id="lobbyScreen">
+    <div class="arena-banner">
+      <div class="tag">⚔️ Real-time Duel Tizimi</div>
+      <h1>Jangga <span>tayyor</span> bo'ling!</h1>
+      <p>Boshqa talabalar bilan real vaqtda algoritmik musobaqa. Tezroq va to'g'riroq yechim topgan g'olib!</p>
+      <div class="arena-stats">
+        <div class="as-item"><div class="as-num" style="color:#43e97b">12</div><div class="as-label">Online o'yinchi</div></div>
+        <div class="as-item"><div class="as-num" style="color:#ff6584">4</div><div class="as-label">Faol duel</div></div>
+        <div class="as-item"><div class="as-num" style="color:var(--gold)">4W 2L</div><div class="as-label">Sizning natija</div></div>
+        <div class="as-item"><div class="as-num" style="color:#a78bfa">+48</div><div class="as-label">Duel ballari</div></div>
+      </div>
+      <button class="btn-find" onclick="findMatch()">⚔️ Raqib topish</button>
+    </div>
+
+    <div class="duel-types">
+      <div class="dtype-card chosen" id="dt0" onclick="selectType(0,this)">
+        <div class="dtype-icon">⚡</div>
+        <h3>Blitz Duel</h3>
+        <p>5 daqiqa. Bir savol. Eng tez yechim g'olib.</p>
+        <span class="dtype-tag" style="background:rgba(67,233,123,0.12);color:#43e97b">Tavsiya etiladi</span>
+      </div>
+      <div class="dtype-card" id="dt1" onclick="selectType(1,this)">
+        <div class="dtype-icon">🧠</div>
+        <h3>Classic Duel</h3>
+        <p>15 daqiqa. 3 ta savol. To'g'rilik va tezlik baholanadi.</p>
+        <span class="dtype-tag" style="background:rgba(108,99,255,0.15);color:#a78bfa">Mashhur</span>
+      </div>
+      <div class="dtype-card" id="dt2" onclick="selectType(2,this)">
+        <div class="dtype-icon">🔥</div>
+        <h3>Survival Duel</h3>
+        <p>30 daqiqa. Savollar tobora qiyinlashadi. Oxirgi tirik qolgan g'olib!</p>
+        <span class="dtype-tag" style="background:rgba(255,101,132,0.12);color:#ff8fab">Qiyin</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="section-title">📜 So'nggi duellar</div>
+        <div class="recent-list" id="recentDuels"></div>
+      </div>
+      <div>
+        <div class="section-title">🏆 Duel reytingi</div>
+        <div class="dlb-list" id="duelLb"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATCHMAKING -->
+  <div id="matchScreen">
+    <div class="match-card">
+      <div style="font-size:.75rem;font-weight:700;color:var(--red);letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem">Raqib qidirilmoqda</div>
+      <div class="match-vs">
+        <div class="match-player mp-me">
+          <div class="mp-avatar" style="background:rgba(108,99,255,.15);border-color:var(--accent)">⚔️</div>
+          <div class="mp-name">Sardor T.</div>
+          <div class="mp-lvl">Knight · 842 ball</div>
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="match-player mp-opp">
+          <div class="mp-avatar" id="oppAvatar">?</div>
+          <div class="mp-name" id="oppName">Qidirilmoqda...</div>
+          <div class="mp-lvl" id="oppLvl">...</div>
+        </div>
+      </div>
+      <div class="match-status" id="matchStatus">Mos raqib qidirilmoqda</div>
+      <div class="match-dots"><div class="match-dot"></div><div class="match-dot"></div><div class="match-dot"></div></div>
+      <button class="btn-cancel" onclick="cancelMatch()">✕ Bekor qilish</button>
+    </div>
+  </div>
+
+  <!-- BATTLE -->
+  <div id="battleScreen">
+    <div class="battle-header">
+      <div class="bh-player bh-me">
+        <div class="bh-av">⚔️</div>
+        <div>
+          <div class="bh-name">Sardor T. <span style="font-size:.7rem;color:#a78bfa">(Sen)</span></div>
+          <div class="bh-hp">HP</div>
+          <div class="hp-bar"><div class="hp-fill bh-me" id="myHp" style="width:100%"></div></div>
+        </div>
+      </div>
+      <div style="text-align:center;flex-shrink:0">
+        <div class="timer-num" id="battleTimer">05:00</div>
+        <div class="timer-label">⚡ Blitz Duel</div>
+        <div class="bh-score" id="battleScore">0 : 0</div>
+      </div>
+      <div class="bh-player bh-opp" style="justify-content:flex-end;flex-direction:row-reverse">
+        <div class="bh-av">🔮</div>
+        <div style="text-align:right">
+          <div class="bh-name">Jasur M.</div>
+          <div class="bh-hp">HP</div>
+          <div class="hp-bar" style="margin-left:auto"><div class="hp-fill bh-opp" id="oppHp" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-body">
+      <div class="battle-pane">
+        <div class="bp-label">📋 Topshiriq <span class="live">LIVE</span></div>
+        <div class="task-pane">
+          <div class="duel-task-title">Saralangan massivdan elementni topish</div>
+          <div class="duel-task-desc">Berilgan tartiblangan massivdan target elementning indeksini toping. Topilmasa -1 qaytaring. <strong>O(log n)</strong> murakkablikda yechim talab etiladi.</div>
+          <div class="duel-code-box">Kiritish: int[] arr = {1,3,5,7,9,11,13}
+          int target = 7
+Chiqarish: 3</div>
+          <div class="duel-examples">
+            <div class="duel-ex"><div class="ex-l">Misol 1</div><div class="ex-v">arr=[2,4,6,8], target=6 → 2</div></div>
+            <div class="duel-ex"><div class="ex-l">Misol 2</div><div class="ex-v">arr=[1,3,5], target=4 → -1</div></div>
+            <div class="duel-ex"><div class="ex-l">Cheklov</div><div class="ex-v">1 ≤ n ≤ 10⁵ · Faqat binary search!</div></div>
+          </div>
+          <div style="margin-top:1rem;padding:.7rem;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.2);border-radius:10px;font-size:.8rem;color:#ffa500">
+            💡 Maslahat: Binary search — O(log n). while(left ≤ right) ...
+          </div>
+          <div style="margin-top:.8rem" id="oppStatusEl">
+            <div class="opp-status"><span class="opp-typing">⌨️</span> <span id="oppStatusTxt">Jasur M. yozmoqda...</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="battle-pane editor-pane">
+        <div class="bp-label">💻 Sizning yechimingiz</div>
+        <div class="battle-editor">
+          <div class="be-ln" id="beLn"></div>
+          <textarea class="be-code" id="battleCode" spellcheck="false" autocomplete="off"
+            oninput="onCodeChange()" onkeydown="handleBattleTab(event)">using System;
+
+class BinarySearch {
+    static int Search(int[] arr, int target) {
+        int left = 0, right = arr.Length - 1;
+
+        // Binary search yozing
+
+        return -1;
+    }
+
+    static void Main() {
+        int[] arr = {1, 3, 5, 7, 9, 11, 13};
+        Console.WriteLine(Search(arr, 7));
+    }
+}</textarea>
+        </div>
+        <div class="battle-footer">
+          <button class="bf-btn bf-run" onclick="battleRun()">▶ Run</button>
+          <span class="bf-status" id="bfStatus">Tayyor</span>
+          <button class="bf-btn bf-submit" onclick="battleSubmit()">⚡ Submit!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultScreen">
+    <div class="result-wrap">
+      <div class="result-confetti" id="rConfetti">🎉</div>
+      <div class="result-card">
+        <div class="rc-title" id="rcTitle">G'alaba!</div>
+        <div class="rc-sub" id="rcSub">Siz raqibingizdan tezroq va to'g'ri yechim topdingi</div>
+        <div class="rc-vs">
+          <div class="rc-player rc-win">
+            <div class="rc-av">⚔️</div>
+            <div class="rc-name">Sardor T.</div>
+            <div class="rc-score" id="myFinalScore">1</div>
+          </div>
+          <div class="rc-vs-badge">VS</div>
+          <div class="rc-player rc-lose">
+            <div class="rc-av">🔮</div>
+            <div class="rc-name">Jasur M.</div>
+            <div class="rc-score" id="oppFinalScore">0</div>
+          </div>
+        </div>
+        <div class="rc-rewards">
+          <div class="rc-reward"><div class="rv">+12</div><div class="rl">Rating ball</div></div>
+          <div class="rc-reward"><div class="rv">+1</div><div class="rl">G'alaba</div></div>
+          <div class="rc-reward"><div class="rv">⚔️</div><div class="rl">Duelist badge</div></div>
+          <div class="rc-reward"><div class="rv">🔥</div><div class="rl">Streak +1</div></div>
+        </div>
+        <div class="rc-btns">
+          <button class="rc-btn rc-btn-main" onclick="playAgain()">⚔️ Yana o'ynash</button>
+          <button class="rc-btn rc-btn-sec" onclick="window.location.href='dashboard.html'" style="border:1px solid var(--border)">🏠 Dashboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+Auth.fillUserUI();
+
+// ── WebSocket + Duel state ────────────────────────────────────────────────
+let duelWS      = null;   // WebSocket instance
+let currentDuel = null;   // REST API dan qaytgan duel obj
+let battleTimerInt = null;
+let seconds = 300;
+let codeUpdateTimer = null;  // debounce
+
+// WS URL (API_BASE'dan protokol olinadi)
+function wsBase() {
+  const proto = (API_BASE || '').startsWith('https') ? 'wss' : 'ws';
+  const host  = (API_BASE || window.location.origin).replace(/^https?:\/\//, '').replace(/\/api\/?$/, '');
+  return `${proto}://${host}`;
+}
+
+// ── So'nggi duellar (API) ─────────────────────────────────────────────────
+async function loadRecentDuels() {
+  const RES={win:{cls:'res-win',lbl:"G'"},loss:{cls:'res-loss',lbl:'M'},draw:{cls:'res-draw',lbl:'D'}};
+  try {
+    const list = await api.duels();
+    const arr  = Array.isArray(list) ? list : (list.results || []);
+    if (!arr.length) {
+      document.getElementById('recentDuels').innerHTML =
+        '<div style="color:var(--muted);padding:.8rem;text-align:center">Hali duel o\'ynamagansiz</div>';
+      return;
+    }
+    const me = Auth.getUser()?.username || '';
+    document.getElementById('recentDuels').innerHTML = arr.slice(0,6).map(d => {
+      const isCh  = d.challenger_username === me;
+      const opp   = isCh ? (d.opponent_username || '?') : (d.challenger_username || '?');
+      const win   = d.winner_username === me;
+      const lose  = d.winner_username && d.winner_username !== me;
+      const res   = !d.winner_username ? 'draw' : (win ? 'win' : 'loss');
+      const topic = d.task_title || '—';
+      return `<div class="duel-item">
+        <div class="di-result ${RES[res].cls}">${RES[res].lbl}</div>
+        <div class="di-info">
+          <div class="di-name">⚔️ ${opp}</div>
+          <div class="di-meta">${topic}</div>
+        </div>
+        <div class="di-score" style="color:${res==='win'?'#43e97b':res==='loss'?'#ff6584':'#ffa500'}">${d.status || ''}</div>
+      </div>`;
+    }).join('');
+  } catch {
+    // Xatolik — static ma'lumot
+  }
+}
+
+// ── Leaderboard (API) ─────────────────────────────────────────────────────
+async function loadDuelLb() {
+  try {
+    const data = await api.leaderboard();
+    const arr  = Array.isArray(data) ? data : (data.results || []);
+    const me   = Auth.getUser()?.username || '';
+    document.getElementById('duelLb').innerHTML = arr.slice(0,6).map((d,i) => `
+      <div class="dlb-item" style="${d.username===me?'background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px':''}">
+        <div class="dlb-rank" style="color:${i<3?'#ffd700':'var(--muted)'}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
+        <div class="dlb-av">⚔️</div>
+        <div class="dlb-name">${d.full_name || d.username}${d.username===me?' ←':''}</div>
+        <div class="dlb-wins">${d.rating_score || 0} ball</div>
+      </div>`).join('');
+  } catch {}
+}
+
+function selectType(i,el){
+  document.querySelectorAll('.dtype-card').forEach(c=>c.classList.remove('chosen'));
+  el.classList.add('chosen');
+}
+
+// ── MATCHMAKING (real API) ────────────────────────────────────────────────
+async function findMatch() {
+  document.getElementById('lobbyScreen').style.display='none';
+  document.getElementById('matchScreen').style.display='flex';
+  document.getElementById('matchStatus').textContent='Duel yaratilmoqda...';
+  document.getElementById('oppAvatar').textContent='?';
+  document.getElementById('oppName').textContent='Raqib kutilmoqda...';
+
+  try {
+    // Duel yaratish (random topshiriq bilan)
+    currentDuel = await api.createDuel({});
+    if (!currentDuel) throw new Error('Duel yaratilmadi');
+
+    document.getElementById('matchStatus').textContent='Raqib kutilmoqda...';
+
+    // WebSocket ga ulanish
+    connectDuelWS(currentDuel.room_id);
+
+    // ready signali yuborish (3 soniyadan so'ng)
+    setTimeout(() => {
+      if (duelWS && duelWS.readyState === WebSocket.OPEN) {
+        duelWS.send(JSON.stringify({ type: 'ready' }));
+      }
+    }, 2000);
+
+  } catch(e) {
+    document.getElementById('matchStatus').textContent='❌ ' + (e.message || 'Xatolik');
+    setTimeout(() => {
+      document.getElementById('matchScreen').style.display='none';
+      document.getElementById('lobbyScreen').style.display='block';
+    }, 2000);
+  }
+}
+
+async function cancelMatch() {
+  if (duelWS) { duelWS.close(); duelWS = null; }
+  if (currentDuel?.id) {
+    try { await api.cancelDuel(currentDuel.id); } catch {}
+  }
+  currentDuel = null;
+  document.getElementById('matchScreen').style.display='none';
+  document.getElementById('lobbyScreen').style.display='block';
+}
+
+// ── WEBSOCKET ─────────────────────────────────────────────────────────────
+function connectDuelWS(roomId) {
+  const token = Auth.getAccess();
+  const url   = `${wsBase()}/ws/duel/${roomId}/?token=${token}`;
+  duelWS = new WebSocket(url);
+
+  duelWS.onopen = () => {
+    console.log('[Duel WS] connected');
+  };
+
+  duelWS.onmessage = (evt) => {
+    let msg;
+    try { msg = JSON.parse(evt.data); } catch { return; }
+    handleWSMessage(msg);
+  };
+
+  duelWS.onerror = () => {
+    showToast('❌ WebSocket xatoligi. Ulanish uzildi.');
+  };
+
+  duelWS.onclose = () => {
+    console.log('[Duel WS] disconnected');
+  };
+}
+
+function handleWSMessage(msg) {
+  switch (msg.type) {
+    case 'connected':
+      console.log('[WS] Connected as', msg.user);
+      break;
+
+    case 'opponent_ready':
+      document.getElementById('matchStatus').textContent='Raqib tayyor! Jang boshlanmoqda...';
+      document.getElementById('oppAvatar').textContent='⚔️';
+      setTimeout(startBattle, 800);
+      break;
+
+    case 'opponent_code':
+      // Raqib kodini ekranda ko'rsatish (read-only)
+      const oppArea = document.getElementById('oppCode');
+      if (oppArea) oppArea.textContent = msg.code || '';
+      document.getElementById('oppStatusTxt').textContent='Raqib yozmoqda...';
+      break;
+
+    case 'opponent_submitted':
+      document.getElementById('oppStatusTxt').textContent='⚡ Raqib submission yubordi!';
+      showToast('⚡ Raqib kodni yubordi!');
+      break;
+
+    case 'submission_received':
+      document.getElementById('bfStatus').textContent='⏳ Tekshirilmoqda (Judge0)...';
+      break;
+
+    case 'duel_result':
+      const me     = Auth.getUser()?.username || '';
+      const isWin  = msg.winner === me;
+      showResult(isWin, msg);
+      break;
+
+    case 'error':
+      showToast('❌ ' + (msg.message || 'Server xatosi'));
+      break;
+  }
+}
+
+// ── BATTLE ────────────────────────────────────────────────────────────────
+function startBattle() {
+  document.getElementById('matchScreen').style.display='none';
+  document.getElementById('battleScreen').style.display='flex';
+
+  if (currentDuel?.task_title) {
+    const taskEl = document.getElementById('battleTaskTitle');
+    if (taskEl) taskEl.textContent = currentDuel.task_title;
+  }
+
+  updateBattleLines();
+  startBattleTimer();
+
+  // ready signali
+  if (duelWS && duelWS.readyState === WebSocket.OPEN) {
+    duelWS.send(JSON.stringify({ type: 'ready' }));
+  }
+}
+
+function startBattleTimer() {
+  battleTimerInt = setInterval(() => {
+    seconds--;
+    const m = Math.floor(seconds/60).toString().padStart(2,'0');
+    const s = (seconds%60).toString().padStart(2,'0');
+    const el = document.getElementById('battleTimer');
+    if (el) { el.textContent=`${m}:${s}`; if(seconds<=60) el.classList.add('warn'); }
+    if (seconds <= 0) { clearInterval(battleTimerInt); battleSubmit(); }
+  }, 1000);
+}
+
+function battleRun() {
+  document.getElementById('bfStatus').textContent='Ishga tushirilmoqda...';
+  setTimeout(() => document.getElementById('bfStatus').textContent='✅ Sintaksis OK', 800);
+}
+
+function battleSubmit() {
+  clearInterval(battleTimerInt);
+  const code = document.getElementById('battleCode')?.value || '';
+  document.getElementById('bfStatus').textContent='⏳ Yuklanmoqda...';
+
+  if (duelWS && duelWS.readyState === WebSocket.OPEN) {
+    duelWS.send(JSON.stringify({ type: 'submit', code }));
+  } else {
+    showToast('❌ WebSocket ulanmagan!');
+  }
+}
+
+function battleSurrender() {
+  if (!confirm('Taslim bo\'lishni xohlaysizmi?')) return;
+  clearInterval(battleTimerInt);
+  if (duelWS && duelWS.readyState === WebSocket.OPEN) {
+    duelWS.send(JSON.stringify({ type: 'surrender' }));
+  }
+}
+
+// Kod o'zgarishi — debounce bilan raqibga yuborish
+function onCodeChange() {
+  updateBattleLines();
+  clearTimeout(codeUpdateTimer);
+  codeUpdateTimer = setTimeout(() => {
+    const code = document.getElementById('battleCode')?.value || '';
+    if (duelWS && duelWS.readyState === WebSocket.OPEN) {
+      duelWS.send(JSON.stringify({ type: 'code_update', code }));
+    }
+  }, 500);
+}
+
+// ── RESULT ────────────────────────────────────────────────────────────────
+function showResult(win, msg = {}) {
+  clearInterval(battleTimerInt);
+  document.getElementById('battleScreen').style.display='none';
+  document.getElementById('resultScreen').style.display='flex';
+
+  const winPts  = msg.win_pts  || (win ? 12 : 0);
+  const losePts = msg.lose_pts || (win ? 0  : 5);
+  const me      = Auth.getUser()?.username || '';
+
+  if (win) {
+    document.getElementById('rConfetti').textContent='🎉';
+    document.getElementById('rcTitle').textContent='G\'alaba!';
+    document.getElementById('rcSub').textContent='Siz birinchi bo\'lib vazifani muvaffaqiyatli bajardingiz!';
+    document.getElementById('myFinalScore').style.color='#43e97b';
+    document.getElementById('oppFinalScore').style.color='#ff6584';
+    document.getElementById('myFinalScore').textContent=msg.scores?.challenger || 1;
+    document.getElementById('oppFinalScore').textContent=msg.scores?.opponent  || 0;
+    document.querySelectorAll('.rc-reward')[0].querySelector('.rv').textContent='+'+winPts;
+  } else {
+    document.getElementById('rConfetti').textContent='😤';
+    document.getElementById('rcTitle').textContent="Mag'lubiyat";
+    document.getElementById('rcSub').textContent='Keyingi marta tezroq bo\'ling!';
+    document.querySelector('.rc-player:first-child').className='rc-player rc-lose';
+    document.querySelector('.rc-player:last-child').className='rc-player rc-win';
+    document.getElementById('myFinalScore').style.color='#ff6584';
+    document.getElementById('oppFinalScore').style.color='#43e97b';
+    document.getElementById('myFinalScore').textContent=msg.scores?.challenger || 0;
+    document.getElementById('oppFinalScore').textContent=msg.scores?.opponent  || 1;
+    document.querySelectorAll('.rc-reward')[0].querySelector('.rv').textContent='-'+losePts;
+    document.querySelectorAll('.rc-reward')[0].querySelector('.rl').textContent='Rating ball';
+  }
+
+  // WS yopamiz
+  if (duelWS) { duelWS.close(); duelWS = null; }
+}
+
+function playAgain() {
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('lobbyScreen').style.display='block';
+  seconds = 300;
+  currentDuel = null;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText='position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1f3a;border:1px solid rgba(255,101,132,0.4);border-radius:14px;padding:.75rem 1.2rem;font-size:.85rem;font-weight:600;z-index:999;animation:fi .3s ease;box-shadow:0 8px 30px rgba(0,0,0,.3)';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2800);
+}
+const _s=document.createElement('style');
+_s.textContent='@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
+document.head.appendChild(_s);
+
+/* Editor lines */
+function updateBattleLines(){
+  const ta=document.getElementById('battleCode');
+  const ln=document.getElementById('beLn');
+  if(ta && ln) ln.innerHTML=ta.value.split('\n').map((_,i)=>`<span>${i+1}</span>`).join('');
+}
+function handleBattleTab(e){
+  if(e.key==='Tab'){e.preventDefault();const t=e.target;const s=t.selectionStart;t.value=t.value.substring(0,s)+'    '+t.value.substring(t.selectionEnd);t.selectionStart=t.selectionEnd=s+4;updateBattleLines();}
+}
+
+// ── Sahifa yuklanishi ─────────────────────────────────────────────────────
+(async function init() {
+  await Promise.all([loadRecentDuels(), loadDuelLb()]);
+  updateBattleLines();
+})();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

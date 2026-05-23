@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Trayektoriya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .sb-user .info .name{font-size:.88rem;font-weight:600}
+    .sb-user .info .role{font-size:.72rem;color:var(--muted)}
+    .logout-btn{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.3rem;border-radius:8px;transition:color .2s}
+    .logout-btn:hover{color:var(--accent2)}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-left h2{font-size:1.05rem;font-weight:700}
+    .topbar-left .breadcrumb{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .topbar-right{display:flex;align-items:center;gap:.7rem}
+    .btn{padding:.5rem 1.1rem;border-radius:10px;font-size:.83rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,#6c63ff,#8b5cf6);color:#fff}
+    .btn-primary:hover{opacity:.9}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .content{padding:2rem;flex:1}
+
+    /* CARD */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+    .card-title{font-size:.95rem;font-weight:700}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2rem}
+    @media(max-width:1100px){.stats-row{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+    .stat-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+    .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .stat-box::after{content:attr(data-icon);position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.08}
+    .stat-box .label{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.4rem}
+    .stat-box .value{font-size:1.6rem;font-weight:900;line-height:1;margin-bottom:.2rem}
+    .stat-box .sub{font-size:.75rem;color:var(--muted)}
+    .trend-up{color:#43e97b;font-size:.73rem;margin-top:.2rem}
+
+    /* GRID LAYOUTS */
+    .grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    .grid-1-1{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:1050px){.grid-2-1,.grid-1-1,.grid-3{grid-template-columns:1fr}}
+
+    /* TABS */
+    .tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border)}
+    .tab-btn{padding:.6rem 1.1rem;border-radius:10px 10px 0 0;font-size:.83rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;position:relative;bottom:-1px;border:1px solid transparent;border-bottom:none}
+    .tab-btn.active{background:var(--bg2);color:#a78bfa;border-color:var(--border);border-bottom-color:var(--bg2)}
+    .tab-btn:hover:not(.active){color:var(--text)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* CHART WRAP */
+    .chart-wrap{position:relative}
+    canvas.chart{width:100%;display:block}
+
+    /* TOPIC SCORE TABLE */
+    .topic-table{width:100%;border-collapse:collapse}
+    .topic-table th{font-size:.7rem;color:var(--muted);font-weight:600;text-align:center;padding:.55rem .5rem;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+    .topic-table th:first-child{text-align:left}
+    .topic-table td{padding:.6rem .5rem;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.82rem;text-align:center;vertical-align:middle}
+    .topic-table td:first-child{text-align:left}
+    .topic-table tr:hover td{background:rgba(108,99,255,0.04)}
+    .topic-table tr:last-child td{border-bottom:none}
+    .criterion-cell{font-weight:700}
+    .c-mo{color:#60a5fa}
+    .c-ko{color:#a78bfa}
+    .c-fa{color:#43e97b}
+    .c-re{color:#fb923c}
+    .total-cell{font-weight:900;font-size:.9rem}
+    .topic-name-cell{font-weight:600;max-width:180px}
+    .topic-num{display:inline-flex;width:22px;height:22px;border-radius:6px;background:rgba(108,99,255,0.12);align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#a78bfa;margin-right:.4rem;flex-shrink:0}
+    .status-badge{font-size:.65rem;font-weight:700;padding:.12rem .4rem;border-radius:6px}
+    .s-done{background:rgba(67,233,123,0.12);color:#43e97b}
+    .s-prog{background:rgba(108,99,255,0.12);color:#a78bfa}
+    .s-lock{background:rgba(255,255,255,0.05);color:var(--muted)}
+
+    /* MODULE PROGRESS */
+    .module-progress{display:flex;flex-direction:column;gap:1.2rem}
+    .module-block{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:1.2rem}
+    .module-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+    .module-name{font-size:.92rem;font-weight:700}
+    .module-pct{font-size:.85rem;font-weight:700;color:#a78bfa}
+    .module-bar{height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-bottom:.5rem}
+    .module-bar-fill{height:100%;border-radius:4px}
+    .module-meta{font-size:.75rem;color:var(--muted);display:flex;gap:1rem}
+
+    /* CRITERION TREND TABLE */
+    .crit-trend-table{width:100%;border-collapse:collapse}
+    .crit-trend-table th{font-size:.72rem;color:var(--muted);font-weight:600;padding:.5rem .7rem;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px}
+    .crit-trend-table td{padding:.6rem .7rem;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.83rem}
+    .crit-trend-table tr:last-child td{border-bottom:none}
+    .bar-inline{display:flex;align-items:center;gap:.5rem}
+    .bi-bar{flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+    .bi-fill{height:100%;border-radius:3px}
+    .bi-val{font-size:.78rem;font-weight:700;white-space:nowrap;min-width:40px}
+
+    /* WEEK HEATMAP */
+    .heatmap-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+    .hm-cell{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:transform .1s}
+    .hm-cell:hover{transform:scale(1.3)}
+    .hm-0{background:rgba(255,255,255,0.05)}
+    .hm-1{background:rgba(108,99,255,0.2)}
+    .hm-2{background:rgba(108,99,255,0.4)}
+    .hm-3{background:rgba(108,99,255,0.65)}
+    .hm-4{background:rgba(108,99,255,0.9)}
+    .hm-labels{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-bottom:4px}
+    .hm-label{font-size:.6rem;color:var(--muted);text-align:center}
+
+    /* PREDICTION CARD */
+    .prediction-card{background:linear-gradient(135deg,rgba(108,99,255,0.12),rgba(255,101,132,0.06));border:1px solid rgba(108,99,255,0.3);border-radius:18px;padding:1.5rem}
+    .pred-header{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+    .pred-icon{width:42px;height:42px;border-radius:12px;background:rgba(108,99,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+    .pred-title{font-size:.95rem;font-weight:700}
+    .pred-sub{font-size:.75rem;color:var(--muted)}
+    .pred-items{display:flex;flex-direction:column;gap:.7rem}
+    .pred-item{display:flex;align-items:center;justify-content:space-between;padding:.6rem .8rem;background:rgba(255,255,255,0.03);border-radius:10px;font-size:.83rem}
+    .pred-label{color:var(--muted)}
+    .pred-val{font-weight:700}
+
+    /* AI INSIGHT */
+    .ai-insight{background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.18);border-radius:14px;padding:1rem 1.2rem;margin-bottom:.8rem;display:flex;gap:.8rem}
+    .ai-icon{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}
+    .ai-text{font-size:.83rem;line-height:1.6;color:var(--muted)}
+    .ai-text strong{color:var(--text)}
+
+    /* LEVEL TIMELINE */
+    .level-timeline{display:flex;flex-direction:column;gap:0}
+    .lt-item{display:flex;gap:1rem;position:relative;padding-bottom:1.2rem}
+    .lt-item:last-child{padding-bottom:0}
+    .lt-left{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;width:36px}
+    .lt-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);flex-shrink:0;z-index:1}
+    .lt-dot.done{background:var(--accent);border-color:var(--accent)}
+    .lt-dot.current{background:var(--accent2);border-color:var(--accent2);box-shadow:0 0 10px rgba(255,101,132,0.5)}
+    .lt-dot.future{border-color:rgba(255,255,255,0.15)}
+    .lt-line{flex:1;width:2px;background:rgba(108,99,255,0.2);margin:0 auto}
+    .lt-content{flex:1;padding-bottom:1rem}
+    .lt-item:last-child .lt-content{padding-bottom:0}
+    .lt-level{font-size:.9rem;font-weight:700}
+    .lt-range{font-size:.75rem;color:var(--muted);margin-bottom:.3rem}
+    .lt-status{font-size:.72rem;font-weight:700;padding:.12rem .45rem;border-radius:6px;display:inline-block}
+    .st-done{background:rgba(67,233,123,0.12);color:#43e97b}
+    .st-curr{background:rgba(255,101,132,0.12);color:#ff6584}
+    .st-fut{background:rgba(255,255,255,0.05);color:var(--muted)}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/trajectory.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <a href="index.html">⚔️ Coders War</a>
+    <div class="sub">Algoritmik tillar va dasturlash</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
+    <a class="nav-item active" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
+    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="avatar" data-user-init>?</div>
+      <div class="info">
+        <div class="name" data-user-name>...</div>
+        <div class="role" data-user-role>Student</div>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2>📈 O'quv Trayektoriyasi</h2>
+      <div class="breadcrumb">O'quv • To'liq tahlil va prognoz</div>
+    </div>
+    <div class="topbar-right">
+      <select style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.45rem .8rem;font-size:.83rem;outline:none;cursor:pointer">
+        <option>Semestr 1 (2024–25)</option>
+        <option>Semestr 2 (2025)</option>
+      </select>
+      <button class="btn btn-outline">📤 Export PDF</button>
+      <button class="btn btn-primary">🤖 AI Tahlil</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box" data-icon="⭐">
+        <div class="label">Rating Score</div>
+        <div class="value" id="stRating" style="color:#a78bfa">—</div>
+        <div class="sub">/ 4500 maksimal</div>
+        <div class="trend-up" id="stRatingNext">— ball keyingisiga</div>
+      </div>
+      <div class="stat-box" data-icon="📊">
+        <div class="label">Academic Score</div>
+        <div class="value" id="stAcademic" style="color:#43e97b">—</div>
+        <div class="sub">O'rtacha ball</div>
+        <div class="trend-up">Mavzular o'rtachasi</div>
+      </div>
+      <div class="stat-box" data-icon="📚">
+        <div class="label">Tugatilgan mavzular</div>
+        <div class="value" id="stTopics" style="color:#ffd700">— / 45</div>
+        <div class="sub" id="stTopicsPct">0% bajarildi</div>
+        <div class="trend-up" id="stStreak">🔥 — kun streak</div>
+      </div>
+      <div class="stat-box" data-icon="🔥">
+        <div class="label">Joriy daraja</div>
+        <div class="value" id="stLevel" style="color:#ff6584">—</div>
+        <div class="sub" id="stLevelRange">—</div>
+        <div class="trend-up" id="stLevelNext">—</div>
+      </div>
+      <div class="stat-box" data-icon="🎯">
+        <div class="label">Prognoz: Yakuniy</div>
+        <div class="value" style="color:#60a5fa">Hero</div>
+        <div class="sub">Semestr oxirida</div>
+        <div class="trend-up">1480–1650 prognoz</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('overview')">📊 Umumiy ko'rinish</button>
+      <button class="tab-btn" onclick="switchTab('topics')">📚 Mavzular bo'yicha</button>
+      <button class="tab-btn" onclick="switchTab('criteria')">🎯 Mezonlar tahlili</button>
+      <button class="tab-btn" onclick="switchTab('activity')">🗓️ Faollik</button>
+      <button class="tab-btn" onclick="switchTab('forecast')">🔮 Prognoz</button>
+    </div>
+
+    <!-- ── TAB: OVERVIEW ── -->
+    <div id="tab-overview" class="tab-content active">
+      <!-- MAIN TRAJECTORY CHART -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header">
+          <span class="card-title">📈 Rating Score o'zgarishi (hafta bo'yicha)</span>
+          <div style="display:flex;gap:.5rem">
+            <span style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.3rem"><span style="width:12px;height:3px;background:#6c63ff;display:inline-block;border-radius:2px"></span>Haqiqiy</span>
+            <span style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.3rem"><span style="width:12px;height:3px;background:rgba(108,99,255,0.35);display:inline-block;border-radius:2px;border-top:2px dashed #a78bfa"></span>Prognoz</span>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="trajectoryChart" class="chart"></canvas>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <!-- CRITERIA RADAR -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">🕸️ 4 Mezon radari (mavzular o'rtachasi)</span></div>
+          <div style="display:flex;align-items:center;gap:1.5rem">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center">
+              <canvas id="radarChart" width="200" height="200"></canvas>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;min-width:150px">
+              <div style="font-size:.8rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem">
+                <span style="color:#60a5fa">● Motivatsion (Mo)</span><span style="font-weight:700" id="lgMo">—/15</span>
+              </div>
+              <div style="font-size:.8rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem">
+                <span style="color:#a78bfa">● Kognitiv (Ko)</span><span style="font-weight:700" id="lgKo">—/35</span>
+              </div>
+              <div style="font-size:.8rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem">
+                <span style="color:#43e97b">● Faoliyatli (Fa)</span><span style="font-weight:700" id="lgFa">—/30</span>
+              </div>
+              <div style="font-size:.8rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem">
+                <span style="color:#fb923c">● Refleksiv (Re)</span><span style="font-weight:700" id="lgRe">—/20</span>
+              </div>
+              <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.85rem;font-weight:700;display:flex;justify-content:space-between">
+                <span>Jami o'rtacha:</span><span style="color:#a78bfa" id="lgTotal">—/100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE PROGRESS + LEVEL TIMELINE -->
+        <div>
+          <div class="card" style="margin-bottom:1.5rem">
+            <div class="card-header"><span class="card-title">📦 Modul taraqqiyoti</span></div>
+            <div class="module-progress" id="moduleProgress"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">🎖️ Daraja yo'li</span></div>
+            <div class="level-timeline" id="levelTimeline"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: TOPICS ── -->
+    <div id="tab-topics" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📚 Barcha mavzular bo'yicha 4 mezon ballari</span>
+          <div style="display:flex;gap:.5rem">
+            <select id="moduleFilter" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.3rem .6rem;font-size:.8rem;outline:none;cursor:pointer" onchange="renderTopicTable()">
+              <option value="all">Barcha modullar</option>
+              <option value="1">Modul 1 (Asoslar)</option>
+              <option value="2">Modul 2 (O'rta daraja)</option>
+              <option value="3">Modul 3 (Ilg'or)</option>
+            </select>
+            <select id="statusFilter" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.3rem .6rem;font-size:.8rem;outline:none;cursor:pointer" onchange="renderTopicTable()">
+              <option value="all">Barcha holatlar</option>
+              <option value="done">Tugatilgan</option>
+              <option value="progress">Jarayonda</option>
+              <option value="locked">Qulflangan</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="topic-table">
+            <thead>
+              <tr>
+                <th style="min-width:180px">Mavzu</th>
+                <th style="color:#60a5fa">Mo<br><span style="font-weight:400">/15</span></th>
+                <th style="color:#a78bfa">Ko<br><span style="font-weight:400">/35</span></th>
+                <th style="color:#43e97b">Fa<br><span style="font-weight:400">/30</span></th>
+                <th style="color:#fb923c">Re<br><span style="font-weight:400">/20</span></th>
+                <th>Jami<br><span style="font-weight:400">/100</span></th>
+                <th>Holat</th>
+              </tr>
+            </thead>
+            <tbody id="topicTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: CRITERIA ── -->
+    <div id="tab-criteria" class="tab-content">
+      <div class="grid-1-1">
+        <!-- CRITERION BREAKDOWN -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">🎯 Mezon bo'yicha o'sish dinamikasi</span></div>
+          <div class="chart-wrap" style="height:200px">
+            <canvas id="criteriaChart" class="chart"></canvas>
+          </div>
+        </div>
+        <!-- CRITERION STATS TABLE -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 Mezonlar statistikasi</span></div>
+          <table class="crit-trend-table">
+            <thead><tr><th>Mezon</th><th>O'rtacha</th><th>Progress</th><th>Trend</th></tr></thead>
+            <tbody id="critStatsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WEAK AREAS -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header"><span class="card-title">⚠️ Kuchsiz tomonlar va tavsiyalar</span></div>
+        <div id="weakAreas"></div>
+      </div>
+
+      <!-- STRONG AREAS -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">💪 Kuchli tomonlar</span></div>
+        <div id="strongAreas"></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: ACTIVITY ── -->
+    <div id="tab-activity" class="tab-content">
+      <div class="grid-2-1">
+        <div>
+          <div class="card" style="margin-bottom:1.5rem">
+            <div class="card-header"><span class="card-title">🗓️ 12 oylik faollik xaritasi</span></div>
+            <div class="hm-labels" id="hmLabels"></div>
+            <div class="heatmap-grid" id="heatmapGrid"></div>
+            <div style="display:flex;align-items:center;gap:.4rem;margin-top:.8rem;font-size:.72rem;color:var(--muted)">
+              Kam
+              <div style="display:flex;gap:3px">
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(255,255,255,0.05)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(108,99,255,0.2)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(108,99,255,0.45)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(108,99,255,0.7)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(108,99,255,0.95)"></div>
+              </div>
+              Ko'p
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">📅 Haftalik faollik (soat bo'yicha)</span></div>
+            <div class="chart-wrap" style="height:150px">
+              <canvas id="weeklyChart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:1.5rem">
+            <div class="card-header"><span class="card-title">⚡ Faollik statistikasi</span></div>
+            <div style="display:flex;flex-direction:column;gap:.7rem;font-size:.83rem">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
+                <span>🔥 Joriy streak</span><strong style="color:#ff6584">12 kun</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
+                <span>🏆 Rekord streak</span><strong style="color:var(--gold)">28 kun</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
+                <span>📅 Jami faol kunlar</span><strong style="color:#a78bfa">68 kun</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
+                <span>⏱️ O'rtacha kunlik vaqt</span><strong style="color:#43e97b">2.4 soat</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
+                <span>💻 Yozilgan kodlar</span><strong style="color:#60a5fa">312 ta</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
+                <span>⚡ O'tkazilgan duell</span><strong style="color:#ff6584">34 ta</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
+                <span>🔍 Peer reviewlar</span><strong style="color:#fb923c">24 ta</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">🕐 Eng faol vaqt</span></div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem">
+              {[['Ertalab','06-09','☀️',30],['Kun o\'rtasi','12-15','🌤️',55],['Kechqurun','18-21','🌙',85],['Tun','21-00','⭐',45]].map(([l,t,e,p])=>`
+              <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:.6rem;text-align:center">
+                <div style="font-size:1.2rem;margin-bottom:.2rem">${e}</div>
+                <div style="font-size:.7rem;font-weight:600">${l}</div>
+                <div style="font-size:.68rem;color:var(--muted)">${t}</div>
+                <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;margin:.4rem 0">
+                  <div style="width:20px;background:linear-gradient(0deg,#6c63ff,#a78bfa);border-radius:3px 3px 0 0;height:${p}%"></div>
+                </div>
+                <div style="font-size:.72rem;color:#a78bfa;font-weight:700">${p}%</div>
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: FORECAST ── -->
+    <div id="tab-forecast" class="tab-content">
+      <div class="grid-2-1">
+        <div>
+          <div class="card" style="margin-bottom:1.5rem">
+            <div class="card-header"><span class="card-title">🔮 Semestr oxiri prognoozi</span></div>
+            <div class="chart-wrap" style="height:200px">
+              <canvas id="forecastChart" class="chart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">🤖 AI tahlil va tavsiyalar</span></div>
+            <div id="aiInsights"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="prediction-card" style="margin-bottom:1.5rem">
+            <div class="pred-header">
+              <div class="pred-icon">🔮</div>
+              <div>
+                <div class="pred-title">Prognoz natijalari</div>
+                <div class="pred-sub">Hozirgi sur'at asosida</div>
+              </div>
+            </div>
+            <div class="pred-items">
+              <div class="pred-item">
+                <span class="pred-label">Yakuniy Rating Score</span>
+                <span class="pred-val" style="color:#a78bfa">1480–1650</span>
+              </div>
+              <div class="pred-item">
+                <span class="pred-label">Yakuniy daraja</span>
+                <span class="pred-val" style="color:var(--gold)">Hero 🦸</span>
+              </div>
+              <div class="pred-item">
+                <span class="pred-label">Tugatilgan mavzular</span>
+                <span class="pred-val" style="color:#43e97b">32–36 / 45</span>
+              </div>
+              <div class="pred-item">
+                <span class="pred-label">Yakuniy Academic Score</span>
+                <span class="pred-val" style="color:#60a5fa">82–87</span>
+              </div>
+              <div class="pred-item">
+                <span class="pred-label">Reyting o'rni (prognoz)</span>
+                <span class="pred-val" style="color:#ff6584">#8–#12</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">🎯 Maqsad scenariylar</span></div>
+            <div style="display:flex;flex-direction:column;gap:.8rem;font-size:.83rem">
+              <div style="padding:.9rem;background:rgba(67,233,123,0.06);border:1px solid rgba(67,233,123,0.15);border-radius:12px">
+                <div style="font-weight:700;color:#43e97b;margin-bottom:.3rem">🚀 Optimistik (hafta +100 ball)</div>
+                <div style="color:var(--muted)">Yakuniy: 2100+ ball → <strong>Legend</strong> darajasiga yetish</div>
+              </div>
+              <div style="padding:.9rem;background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.2);border-radius:12px">
+                <div style="font-weight:700;color:#a78bfa;margin-bottom:.3rem">📊 Realistik (hozirgi sur'at)</div>
+                <div style="color:var(--muted)">Yakuniy: 1480–1650 → <strong>Hero</strong> darajasi</div>
+              </div>
+              <div style="padding:.9rem;background:rgba(255,101,132,0.06);border:1px solid rgba(255,101,132,0.15);border-radius:12px">
+                <div style="font-weight:700;color:#ff6584;margin-bottom:.3rem">⚠️ Pessimistik (kamaysa)</div>
+                <div style="color:var(--muted)">Yakuniy: 1100–1300 → <strong>Knight</strong> da qolish</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+
+// ── Level metadata ─────────────────────────────────────────────
+const LV_META = {
+  recruit:  {icon:'🛡️', name:'Recruit',  range:'0–300',    next:300},
+  warden:   {icon:'🗡️', name:'Warden',   range:'301–750',   next:750},
+  knight:   {icon:'⚔️', name:'Knight',   range:'751–1300',  next:1300},
+  hero:     {icon:'🦅', name:'Hero',     range:'1301–1900', next:1900},
+  legend:   {icon:'🔥', name:'Legend',   range:'1901–2600', next:2600},
+  lord:     {icon:'👑', name:'Lord',     range:'2601–3350', next:3350},
+  deity:    {icon:'🔮', name:'Imperator', range:'3351–4050', next:4050},
+  titan:    {icon:'⚡', name:'Titan',    range:'4051–4500', next:4500},
+};
+
+async function initTraj() {
+  Auth.fillUserUI();
+  try {
+    const [me, scores] = await Promise.all([api.me(), api.scores()]);
+    const sp = me.student_profile || {};
+    const rating   = sp.rating_score || 0;
+    const academic = sp.academic_score ? Math.round(sp.academic_score * 10) / 10 : '—';
+    const completed = Array.isArray(scores) ? scores.filter(s => s.is_completed).length : 0;
+    const streak   = sp.current_streak || 0;
+    const lvKey    = sp.level || 'recruit';
+    const lv       = LV_META[lvKey] || LV_META.recruit;
+    const toNext   = lv.next - rating;
+
+    document.getElementById('stRating').textContent      = rating;
+    document.getElementById('stRatingNext').textContent  = toNext > 0 ? `${toNext} ball keyingisiga` : 'Maksimal darajaga yaqin!';
+    document.getElementById('stAcademic').textContent    = academic;
+    document.getElementById('stTopics').textContent      = `${completed} / 45`;
+    document.getElementById('stTopicsPct').textContent   = Math.round(completed / 45 * 100) + '% bajarildi';
+    document.getElementById('stStreak').textContent      = `🔥 ${streak} kun streak`;
+    document.getElementById('stLevel').textContent       = `${lv.icon} ${lv.name}`;
+    document.getElementById('stLevelRange').textContent  = lv.range + ' oralig\'i';
+    document.getElementById('stLevelNext').textContent   = toNext > 0 ? `${toNext} ball keyingisiga` : '🎉 Maksimal!';
+
+    // Update topic table data if available
+    if (Array.isArray(scores) && scores.length) {
+      const sortedScores = [...scores].sort((a,b)=>(a.topic_number||a.topic||0)-(b.topic_number||b.topic||0));
+      // Rebuild topics array from real API data for renderTopicTable()
+      topics.length = 0;
+      sortedScores.forEach((s, i) => {
+        topics.push({
+          num: s.topic_number || (i+1),
+          name: s.topic_title || s.topic_name || `Mavzu ${i+1}`,
+          module: Math.ceil((s.topic_number || (i+1)) / 5),
+          status: s.is_completed ? 'done' : (s.total_score > 0 ? 'progress' : 'locked'),
+          Mo: s.mo_score||0, Ko: s.ko_score||0, Fa: s.fa_score||0, Re: s.re_score||0,
+        });
+      });
+      renderTopicTable();
+    }
+  } catch(e) { console.warn('Trajectory init error:', e); }
+}
+
+// ── DATA ──────────────────────────────────────────────────────
+const topics=[
+  {num:1,name:'C# kirish va o\'rnatish',module:1,status:'done',Mo:13,Ko:26,Fa:31,Re:16},
+  {num:2,name:'O\'zgaruvchilar va turlar',module:1,status:'done',Mo:12,Ko:24,Fa:29,Re:14},
+  {num:3,name:'Shart operatorlari',module:1,status:'done',Mo:11,Ko:23,Fa:28,Re:13},
+  {num:4,name:'Sikllar (for, while)',module:1,status:'done',Mo:12,Ko:22,Fa:26,Re:14},
+  {num:5,name:'Massivlar',module:1,status:'done',Mo:11,Ko:23,Fa:27,Re:13},
+  {num:6,name:'Metodlar (funksiyalar)',module:1,status:'done',Mo:12,Ko:25,Fa:28,Re:15},
+  {num:7,name:'Rekursiya asoslari',module:1,status:'done',Mo:10,Ko:21,Fa:24,Re:12},
+  {num:8,name:'Satrlar (string)',module:1,status:'done',Mo:11,Ko:22,Fa:26,Re:13},
+  {num:9,name:'OOP: Klasslar',module:1,status:'done',Mo:12,Ko:24,Fa:29,Re:15},
+  {num:10,name:'OOP: Vorislik',module:2,status:'progress',Mo:7,Ko:17,Fa:18,Re:8},
+  {num:11,name:'OOP: Polimorfizm',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
+  {num:12,name:'Interfeyslar',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
+  {num:13,name:'Collections: List',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
+  {num:14,name:'Collections: Dictionary',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
+  {num:15,name:'LINQ asoslari',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
+];
+
+// ── MODULE PROGRESS ───────────────────────────────────────────
+const modules=[
+  {name:'📗 Modul 1 — C# Asoslari',done:9,total:15,pct:60,color:'#43e97b'},
+  {name:'📘 Modul 2 — O\'rta daraja',done:1,total:15,pct:7,color:'#6c63ff'},
+  {name:'📕 Modul 3 — Ilg\'or',done:0,total:15,pct:0,color:'#ff6584'},
+];
+const mpEl=document.getElementById('moduleProgress');
+modules.forEach(m=>{
+  mpEl.innerHTML+=`<div class="module-block">
+    <div class="module-header">
+      <span class="module-name">${m.name}</span>
+      <span class="module-pct">${m.pct}%</span>
+    </div>
+    <div class="module-bar"><div class="module-bar-fill" style="width:${m.pct}%;background:${m.color}"></div></div>
+    <div class="module-meta"><span>${m.done}/${m.total} mavzu</span><span>${m.done*100} ball to'plangan</span></div>
+  </div>`;
+});
+
+// ── LEVEL TIMELINE ────────────────────────────────────────────
+const levels=[
+  {name:'Recruit ⚔️',range:'0–300',status:'done'},
+  {name:'Warden 🛡️',range:'301–750',status:'done'},
+  {name:'Knight 🗡️',range:'751–1300',status:'current'},
+  {name:'Hero 🦸',range:'1301–1900',status:'future'},
+  {name:'Legend 🌟',range:'1901–2600',status:'future'},
+  {name:'Lord 👑',range:'2601–3350',status:'future'},
+];
+const ltEl=document.getElementById('levelTimeline');
+levels.forEach((lv,i)=>{
+  ltEl.innerHTML+=`<div class="lt-item">
+    <div class="lt-left">
+      <div class="lt-dot ${lv.status}"></div>
+      ${i<levels.length-1?'<div class="lt-line"></div>':''}
+    </div>
+    <div class="lt-content">
+      <div class="lt-level">${lv.name}</div>
+      <div class="lt-range">${lv.range} ball</div>
+      <span class="lt-status ${lv.status==='done'?'st-done':lv.status==='current'?'st-curr':'st-fut'}">${lv.status==='done'?'✓ Tugallandi':lv.status==='current'?'● Hozir siz bunda':'◯ Kelajak'}</span>
+    </div>
+  </div>`;
+});
+
+// ── TOPIC TABLE ───────────────────────────────────────────────
+function renderTopicTable(){
+  const modF=document.getElementById('moduleFilter').value;
+  const stF=document.getElementById('statusFilter').value;
+  const body=document.getElementById('topicTableBody');
+  body.innerHTML='';
+  topics.filter(t=>{
+    if(modF!=='all'&&t.module!=modF)return false;
+    if(stF!=='all'&&t.status!==stF)return false;
+    return true;
+  }).forEach(t=>{
+    const total=t.Mo+t.Ko+t.Fa+t.Re;
+    const isDone=t.status==='done',isProg=t.status==='progress';
+    const stBadge=isDone?'<span class="status-badge s-done">Tugatildi</span>':isProg?'<span class="status-badge s-prog">Jarayonda</span>':'<span class="status-badge s-lock">🔒 Qulflangan</span>';
+    const col=isDone||isProg?'':'style="opacity:.35"';
+    body.innerHTML+=`<tr ${col}>
+      <td class="topic-name-cell"><span class="topic-num">${t.num}</span>${t.name}</td>
+      <td class="criterion-cell c-mo">${t.Mo||'—'}</td>
+      <td class="criterion-cell c-ko">${t.Ko||'—'}</td>
+      <td class="criterion-cell c-fa">${t.Fa||'—'}</td>
+      <td class="criterion-cell c-re">${t.Re||'—'}</td>
+      <td class="total-cell" style="color:${total>=80?'#43e97b':total>=60?'#ffd700':total>0?'#ff6584':'var(--muted)'}">${total||'—'}</td>
+      <td>${stBadge}</td>
+    </tr>`;
+  });
+}
+renderTopicTable();
+
+// ── CRITERIA STATS ────────────────────────────────────────────
+const critData=[
+  {name:'Motivatsion (Mo)',max:15,avg:10.5,color:'#60a5fa',trend:'↑+0.8'},
+  {name:'Kognitiv (Ko)',max:35,avg:26.2,color:'#a78bfa',trend:'↑+1.2'},
+  {name:'Faoliyatli (Fa)',max:30,avg:23.4,color:'#43e97b',trend:'↑+2.1'},
+  {name:'Refleksiv (Re)',max:20,avg:12.8,color:'#fb923c',trend:'↑+0.4'},
+];
+const csBody=document.getElementById('critStatsBody');
+critData.forEach(c=>{
+  const pct=Math.round(c.avg/c.max*100);
+  csBody.innerHTML+=`<tr>
+    <td style="font-weight:600;color:${c.color}">${c.name}</td>
+    <td style="font-weight:700">${c.avg}/${c.max}</td>
+    <td><div class="bar-inline"><div class="bi-bar"><div class="bi-fill" style="width:${pct}%;background:${c.color}"></div></div><span class="bi-val" style="color:${c.color}">${pct}%</span></div></td>
+    <td style="font-size:.78rem;font-weight:600;color:${c.trend.startsWith('↑')?'#43e97b':'#ff6584'}">${c.trend}</td>
+  </tr>`;
+});
+
+// WEAK AREAS
+const waEl=document.getElementById('weakAreas');
+[
+  {icon:'📝',title:'Refleksiv ball rivojlanish yo\'lida (12.8/20)',text:'Mavzu bo\'yicha journal yozish va o\'z-o\'zini tahlil qilish sifatini oshirish kerak. Har bir mavzudan so\'ng chuqur fikr yozing.',color:'rgba(251,146,60,0.06)'},
+  {icon:'⭐',title:'Motivatsion ball o\'rtacha (10.5/15)',text:'O\'qituvchi tomonidan beriladigan motivatsion ballarni oshirish uchun faoliyatini oshiring va qo\'shimcha topshiriqlar bajaring.',color:'rgba(96,165,250,0.06)'},
+].forEach(w=>{
+  waEl.innerHTML+=`<div class="ai-insight" style="background:${w.color}">
+    <span class="ai-icon">${w.icon}</span>
+    <div class="ai-text"><strong>${w.title}</strong><br>${w.text}</div>
+  </div>`;
+});
+
+// STRONG AREAS
+const saEl=document.getElementById('strongAreas');
+[
+  {icon:'💪',title:'Faoliyatli mezoni yuqori (23.4/30 = 78%)',text:'Kod yozish va amaliyot topshiriqlarni bajarishda kuchli ko\'rsatkichlar. Bu siz uchun asosiy ustunlik.'},
+  {icon:'🧠',title:'Kognitiv o\'sish yaxshi (26.2/35 = 75%)',text:'Nazariy bilimlarni o\'zlashtirish sur\'ati jadal. Murakkab mavzularni ham tez tushunasiz.'},
+].forEach(s=>{
+  saEl.innerHTML+=`<div class="ai-insight" style="background:rgba(67,233,123,0.05);border-color:rgba(67,233,123,0.15)">
+    <span class="ai-icon">${s.icon}</span>
+    <div class="ai-text"><strong>${s.title}</strong><br>${s.text}</div>
+  </div>`;
+});
+
+// AI INSIGHTS FOR FORECAST
+const aiEl=document.getElementById('aiInsights');
+[
+  {icon:'🎯',text:'<strong>Asosiy tavsiya:</strong> Haftasiga 3 mavzudan ko\'proq o\'tish sur\'atini saqlang. Hozirgi sur\'atda semestr oxirida Hero darajasiga erishish mumkin.'},
+  {icon:'⚡',text:'<strong>Duel strategiyasi:</strong> Ko\'proq duel o\'tkazish (haftasiga 5+) Rating Scoreni tezroq oshiradi. Algoritm masalalariga e\'tibor bering.'},
+  {icon:'💡',text:'<strong>Refleksiv mezon uchun:</strong> Har bir mavzuda chuqur reflection journal yozing va o\'z-o\'zingizni tahlil qiling.'},
+  {icon:'📈',text:'<strong>Prognoz to\'g\'risida:</strong> Joriy sur\'atingizni 15% oshirsangiz, Legend darajasiga (1901+) erishish realistik.'},
+].forEach(a=>{
+  aiEl.innerHTML+=`<div class="ai-insight"><span class="ai-icon">${a.icon}</span><div class="ai-text">${a.text}</div></div>`;
+});
+
+// ── HEATMAP ───────────────────────────────────────────────────
+const months=['Sen','Okt','Noy','Dek','Yan','Fev','Mar','Apr','May','Iyu','Iyu','Avg'];
+const hmL=document.getElementById('hmLabels');
+months.forEach(m=>hmL.innerHTML+=`<div class="hm-label">${m}</div>`);
+const hmG=document.getElementById('heatmapGrid');
+const vals=[0,1,2,3,4,3,2,1,2,3,4,3,2,3,4,3,2,1,0,1,2,3,2,1,0,0,1,2,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0];
+vals.slice(0,144).forEach((v,i)=>{
+  hmG.innerHTML+=`<div class="hm-cell hm-${v}" title="Kun ${i+1}: ${v} ta mavzu"></div>`;
+});
+
+// ── CANVAS CHARTS ─────────────────────────────────────────────
+// 1. Trajectory chart
+(function(){
+  const c=document.getElementById('trajectoryChart');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
+  const actualData=[100,180,260,320,400,480,540,620,710,842];
+  const forecastData=[null,null,null,null,null,null,null,null,null,842,960,1080,1200,1350,1480,1620];
+  const allData=[...actualData,...forecastData.slice(actualData.length)];
+  const labels=['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16'];
+  const pad={l:50,r:20,t:20,b:30};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const max=1800,min=0;
+  // level lines
+  const lvls=[{y:300,lbl:'Warden',c:'rgba(100,200,100,0.25)'},{y:750,lbl:'Knight',c:'rgba(100,150,255,0.25)'},{y:1300,lbl:'Hero',c:'rgba(255,200,100,0.25)'}];
+  lvls.forEach(lv=>{
+    const yp=pad.t+iH*(1-(lv.y-min)/(max-min));
+    ctx.strokeStyle=lv.c;ctx.lineWidth=1;ctx.setLineDash([5,5]);
+    ctx.beginPath();ctx.moveTo(pad.l,yp);ctx.lineTo(pad.l+iW,yp);ctx.stroke();
+    ctx.fillStyle=lv.c.replace('0.25','0.8');ctx.font='10px Segoe UI';ctx.textAlign='left';
+    ctx.fillText(lv.lbl,pad.l+4,yp-4);
+  });
+  ctx.setLineDash([]);
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const y=pad.t+iH*i/5;const v=Math.round(max*(1-i/5));
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();
+    ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='right';
+    ctx.fillText(v,pad.l-6,y+4);
+  }
+  // actual gradient fill
+  const pts=actualData.map((v,i)=>({x:pad.l+iW*i/(labels.length-1),y:pad.t+iH*(1-(v-min)/(max-min))}));
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+iH);
+  grad.addColorStop(0,'rgba(108,99,255,0.35)');grad.addColorStop(1,'rgba(108,99,255,0)');
+  ctx.beginPath();ctx.moveTo(pts[0].x,pad.t+iH);
+  pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,pad.t+iH);ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();ctx.strokeStyle='#6c63ff';ctx.lineWidth=2.5;ctx.setLineDash([]);
+  pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fillStyle='#6c63ff';ctx.fill();});
+  // forecast dashed
+  const fcStart=actualData.length-1;
+  const fcPts=forecastData.slice(fcStart).map((v,i)=>({x:pad.l+iW*(fcStart+i)/(labels.length-1),y:pad.t+iH*(1-(v-min)/(max-min))}));
+  ctx.beginPath();ctx.strokeStyle='rgba(167,139,250,0.6)';ctx.lineWidth=2;ctx.setLineDash([8,5]);
+  fcPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
+  ctx.setLineDash([]);
+  // x labels
+  ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='center';
+  labels.forEach((l,i)=>{if(i%2===0)ctx.fillText(l,pad.l+iW*i/(labels.length-1),H-6);});
+})();
+
+// 2. Radar chart
+(function(){
+  const c=document.getElementById('radarChart');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  c.width=200;c.height=200;
+  const cx=100,cy=100,r=75;
+  const labels=['Mo','Ko','Fa','Re'];
+  const values=[70,75,78,64];
+  const colors=['#60a5fa','#a78bfa','#43e97b','#fb923c'];
+  const n=labels.length;
+  const ang=Array.from({length:n},(_,i)=>-Math.PI/2+2*Math.PI*i/n);
+  // grid
+  for(let g=1;g<=4;g++){
+    ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;
+    ang.forEach((a,i)=>{const x=cx+r*(g/4)*Math.cos(a),y=cy+r*(g/4)*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.closePath();ctx.stroke();
+  }
+  ang.forEach(a=>{ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=1;ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));ctx.stroke();});
+  // data
+  ctx.beginPath();ctx.fillStyle='rgba(108,99,255,0.15)';ctx.strokeStyle='rgba(108,99,255,0.8)';ctx.lineWidth=2;
+  values.forEach((v,i)=>{const x=cx+r*(v/100)*Math.cos(ang[i]),y=cy+r*(v/100)*Math.sin(ang[i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // dots & labels
+  values.forEach((v,i)=>{
+    const x=cx+r*(v/100)*Math.cos(ang[i]),y=cy+r*(v/100)*Math.sin(ang[i]);
+    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fillStyle=colors[i];ctx.fill();
+    const lx=cx+(r+16)*Math.cos(ang[i]),ly=cy+(r+16)*Math.sin(ang[i]);
+    ctx.fillStyle=colors[i];ctx.font='bold 9.5px Segoe UI';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(labels[i],lx,ly);
+  });
+})();
+
+// 3. Criteria grouped bar
+(function(){
+  const c=document.getElementById('criteriaChart');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
+  const labels=['Mo','Ko','Fa','Re'];
+  const maxVals=[15,35,30,20];
+  const avgVals=[10.5,26.2,23.4,12.8];
+  const colors=['#60a5fa','#a78bfa','#43e97b','#fb923c'];
+  const pad={l:20,r:10,t:15,b:25};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const bW=iW/labels.length*0.55,gap=iW/labels.length;
+  labels.forEach((lbl,i)=>{
+    const x=pad.l+gap*i+(gap-bW)/2;
+    const maxH=iH;const avgH=iH*(avgVals[i]/maxVals[i]);
+    // max bar (faded)
+    ctx.fillStyle=colors[i]+'33';
+    ctx.beginPath();ctx.roundRect(x,pad.t,bW,maxH,3);ctx.fill();
+    // actual bar
+    ctx.fillStyle=colors[i];
+    ctx.beginPath();ctx.roundRect(x,pad.t+maxH-avgH,bW,avgH,3);ctx.fill();
+    // label
+    ctx.fillStyle='rgba(136,146,176,0.8)';ctx.font='bold 11px Segoe UI';ctx.textAlign='center';
+    ctx.fillText(lbl,x+bW/2,H-5);
+    // value
+    ctx.fillStyle=colors[i];ctx.font='bold 10px Segoe UI';
+    ctx.fillText(avgVals[i],x+bW/2,pad.t+maxH-avgH-5);
+  });
+})();
+
+// 4. Weekly activity chart
+(function(){
+  const c=document.getElementById('weeklyChart');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
+  const data=[1.5,2.0,3.5,2.8,1.2,4.2,3.0];
+  const days=['Du','Se','Ch','Pa','Ju','Sh','Ya'];
+  const pad={l:25,r:10,t:10,b:25};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const max=5,bW=iW/data.length*0.5;
+  data.forEach((v,i)=>{
+    const x=pad.l+(iW/(data.length))*(i+0.25);
+    const bH=iH*(v/max);
+    const grad=ctx.createLinearGradient(0,pad.t+iH-bH,0,pad.t+iH);
+    grad.addColorStop(0,'#6c63ff');grad.addColorStop(1,'rgba(108,99,255,0.2)');
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.roundRect(x,pad.t+iH-bH,bW,bH,3);ctx.fill();
+    ctx.fillStyle='rgba(136,146,176,0.8)';ctx.font='10px Segoe UI';ctx.textAlign='center';
+    ctx.fillText(days[i],x+bW/2,H-5);
+  });
+})();
+
+// 5. Forecast chart
+(function(){
+  const c=document.getElementById('forecastChart');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
+  const optimistic=[842,920,1020,1120,1250,1380,1520,1680,1850,2050];
+  const realistic=[842,900,960,1020,1100,1180,1260,1350,1420,1500];
+  const pessimistic=[842,870,900,930,960,1000,1050,1100,1150,1200];
+  const labels=['W10','W11','W12','W13','W14','W15','W16','W17','W18','W19'];
+  const pad={l:50,r:20,t:20,b:30};
+  const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const max=2200,min=600;
+  const drawLine=(data,color,dash=[])=>{
+    const pts=data.map((v,i)=>({x:pad.l+iW*i/(data.length-1),y:pad.t+iH*(1-(v-min)/(max-min))}));
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash(dash);
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
+    ctx.setLineDash([]);
+  };
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const y=pad.t+iH*i/5;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();
+    ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='right';
+    ctx.fillText(Math.round(max*(1-i/5)+min*i/5),pad.l-5,y+4);
+  }
+  drawLine(pessimistic,'rgba(255,101,132,0.7)',[6,4]);
+  drawLine(realistic,'rgba(167,139,250,0.9)',[]);
+  drawLine(optimistic,'rgba(67,233,123,0.8)',[4,3]);
+  ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='center';
+  labels.forEach((l,i)=>{if(i%2===0)ctx.fillText(l,pad.l+iW*i/(labels.length-1),H-5);});
+})();
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(id){
+  const ids=['overview','topics','criteria','activity','forecast'];
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',ids[i]===id));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.toggle('active',t.id==='tab-'+id));
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+initTraj();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

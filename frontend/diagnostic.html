@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Diagnostika Testi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    .bg-glow{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 50% 20%,rgba(108,99,255,0.1) 0%,transparent 70%)}
+
+    /* INTRO SCREEN */
+    .intro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center}
+    .intro-card{max-width:560px;background:var(--card);border:1px solid var(--border);border-radius:28px;padding:3rem 2.5rem;backdrop-filter:blur(20px)}
+    .intro-icon{font-size:4rem;margin-bottom:1.5rem}
+    .intro-card h1{font-size:2rem;font-weight:900;margin-bottom:.8rem}
+    .intro-card p{color:var(--muted);line-height:1.7;margin-bottom:2rem}
+    .info-chips{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+    .chip{background:rgba(108,99,255,0.12);border:1px solid var(--border);padding:.4rem 1rem;border-radius:20px;font-size:.82rem;color:#a79fff}
+    .btn-start{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;padding:1rem 2.5rem;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(108,99,255,0.4);transition:transform .2s,box-shadow .2s}
+    .btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,99,255,0.5)}
+
+    /* QUIZ SCREEN */
+    .quiz-screen{display:none;min-height:100vh;padding:2rem 1.5rem}
+    .quiz-header{max-width:720px;margin:0 auto 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+    .logo-small{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .timer{display:flex;align-items:center;gap:.5rem;background:rgba(255,101,132,0.1);border:1px solid rgba(255,101,132,0.3);border-radius:10px;padding:.4rem .9rem;font-size:.9rem;font-weight:700;color:#ff8fab}
+    .timer.warn{background:rgba(255,101,132,0.2);animation:pulse 1s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+    .progress-wrap{max-width:720px;margin:0 auto 2rem}
+    .prog-info{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:.5rem}
+    .prog-track{height:6px;background:rgba(255,255,255,0.07);border-radius:3px}
+    .prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#6c63ff,#a78bfa);transition:width .4s ease}
+    .q-card{max-width:720px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;backdrop-filter:blur(16px)}
+    .q-num{font-size:.78rem;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1rem}
+    .q-text{font-size:1.15rem;font-weight:600;line-height:1.6;margin-bottom:.5rem}
+    .q-code{background:rgba(0,0,0,0.4);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:1rem 1.2rem;font-family:'Consolas','Courier New',monospace;font-size:.88rem;color:#a78bfa;line-height:1.7;margin:1rem 0;white-space:pre}
+    .options{display:flex;flex-direction:column;gap:.75rem;margin-top:1.5rem}
+    .option{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1rem 1.3rem;cursor:pointer;display:flex;align-items:center;gap:1rem;transition:all .2s;font-size:.95rem}
+    .option:hover{border-color:var(--accent);background:rgba(108,99,255,0.08)}
+    .option.selected{border-color:var(--accent);background:rgba(108,99,255,0.15)}
+    .option.correct{border-color:#43e97b;background:rgba(67,233,123,0.12);color:#43e97b}
+    .option.wrong{border-color:#ff6584;background:rgba(255,101,132,0.1);color:#ff8fab}
+    .opt-letter{width:32px;height:32px;border-radius:8px;background:rgba(108,99,255,0.15);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;transition:all .2s}
+    .option.selected .opt-letter{background:var(--accent);border-color:var(--accent);color:#fff}
+    .option.correct .opt-letter{background:#43e97b;border-color:#43e97b;color:#000}
+    .option.wrong .opt-letter{background:#ff6584;border-color:#ff6584;color:#fff}
+    .q-nav{display:flex;justify-content:flex-end;margin-top:1.5rem}
+    .btn-next{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;padding:.8rem 2rem;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+    .btn-next:disabled{opacity:.4;cursor:default}
+
+    /* RESULT SCREEN */
+    .result-screen{display:none;min-height:100vh;display:none;align-items:center;justify-content:center;padding:2rem;text-align:center}
+    .result-card{max-width:560px;width:100%;background:var(--card);border:1px solid var(--border);border-radius:28px;padding:3rem 2.5rem;backdrop-filter:blur(20px)}
+    .result-icon{font-size:4rem;margin-bottom:1rem}
+    .result-level{display:inline-block;padding:.5rem 1.5rem;border-radius:20px;font-size:1rem;font-weight:700;margin-bottom:1.5rem}
+    .level-beginner{background:rgba(67,233,123,0.15);border:1px solid rgba(67,233,123,0.3);color:#43e97b}
+    .level-intermediate{background:rgba(66,153,225,0.15);border:1px solid rgba(66,153,225,0.3);color:#4299e1}
+    .level-advanced{background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:#a78bfa}
+    .score-circle{width:120px;height:120px;border-radius:50%;border:4px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.5rem;background:rgba(108,99,255,0.08)}
+    .score-circle .big{font-size:2rem;font-weight:900;color:var(--accent)}
+    .score-circle .of{font-size:.75rem;color:var(--muted)}
+    .result-card h2{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+    .result-card p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+    .result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+    .rs{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:1rem;text-align:center}
+    .rs .rv{font-size:1.4rem;font-weight:800;margin-bottom:.2rem}
+    .rs .rl{font-size:.75rem;color:var(--muted)}
+    .btn-continue{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;padding:1rem 2.5rem;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(108,99,255,0.4);transition:transform .2s}
+    .btn-continue:hover{transform:translateY(-2px)}
+  </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<!-- INTRO -->
+<div class="intro" id="introScreen">
+  <div class="intro-card">
+    <div class="intro-icon">🧪</div>
+    <h1>Diagnostika Testi</h1>
+    <p>Ushbu test sizning algoritmik va dasturlash bo'yicha boshlang'ich darajangizni aniqlaydi. Natija sizning o'quv yo'lingizni moslashtirishga yordam beradi.</p>
+    <div class="info-chips">
+      <span class="chip">📝 20 ta savol</span>
+      <span class="chip">⏱️ 20 daqiqa</span>
+      <span class="chip">🎯 Daraja aniqlash</span>
+      <span class="chip">📊 Rating scorega ta'sir qilmaydi</span>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">Testni boshlash →</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-screen" id="quizScreen">
+  <div class="quiz-header">
+    <div class="logo-small">CodersWar</div>
+    <div class="timer" id="timerEl">⏱️ <span id="timerTxt">20:00</span></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="prog-info">
+      <span id="qLabel">Savol 1 / 20</span>
+      <span id="qScore">0 ball</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  </div>
+  <div class="q-card">
+    <div class="q-num" id="qNum">SAVOL 01</div>
+    <div class="q-text" id="qText"></div>
+    <div class="q-code" id="qCode" style="display:none"></div>
+    <div class="options" id="optionsEl"></div>
+    <div class="q-nav">
+      <button class="btn-next" id="nextBtn" onclick="nextQ()" disabled>
+        Keyingisi →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="result-screen" id="resultScreen" style="display:none">
+  <div class="result-card">
+    <div class="result-icon" id="rIcon">🎯</div>
+    <div class="result-level" id="rLevel">Beginner</div>
+    <div class="score-circle">
+      <div class="big" id="rScore">0</div>
+      <div class="of">/ 20</div>
+    </div>
+    <h2 id="rTitle">Ajoyib!</h2>
+    <p id="rDesc">Siz algoritmik fikrlash asoslarini bilasiz.</p>
+    <div class="result-stats">
+      <div class="rs"><div class="rv" id="rCorrect" style="color:#43e97b">0</div><div class="rl">To'g'ri</div></div>
+      <div class="rs"><div class="rv" id="rWrong" style="color:#ff6584">0</div><div class="rl">Noto'g'ri</div></div>
+      <div class="rs"><div class="rv" id="rPct" style="color:#a78bfa">0%</div><div class="rl">Natija</div></div>
+    </div>
+    <button class="btn-continue" onclick="window.location.href='character.html'">
+      Personaj tanlashga o'tish →
+    </button>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+const QUESTIONS=[
+  {text:"C# dasturlash tili qaysi kompaniya tomonidan ishlab chiqilgan?",options:["Microsoft","Google","Oracle","Apple"],answer:0},
+  {text:"C# da o'zgaruvchi e'lon qilishning to'g'ri usuli qaysi?",code:"// Qaysi variant to'g'ri?",options:["int x = 5;","x int = 5;","integer x = 5;","var = 5 int;"],answer:0},
+  {text:"Quyidagi kod qanday natija beradi?",code:"int a = 10;\nint b = 3;\nConsole.WriteLine(a % b);",options:["3","1","0","3.33"],answer:1},
+  {text:"C# da string birlashtirishning to'g'ri usuli qaysi?",options:["str1 + str2","str1 & str2","str1 . str2","str1 concat str2"],answer:0},
+  {text:"'while' va 'do...while' tsikllarining asosiy farqi nima?",options:["do...while kamida bir marta bajariladi","while tezroq ishlaydi","do...while faqat sonlar uchun","farq yo'q"],answer:0},
+  {text:"Massivni e'lon qilishning to'g'ri usuli qaysi?",code:"// C# da massiv e'lon qilish",options:["int[] arr = new int[5];","int arr[5];","array int arr = new[5];","int arr = array(5);"],answer:0},
+  {text:"Quyidagi metodning qaytarish turi qanday?",code:"public static void Greet(string name) {\n  Console.WriteLine(\"Salom \" + name);\n}",options:["void — hech narsa qaytarmaydi","string","int","bool"],answer:0},
+  {text:"OOP da 'encapsulation' tushunchasi nimani anglatadi?",options:["Ma'lumotlarni yashirish va himoya qilish","Meros olish","Ko'p shakllilik","Abstraksiya"],answer:0},
+  {text:"C# da 'null' qiymati nima?",options:["Ob'ekt mavjud emasligi","0 soni","Bo'sh string","False qiymati"],answer:0},
+  {text:"Quyidagi kod to'g'rimi?",code:"List<int> numbers = new List<int>();\nnumbers.Add(1);\nnumbers.Add(2);\nConsole.WriteLine(numbers.Count);",options:["Ha, 2 chiqaradi","Xato, List ishlatib bo'lmaydi","Xato, Count o'rniga Length","Ha, 0 chiqaradi"],answer:0},
+  {text:"'break' operatori nima uchun ishlatiladi?",options:["Tsikldan chiqish uchun","O'zgaruvchi qiymatini o'chirish uchun","Metoddan chiqish uchun","Xatoni ushlash uchun"],answer:0},
+  {text:"C# da 'interface' bilan 'abstract class' ning farqi?",options:["Interface faqat metod imzolarini o'z ichiga oladi","Interface realizatsiya qila oladi","Abstract class ko'p meros oladi","Farq yo'q"],answer:0},
+  {text:"Quyidagi algoritmning vaqt murakkabligi qanday?",code:"for(int i = 0; i < n; i++) {\n  for(int j = 0; j < n; j++) {\n    // O(1) amal\n  }\n}",options:["O(n²)","O(n)","O(log n)","O(1)"],answer:0},
+  {text:"'try-catch' bloki nima uchun ishlatiladi?",options:["Xatolarni ushlash va boshqarish uchun","Tsikl yaratish uchun","Metod chaqirish uchun","O'zgaruvchi e'lon qilish uchun"],answer:0},
+  {text:"C# da 'static' kalit so'zi nimani anglatadi?",options:["Sinf nusxasisiz to'g'ridan-to'g'ri chaqiriladigan","O'zgarmas qiymat","Xususiy a'zo","Mavhum a'zo"],answer:0},
+  {text:"Quyidagi kod qanday natija beradi?",code:"string s = \"Hello\";\nConsole.WriteLine(s.Length);",options:["5","6","4","Xato"],answer:0},
+  {text:"Rekursiv funksiyada 'base case' nima?",options:["Rekursiyani to'xtatuvchi shart","Funksiyani chaqiruvchi qism","Parametrlar ro'yxati","Qaytarish turi"],answer:0},
+  {text:"C# da 'LINQ' nima?",options:["Ma'lumotlar to'plamini so'rov qilish tili","Looplar uchun kutubxona","Xavfsizlik moduli","Tarmoq protokoli"],answer:0},
+  {text:"Big O notatsiyasida quyidagilarning eng samarali tartiblash algoritmi qaysi?",options:["O(n log n) — Quick/Merge Sort","O(n²) — Bubble Sort","O(n) — Linear Sort","O(1) — Constant Sort"],answer:0},
+  {text:"'async/await' C# da nima uchun ishlatiladi?",options:["Asinxron operatsiyalarni boshqarish","Xatolarni ushlash","Ma'lumotlar bazasiga ulanish","Fayllarni o'qish"],answer:0}
+];
+
+let current=0, score=0, selected=null, timerInterval=null, seconds=1200;
+let userAnswers = {};  // { "1": selectedIdx, "2": selectedIdx, ... }
+
+function startQuiz(){
+  document.getElementById('introScreen').style.display='none';
+  document.getElementById('quizScreen').style.display='block';
+  startTimer();
+  renderQ();
+}
+
+function startTimer(){
+  timerInterval=setInterval(()=>{
+    seconds--;
+    const m=Math.floor(seconds/60).toString().padStart(2,'0');
+    const s=(seconds%60).toString().padStart(2,'0');
+    document.getElementById('timerTxt').textContent=`${m}:${s}`;
+    if(seconds<=120) document.getElementById('timerEl').classList.add('warn');
+    if(seconds<=0){clearInterval(timerInterval);showResult();}
+  },1000);
+}
+
+function renderQ(){
+  const q=QUESTIONS[current];
+  document.getElementById('qNum').textContent='SAVOL '+String(current+1).padStart(2,'0');
+  document.getElementById('qText').textContent=q.text;
+  const codeEl=document.getElementById('qCode');
+  if(q.code){codeEl.style.display='block';codeEl.textContent=q.code;}
+  else codeEl.style.display='none';
+  const opts=document.getElementById('optionsEl');
+  opts.innerHTML=q.options.map((o,i)=>`
+    <div class="option" onclick="pick(this,${i})">
+      <div class="opt-letter">${'ABCD'[i]}</div>
+      <span>${o}</span>
+    </div>`).join('');
+  document.getElementById('qLabel').textContent=`Savol ${current+1} / ${QUESTIONS.length}`;
+  document.getElementById('qScore').textContent=`${score} ball`;
+  document.getElementById('progFill').style.width=((current+1)/QUESTIONS.length*100)+'%';
+  document.getElementById('nextBtn').disabled=true;
+  selected=null;
+}
+
+function pick(el,i){
+  if(selected!==null) return;
+  selected=i;
+  const q=QUESTIONS[current];
+  document.querySelectorAll('.option').forEach((o,idx)=>{
+    if(idx===q.answer) o.classList.add('correct');
+    else if(idx===i&&i!==q.answer) o.classList.add('wrong');
+    else if(idx===i) o.classList.add('selected');
+  });
+  userAnswers[String(current + 1)] = i;
+  if(i===q.answer) score++;
+  document.getElementById('nextBtn').disabled=false;
+  document.getElementById('nextBtn').textContent=current===QUESTIONS.length-1?'Natijani ko\'rish ✓':'Keyingisi →';
+}
+
+function nextQ(){
+  current++;
+  if(current>=QUESTIONS.length){clearInterval(timerInterval);showResult();}
+  else renderQ();
+}
+
+async function showResult(){
+  document.getElementById('quizScreen').style.display='none';
+  const rs=document.getElementById('resultScreen');
+  rs.style.display='flex';
+  const pct=Math.round(score/QUESTIONS.length*100);
+  document.getElementById('rScore').textContent=score;
+  document.getElementById('rCorrect').textContent=score;
+  document.getElementById('rWrong').textContent=QUESTIONS.length-score;
+  document.getElementById('rPct').textContent=pct+'%';
+  let level,icon,title,desc,cls;
+  if(pct<40){level='Beginner';icon='🌱';title='Yaxshi boshlash!';desc='Algoritmik fikrlash asoslarini o\'rganishga tayyormiz. Platforma sizga mos boshlang\'ich yo\'lni tavsiya qiladi.';cls='level-beginner';}
+  else if(pct<70){level='Intermediate';icon='⚡';title='Yaxshi daraja!';desc='Siz asoslarni bilasiz. Platforma sizga o\'rta darajadan boshlab, qiyin mavzularni chuqurlashtiradi.';cls='level-intermediate';}
+  else{level='Advanced';icon='🚀';title='Ajoyib!';desc='Siz yuqori darajada! Platforma sizga murakkab mavzular va algoritmik masalalarni tavsiya qiladi.';cls='level-advanced';}
+  document.getElementById('rIcon').textContent=icon;
+  document.getElementById('rLevel').textContent=level;
+  document.getElementById('rLevel').className='result-level '+cls;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rDesc').textContent=desc;
+  // Save diagnostic result to API — format: { answers: { "1": idx, "2": idx, ... } }
+  try { await api.post('/courses/diagnostic/', { answers: userAnswers }); } catch(e) {}
+}
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Ro'yxatdan o'tish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,.logo a{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;overflow-x:hidden}
+    .auth-wrap{width:100%;max-width:560px;position:relative;z-index:1}
+    .logo{text-align:center;margin-bottom:1.5rem}
+    .logo a{font-size:1.6rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .logo p{color:var(--muted);font-size:.85rem;margin-top:.3rem}
+    /* Steps */
+    .steps{display:flex;gap:0;margin-bottom:2rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:.4rem}
+    .step{flex:1;text-align:center;padding:.6rem .4rem;border-radius:12px;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .3s;position:relative}
+    .step.active{background:rgba(108,99,255,0.2);color:#a78bfa;border:1px solid rgba(108,99,255,0.3)}
+    .step.done{color:#43e97b}
+    .step .step-n{display:block;font-size:1rem;margin-bottom:.1rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.2rem;backdrop-filter:blur(20px)}
+    .card h2{font-size:1.4rem;font-weight:800;margin-bottom:.3rem}
+    .card .sub{color:var(--muted);font-size:.85rem;margin-bottom:1.8rem}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:480px){.grid2{grid-template-columns:1fr}}
+    .form-group{margin-bottom:1rem}
+    .form-group label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.4rem;color:var(--text)}
+    .form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:.8rem 1rem;color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+    .form-group select option{background:#0f1628;color:var(--text)}
+    .form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.15)}
+    .form-group input::placeholder{color:var(--muted)}
+    .req{color:#ff6584;margin-left:2px}
+    .pass-strength{height:4px;border-radius:2px;margin-top:.5rem;background:rgba(255,255,255,0.08);overflow:hidden}
+    .pass-strength-bar{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0}
+    .pass-hint{font-size:.75rem;color:var(--muted);margin-top:.3rem}
+    .btn-row{display:flex;gap:1rem;margin-top:1.5rem}
+    .btn{flex:1;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;padding:.9rem;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(108,99,255,0.3)}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(108,99,255,0.45)}
+    .btn-ghost{flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:.9rem;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;transition:border-color .2s}
+    .btn-ghost:hover{border-color:var(--accent)}
+    .switch{text-align:center;margin-top:1.5rem;font-size:.88rem;color:var(--muted)}
+    .switch a{color:var(--accent);font-weight:600;text-decoration:none}
+    /* agreement */
+    .agree{display:flex;align-items:flex-start;gap:.7rem;font-size:.82rem;color:var(--muted);margin-top:1rem}
+    .agree input{margin-top:.15rem;width:auto;flex-shrink:0}
+    .agree a{color:var(--accent)}
+    /* page visibility */
+    .page{display:none}.page.active{display:block}
+    /* email verify */
+    .verify-box{text-align:center;padding:1rem 0}
+    .verify-box .icon{font-size:4rem;margin-bottom:1rem}
+    .verify-box h3{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
+    .verify-box p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+    .otp-row{display:flex;gap:.7rem;justify-content:center;margin-bottom:1.5rem}
+    .otp-row input{width:52px;height:56px;text-align:center;font-size:1.4rem;font-weight:700;background:rgba(255,255,255,0.06);border:1px solid rgba(108,99,255,0.25);border-radius:12px;color:var(--text);outline:none;transition:border-color .2s}
+    .otp-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.15)}
+    .resend{font-size:.85rem;color:var(--muted)}.resend a{color:var(--accent);cursor:pointer}
+    .field-err{font-size:.75rem;color:#ff8fab;margin-top:.3rem;display:none}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/login.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+
+<div class="auth-wrap">
+  <div class="logo">
+    <a href="index.html">CodersWar</a>
+    <p>Yangi hisob yaratish</p>
+  </div>
+
+  <div class="steps" id="stepsBar">
+    <div class="step active" id="s1"><span class="step-n">📝</span>Ma'lumotlar</div>
+    <div class="step" id="s2"><span class="step-n">🔐</span>Xavfsizlik</div>
+    <div class="step" id="s3"><span class="step-n">📧</span>Tasdiqlash</div>
+  </div>
+
+  <div class="card">
+    <!-- Page 1: personal info -->
+    <div class="page active" id="pg1">
+      <h2>Shaxsiy ma'lumotlar</h2>
+      <p class="sub">Barcha majburiy maydonlarni to'ldiring</p>
+      <div class="grid2">
+        <div class="form-group">
+          <label>Ism <span class="req">*</span></label>
+          <input id="firstName" type="text" placeholder="Masalan: Sardor"/>
+          <div class="field-err" id="fnErr">Ism kiriting</div>
+        </div>
+        <div class="form-group">
+          <label>Familiya <span class="req">*</span></label>
+          <input id="lastName" type="text" placeholder="Masalan: Toshmatov"/>
+          <div class="field-err" id="lnErr">Familiya kiriting</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Universitet <span class="req">*</span></label>
+        <select id="uni">
+          <option value="">— Tanlang —</option>
+          <option>Toshkent Axborot Texnologiyalari Universiteti</option>
+          <option>O'zbekiston Milliy Universiteti</option>
+          <option>Toshkent Davlat Texnika Universiteti</option>
+          <option>Samarqand Davlat Universiteti</option>
+          <option>Buxoro Davlat Universiteti</option>
+          <option>Fergʼona Politexnika Instituti</option>
+          <option>Boshqa</option>
+        </select>
+      </div>
+      <div class="grid2">
+        <div class="form-group">
+          <label>Yo'nalish <span class="req">*</span></label>
+          <select id="major">
+            <option value="">— Tanlang —</option>
+            <option>Dasturiy injiniring</option>
+            <option>Kompyuter fanlari</option>
+            <option>Axborot tizimlari</option>
+            <option>Kibxavfsizlik</option>
+            <option>Sun'iy intellekt</option>
+            <option>Boshqa</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Kurs <span class="req">*</span></label>
+          <select id="year">
+            <option value="">— Tanlang —</option>
+            <option>1-kurs</option>
+            <option>2-kurs</option>
+            <option>3-kurs</option>
+            <option>4-kurs</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="form-group">
+          <label>Guruh <span class="req">*</span></label>
+          <input id="group" type="text" placeholder="Masalan: 211-21"/>
+        </div>
+        <div class="form-group">
+          <label>Telefon <span class="req">*</span></label>
+          <input id="phone" type="tel" placeholder="+998 90 000 00 00"/>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="goPage2()">Davom etish →</button>
+      </div>
+    </div>
+
+    <!-- Page 2: credentials -->
+    <div class="page" id="pg2">
+      <h2>Kirish ma'lumotlari</h2>
+      <p class="sub">Email, login va parolingizni o'rnating</p>
+      <div class="form-group">
+        <label>Email <span class="req">*</span></label>
+        <input id="email" type="email" placeholder="email@example.com"/>
+        <div class="field-err" id="emailErr">To'g'ri email kiriting</div>
+      </div>
+      <div class="form-group">
+        <label>Username (login) <span class="req">*</span></label>
+        <input id="username" type="text" placeholder="faqat harf, raqam, _ belgisi" autocomplete="username"/>
+        <div class="field-err" id="unErr">3 ta belgidan uzun bo'lishi kerak</div>
+      </div>
+      <div class="form-group">
+        <label>Parol <span class="req">*</span></label>
+        <input id="pass1" type="password" placeholder="kamida 8 belgi" autocomplete="new-password" oninput="checkPass(this.value)"/>
+        <div class="pass-strength"><div class="pass-strength-bar" id="pBar"></div></div>
+        <div class="pass-hint" id="pHint">Parol kuchi: —</div>
+      </div>
+      <div class="form-group">
+        <label>Parolni tasdiqlang <span class="req">*</span></label>
+        <input id="pass2" type="password" placeholder="parolni qayta kiriting" autocomplete="new-password"/>
+        <div class="field-err" id="p2Err">Parollar mos kelmaydi</div>
+      </div>
+      <div class="agree">
+        <input type="checkbox" id="terms"/>
+        <label for="terms">Men <a href="#">Foydalanish shartlari</a> va <a href="#">Maxfiylik siyosati</a>ga roziman</label>
+      </div>
+      <div class="btn-row" style="margin-top:1.5rem">
+        <button class="btn-ghost" onclick="goPage(1)">← Orqaga</button>
+        <button class="btn" onclick="goPage3()">Tasdiqlash →</button>
+      </div>
+    </div>
+
+    <!-- Page 3: email verify -->
+    <div class="page" id="pg3">
+      <div class="verify-box">
+        <div class="icon">📬</div>
+        <h3>Emailingizni tasdiqlang</h3>
+        <p>Quyidagi emailga 6 xonali kod yuborildi:<br><strong id="sentTo" style="color:#a78bfa"></strong></p>
+        <div class="otp-row">
+          <input type="text" maxlength="1" class="otp" oninput="otpNext(this,0)"/>
+          <input type="text" maxlength="1" class="otp" oninput="otpNext(this,1)"/>
+          <input type="text" maxlength="1" class="otp" oninput="otpNext(this,2)"/>
+          <input type="text" maxlength="1" class="otp" oninput="otpNext(this,3)"/>
+          <input type="text" maxlength="1" class="otp" oninput="otpNext(this,4)"/>
+          <input type="text" maxlength="1" class="otp" oninput="otpNext(this,5)"/>
+        </div>
+        <button class="btn" style="max-width:260px;margin:0 auto .8rem;" onclick="verifyOTP()">Tasdiqlash ✓</button>
+        <div class="resend">Kod kelmadimi? <a onclick="resendCode()">Qayta yuborish</a></div>
+      </div>
+    </div>
+
+    <div class="switch">
+      Akkauntingiz bormi? <a href="login.html">Kirish</a>
+    </div>
+  </div>
+</div>
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+Auth.redirectIfAuthed();
+
+const otps = document.querySelectorAll('.otp');
+let regEmail = ''; // register dan keyin OTP uchun
+
+// ── Sahifa almashtirish ───────────────────────
+function goPage(n) {
+  document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === n - 1));
+  ['s1','s2','s3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+    if (i === n - 1) el.classList.add('active');
+    else if (i < n - 1) el.classList.add('done');
+  });
+}
+
+function goPage2() {
+  const fn = document.getElementById('firstName').value.trim();
+  const ln = document.getElementById('lastName').value.trim();
+  let ok = true;
+  document.getElementById('fnErr').style.display = fn ? 'none' : 'block'; if (!fn) ok = false;
+  document.getElementById('lnErr').style.display = ln ? 'none' : 'block'; if (!ln) ok = false;
+  if (ok) goPage(2);
+}
+
+// ── Parol kuchi ───────────────────────────────
+function checkPass(v) {
+  const bar = document.getElementById('pBar');
+  const hint = document.getElementById('pHint');
+  const s = [v.length >= 8, /[A-Z]/.test(v), /[0-9]/.test(v), /[^A-Za-z0-9]/.test(v)].filter(Boolean).length;
+  bar.style.width = (s * 25) + '%';
+  bar.style.background = ['','#ff6584','#ffa500','#4299e1','#43e97b'][s];
+  hint.textContent = 'Parol kuchi: ' + (['','Zaif',"O'rtacha",'Yaxshi','Kuchli'][s] || '—');
+}
+
+// ── 3-bosqich: API ga yuborish ─────────────────
+async function goPage3() {
+  const email    = document.getElementById('email').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const p1       = document.getElementById('pass1').value;
+  const p2       = document.getElementById('pass2').value;
+  const terms    = document.getElementById('terms').checked;
+  let ok = true;
+
+  document.getElementById('emailErr').style.display = /\S+@\S+\.\S+/.test(email) ? 'none' : 'block';
+  if (!/\S+@\S+\.\S+/.test(email)) ok = false;
+  document.getElementById('unErr').style.display = username.length >= 3 ? 'none' : 'block';
+  if (username.length < 3) ok = false;
+  document.getElementById('p2Err').style.display = p1 === p2 ? 'none' : 'block';
+  if (p1 !== p2) ok = false;
+  if (!terms) { alert('Foydalanish shartlariga rozilik bildiring!'); ok = false; }
+  if (!ok) return;
+
+  const btn = document.querySelector('#pg2 .btn');
+  btn.textContent = 'Yuklanmoqda...'; btn.disabled = true;
+
+  try {
+    await api.register({
+      username,
+      email,
+      first_name: document.getElementById('firstName').value.trim(),
+      last_name:  document.getElementById('lastName').value.trim(),
+      password:   p1,
+      password2:  p2,
+      role: 'student',
+    });
+    regEmail = email;
+    document.getElementById('sentTo').textContent = email;
+    goPage(3);
+  } catch (err) {
+    alert('Xatolik: ' + err.message);
+  } finally {
+    btn.textContent = 'Tasdiqlash →'; btn.disabled = false;
+  }
+}
+
+// ── OTP kiritish ─────────────────────────────
+function otpNext(el, i) {
+  el.value = el.value.replace(/\D/, '');
+  if (el.value && i < 5) otps[i + 1].focus();
+  if (i === 5) {
+    const code = [...otps].map(o => o.value).join('');
+    if (code.length === 6) verifyOTP();
+  }
+}
+
+async function verifyOTP() {
+  const code = [...otps].map(o => o.value).join('');
+  if (code.length < 6) return;
+
+  const btn = document.querySelector('#pg3 .btn');
+  btn.textContent = 'Tekshirilmoqda...'; btn.disabled = true;
+
+  try {
+    await api.verifyOtp({ email: regEmail, code });
+    // Tasdiqlandi — loginga yo'naltirish
+    window.location.href = '/login.html?verified=1';
+  } catch (err) {
+    otps.forEach(o => { o.style.borderColor = '#ff6584'; o.value = ''; });
+    otps[0].focus();
+    setTimeout(() => otps.forEach(o => o.style.borderColor = ''), 1500);
+    alert(err.message || 'Kod noto\'g\'ri. Qayta urinib ko\'ring.');
+  } finally {
+    btn.textContent = 'Tasdiqlash ✓'; btn.disabled = false;
+  }
+}
+
+async function resendCode() {
+  if (!regEmail) return;
+  try {
+    await api.resendOtp(regEmail);
+    alert('Kod qayta yuborildi!');
+  } catch (err) {
+    alert(err.message);
+  }
+}
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

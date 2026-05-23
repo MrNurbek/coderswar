@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coders War — Gamifikatsion O'quv Platformasi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #0f1628;
+      --bg3: #141c35;
+      --accent: #6c63ff;
+      --accent2: #ff6584;
+      --accent3: #43e97b;
+      --gold: #ffd700;
+      --text: #e8eaf6;
+      --muted: #8892b0;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(108,99,255,0.25);
+      --glow: 0 0 30px rgba(108,99,255,0.3);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4, h5, h6,
+    .logo, .nav-links a, .nav-cta,
+    .section-title, .section-tag {
+      font-family: 'MedievalSharp', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* ─── NAVBAR ─────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(10,14,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: 1px;
+      background: linear-gradient(135deg, #6c63ff, #ff6584);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--accent); color: #fff; border: none;
+      padding: .55rem 1.4rem; border-radius: 8px; font-size: .9rem;
+      font-weight: 600; cursor: pointer; transition: opacity .2s;
+      text-decoration: none;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ─── HERO ───────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 6rem 1.5rem 4rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(108,99,255,0.15) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255,101,132,0.08) 0%, transparent 60%);
+      position: relative; overflow: hidden;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid var(--border);
+      color: #a79fff; font-size: .8rem; font-weight: 600;
+      padding: .35rem 1rem; border-radius: 20px;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(135deg, #6c63ff 0%, #a78bfa 40%, #ff6584 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted); max-width: 680px; margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+    .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: linear-gradient(135deg, #6c63ff, #a78bfa);
+      color: #fff; border: none; padding: .85rem 2.2rem;
+      border-radius: 12px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: transform .2s, box-shadow .2s;
+      text-decoration: none; display: inline-block;
+      box-shadow: 0 4px 20px rgba(108,99,255,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,99,255,0.5); }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+      padding: .85rem 2.2rem; border-radius: 12px;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      transition: border-color .2s, background .2s; text-decoration: none;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(108,99,255,0.1); }
+
+    /* floating stat cards */
+    .hero-stats {
+      display: flex; gap: 1.5rem; justify-content: center;
+      flex-wrap: wrap; margin-top: 4rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.2rem 2rem;
+      backdrop-filter: blur(10px);
+      animation: float 4s ease-in-out infinite;
+    }
+    .stat-card:nth-child(2) { animation-delay: 1.3s; }
+    .stat-card:nth-child(3) { animation-delay: 2.6s; }
+    .stat-card .num {
+      font-size: 2rem; font-weight: 800;
+      background: linear-gradient(135deg, #6c63ff, #ff6584);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-card .label { color: var(--muted); font-size: .85rem; margin-top: .25rem; }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ─── SECTION COMMONS ────────────────────────────────── */
+    section { padding: 6rem 1.5rem; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block; color: var(--accent);
+      font-size: .8rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: .75rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; margin-bottom: 1rem; line-height: 1.2;
+    }
+    .section-sub {
+      color: var(--muted); font-size: 1.05rem;
+      max-width: 600px; line-height: 1.7; margin-bottom: 3rem;
+    }
+
+    /* ─── HOW IT WORKS ───────────────────────────────────── */
+    #how { background: var(--bg2); }
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem; position: relative;
+    }
+    .flow-step {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.8rem 1.5rem;
+      text-align: center; transition: border-color .3s, transform .3s;
+      position: relative; overflow: hidden;
+    }
+    .flow-step::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .flow-step:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .flow-step .step-num {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(108,99,255,0.15);
+      border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 800; color: var(--accent);
+      margin: 0 auto 1rem;
+    }
+    .flow-step h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    .flow-step p { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+
+    /* ─── FEATURES ───────────────────────────────────────── */
+    #features { background: var(--bg); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .feature-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+    }
+    .feat-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.2rem;
+    }
+    .feat-icon.purple { background: rgba(108,99,255,0.15); }
+    .feat-icon.pink   { background: rgba(255,101,132,0.15); }
+    .feat-icon.green  { background: rgba(67,233,123,0.15); }
+    .feat-icon.gold   { background: rgba(255,215,0,0.15); }
+    .feat-icon.blue   { background: rgba(66,153,225,0.15); }
+    .feat-icon.orange { background: rgba(237,137,54,0.15); }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .6rem; }
+    .feature-card p  { color: var(--muted); font-size: .9rem; line-height: 1.6; }
+
+    /* ─── SCORING MODEL ──────────────────────────────────── */
+    #scoring { background: var(--bg2); }
+    .scoring-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: start;
+    }
+    @media(max-width:768px) { .scoring-wrap { grid-template-columns: 1fr; } }
+    .criteria-list { display: flex; flex-direction: column; gap: 1rem; }
+    .criterion {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1rem 1.2rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .crit-bar-wrap { flex: 1; }
+    .crit-label { display: flex; justify-content: space-between; margin-bottom: .4rem; }
+    .crit-label span:first-child { font-size: .85rem; font-weight: 600; }
+    .crit-label span:last-child  { font-size: .85rem; color: var(--accent); font-weight: 700; }
+    .bar-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; }
+    .bar-fill  { height: 100%; border-radius: 4px; transition: width 1s ease; }
+    .scoring-info { display: flex; flex-direction: column; gap: 1.5rem; }
+    .info-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem;
+    }
+    .info-box h4 { font-size: 1rem; font-weight: 700; margin-bottom: .8rem; color: var(--accent); }
+    .info-box code {
+      display: block; background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 8px; padding: .8rem 1rem;
+      font-size: .85rem; color: #a78bfa; line-height: 1.8;
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    .formula-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+    .formula-chip {
+      background: rgba(108,99,255,0.12); border: 1px solid var(--border);
+      border-radius: 6px; padding: .25rem .7rem; font-size: .8rem; color: #a79fff;
+    }
+
+    /* ─── LEVELS ─────────────────────────────────────────── */
+    #levels { background: var(--bg); }
+    .levels-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.2rem;
+    }
+    .level-card {
+      border-radius: 16px; padding: 1.5rem;
+      border: 1px solid transparent;
+      position: relative; overflow: hidden;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .level-card:hover { transform: translateY(-4px); }
+    .level-card .lv-badge {
+      font-size: .7rem; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: .2rem .6rem;
+      border-radius: 4px; margin-bottom: .8rem; display: inline-block;
+    }
+    .level-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: .3rem; }
+    .level-card .range { font-size: .85rem; opacity: .7; margin-bottom: .6rem; }
+    .level-card p { font-size: .82rem; opacity: .75; line-height: 1.5; }
+    /* color themes per level */
+    .lv-recruit { background: rgba(148,163,184,0.08); border-color: rgba(148,163,184,0.2); }
+    .lv-recruit .lv-badge { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .lv-warden  { background: rgba(67,233,123,0.07); border-color: rgba(67,233,123,0.2); }
+    .lv-warden .lv-badge  { background: rgba(67,233,123,0.15); color: #43e97b; }
+    .lv-knight  { background: rgba(66,153,225,0.07); border-color: rgba(66,153,225,0.2); }
+    .lv-knight .lv-badge  { background: rgba(66,153,225,0.15); color: #4299e1; }
+    .lv-hero    { background: rgba(108,99,255,0.08); border-color: rgba(108,99,255,0.25); }
+    .lv-hero .lv-badge    { background: rgba(108,99,255,0.2); color: #a78bfa; }
+    .lv-legend  { background: rgba(255,165,0,0.07); border-color: rgba(255,165,0,0.2); }
+    .lv-legend .lv-badge  { background: rgba(255,165,0,0.15); color: #ffa500; }
+    .lv-lord    { background: rgba(255,101,132,0.07); border-color: rgba(255,101,132,0.2); }
+    .lv-lord .lv-badge    { background: rgba(255,101,132,0.15); color: #ff6584; }
+    .lv-deity   { background: rgba(240,113,103,0.07); border-color: rgba(240,113,103,0.2); }
+    .lv-deity .lv-badge   { background: linear-gradient(135deg,rgba(240,113,103,.2),rgba(255,165,0,.2)); color: #f07167; }
+    .lv-titan   { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.35); }
+    .lv-titan .lv-badge   { background: rgba(255,215,0,0.2); color: var(--gold); }
+
+    /* ─── CHARACTERS ─────────────────────────────────────── */
+    #characters { background: var(--bg2); }
+    .chars-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    .char-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1rem 1rem 1.5rem;
+      text-align: center; transition: border-color .3s, transform .3s;
+      cursor: pointer;
+    }
+    .char-card:hover { border-color: var(--accent); transform: translateY(-6px); }
+    .char-card.selected { border-color: var(--accent); box-shadow: var(--glow); }
+    .char-avatar {
+      width: 100%; aspect-ratio: 3/4;
+      margin: 0 auto 1rem;
+      border-radius: 14px; overflow: hidden;
+      filter: drop-shadow(0 4px 12px rgba(108,99,255,0.4));
+    }
+    .char-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top center;
+    }
+    .char-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .3rem; }
+    .char-card .char-en { color: var(--muted); font-size: .8rem; margin-bottom: .5rem; }
+    .char-card .char-desc { color: var(--muted); font-size: .8rem; line-height: 1.5; }
+
+    /* ─── EQUIPMENT ─────────────────────────────────────── */
+    #equipment { background: var(--bg2); }
+    .equip-tabs {
+      display: flex; gap: .6rem; flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .equip-tab {
+      padding: .4rem 1rem; border-radius: 30px; font-size: .82rem; font-weight: 600;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer; transition: all .22s;
+    }
+    .equip-tab.active, .equip-tab:hover {
+      background: var(--accent); border-color: var(--accent); color: #fff;
+    }
+    .equip-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 1rem;
+    }
+    .equip-card {
+      border: 2px solid transparent;
+      border-radius: 16px; padding: 0;
+      transition: transform .28s, box-shadow .28s;
+      cursor: default;
+      position: relative; overflow: hidden;
+      aspect-ratio: 3/4;
+      background: #111827;
+    }
+    .equip-card:hover { transform: translateY(-5px); }
+    .equip-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.1) 55%, transparent 100%);
+      pointer-events: none; z-index: 2;
+    }
+    .equip-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; z-index: 1;
+    }
+    .equip-icon {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-60%);
+      font-size: 3.2rem; z-index: 3; line-height: 1;
+    }
+    .equip-name {
+      position: absolute; bottom: 2rem; left: 0; right: 0;
+      padding: 0 .5rem; text-align: center;
+      font-size: .8rem; font-weight: 700; line-height: 1.3;
+      text-shadow: 0 1px 4px rgba(0,0,0,1); z-index: 3;
+    }
+    .equip-rarity {
+      position: absolute; bottom: .45rem; left: 50%; transform: translateX(-50%);
+      font-size: .68rem; font-weight: 600; white-space: nowrap;
+      padding: .12rem .55rem; border-radius: 20px; z-index: 3;
+    }
+    .rarity-common    { border-color: #94a3b8; }
+    .rarity-rare      { border-color: #4299e1; box-shadow: 0 0 10px rgba(66,153,225,.25); }
+    .rarity-epic      { border-color: #a855f7; box-shadow: 0 0 14px rgba(168,85,247,.3); }
+    .rarity-legendary { border-color: #ffd700; box-shadow: 0 0 18px rgba(255,215,0,.35); }
+    .rarity-common  .equip-rarity  { background: rgba(148,163,184,.25); color: #c8d3e0; }
+    .rarity-rare    .equip-rarity  { background: rgba(66,153,225,.25);  color: #7ec8f5; }
+    .rarity-epic    .equip-rarity  { background: rgba(168,85,247,.25);  color: #d8a4fc; }
+    .rarity-legendary .equip-rarity{ background: rgba(255,215,0,.2);    color: #ffd700; }
+
+    /* ─── MODULES ────────────────────────────────────────── */
+    #modules { background: var(--bg); }
+    .modules-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px) { .modules-grid { grid-template-columns: 1fr; } }
+    .module-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .module-card:hover { border-color: var(--accent); box-shadow: var(--glow); }
+    .module-num {
+      font-size: .75rem; font-weight: 700; color: var(--accent);
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .module-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: .5rem; }
+    .module-card .semester { color: var(--muted); font-size: .85rem; margin-bottom: 1rem; }
+    .module-card .topics-count {
+      display: inline-block; background: rgba(108,99,255,0.12);
+      border: 1px solid var(--border);
+      padding: .3rem .8rem; border-radius: 8px; font-size: .8rem; color: #a79fff;
+    }
+    .topic-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+    .topic-tag {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px; padding: .2rem .6rem; font-size: .75rem; color: var(--muted);
+    }
+
+    /* ─── MVP ROADMAP ────────────────────────────────────── */
+    #roadmap { background: var(--bg); }
+    .roadmap-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+    .mvp-card {
+      border-radius: 20px; padding: 2rem;
+      border: 1px solid; position: relative; overflow: hidden;
+    }
+    .mvp-card::after {
+      content: attr(data-mvp);
+      position: absolute; right: 1.5rem; top: 1.5rem;
+      font-size: 3rem; font-weight: 900; opacity: .06;
+    }
+    .mvp1 { background: rgba(67,233,123,.06); border-color: rgba(67,233,123,.2); }
+    .mvp2 { background: rgba(108,99,255,.06); border-color: rgba(108,99,255,.25); }
+    .mvp3 { background: rgba(255,165,0,.06); border-color: rgba(255,165,0,.2); }
+    .mvp4 { background: rgba(255,101,132,.06); border-color: rgba(255,101,132,.2); }
+    .mvp-phase {
+      font-size: .75rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .mvp1 .mvp-phase { color: #43e97b; }
+    .mvp2 .mvp-phase { color: #a78bfa; }
+    .mvp3 .mvp-phase { color: #ffa500; }
+    .mvp4 .mvp-phase { color: #ff6584; }
+    .mvp-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+    .mvp-list { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .mvp-list li {
+      display: flex; align-items: center; gap: .6rem;
+      font-size: .85rem; color: var(--muted);
+    }
+    .mvp-list li::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .mvp1 .mvp-list li::before { background: #43e97b; }
+    .mvp2 .mvp-list li::before { background: #a78bfa; }
+    .mvp3 .mvp-list li::before { background: #ffa500; }
+    .mvp4 .mvp-list li::before { background: #ff6584; }
+
+    /* ─── ROLES ──────────────────────────────────────────── */
+    #roles { background: var(--bg2); }
+    .roles-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.2rem;
+    }
+    .role-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 18px; padding: 1.8rem;
+      transition: border-color .3s;
+    }
+    .role-card:hover { border-color: var(--accent); }
+    .role-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .role-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; }
+    .role-card p  { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+
+    /* ─── CTA ────────────────────────────────────────────── */
+    #cta {
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(108,99,255,0.2) 0%, transparent 70%);
+      text-align: center; padding: 8rem 1.5rem;
+    }
+    #cta h2 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 1rem; }
+    #cta p  { color: var(--muted); font-size: 1.1rem; margin-bottom: 2.5rem; }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+    footer .footer-logo {
+      font-size: 1.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #6c63ff, #ff6584);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: .5rem;
+    }
+    footer p { color: var(--muted); font-size: .85rem; }
+
+    /* ─── PARTICLES (canvas) ─────────────────────────────── */
+    #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+    /* ─── SCROLL ANIMATE ─────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media(max-width: 640px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: .8rem; }
+      .stat-card { padding: 1rem 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/index.png') center/cover no-repeat;opacity:.18;z-index:-1;pointer-events:none;"></div>
+
+<canvas id="particles"></canvas>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav>
+  <div class="logo">CodersWar</div>
+  <ul class="nav-links">
+    <li><a href="#how">Qanday ishlaydi</a></li>
+    <li><a href="#features">Modullar</a></li>
+    <li><a href="#scoring">Baholash</a></li>
+    <li><a href="#levels">Darajalar</a></li>
+    <li><a href="#equipment">Qurollar</a></li>
+    <li><a href="#roadmap">Yo'l xaritasi</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Boshlash →</a>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <div style="position:relative;z-index:1;">
+    <div class="hero-badge">🎮 Gamifikatsion O'quv Platforma</div>
+    <h1>
+      C# dasturlash tilini<br>
+      <span class="grad">o'yin orqali o'rganing!</span>
+    </h1>
+    <p>
+      Coders War — C# dasturlash tilini o'rgatishga mo'ljallangan
+      gamifikatsion-adaptiv o'quv platforma. 45 mavzu, 4 mezonli baholash,
+      real-time reyting va duel tizimi bilan bilimingizni keyingi bosqichga olib chiqing.
+    </p>
+    <div class="hero-btns">
+      <a href="register.html" class="btn-primary">Ro'yxatdan o'tish</a>
+      <a href="login.html" class="btn-outline">Kirish →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="num">45</div>
+        <div class="label">Mavzu</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">4500</div>
+        <div class="label">Maks. Rating Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">4</div>
+        <div class="label">Baholash Mezoni</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">8</div>
+        <div class="label">Daraja (Level)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ────────────────────────────────────────── -->
+<section id="how">
+  <div class="container">
+    <p class="section-tag">Platforma oqimi</p>
+    <h2 class="section-title">Qanday ishlaydi?</h2>
+    <p class="section-sub">
+      Ro'yxatdan o'tishdan to yuqori darajaga etishgacha bo'lgan to'liq o'quv yo'li.
+    </p>
+    <div class="flow-steps reveal">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <h3>Ro'yxatdan o'ting</h3>
+        <p>Ism, familiya, universitet, yo'nalish va guruhingizni kiriting. Email tasdiqlang.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <h3>Diagnostika testi</h3>
+        <p>20 savollik test orqali boshlang'ich darajangiz (Beginner / Intermediate / Advanced) aniqlanadi.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <h3>Personaj tanlang</h3>
+        <p>5 ta personajdan birini tanlang: Warrior, Ranger, Sorceress, Knight yoki Lady Knight.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <h3>Darslar</h3>
+        <p>Video darslar va nazariy materiallarni o'rganing. Har mavzuda 3 ta daraja mavjud.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <h3>Amaliyot</h3>
+        <p>C# kod yozing, amaliy topshiriqlar va loyihalarni bajaring. Kod avtomatik test case orqali tekshiriladi.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">6</div>
+        <h3>Reyting & Level</h3>
+        <p>4 mezon bo'yicha 100 ball to'plang, Rating scoreni oshiring va yangi levelga chiqing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ────────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <p class="section-tag">Bo'limlar</p>
+    <h2 class="section-title">Platformaning asosiy bo'limlari</h2>
+    <p class="section-sub">
+      Har bir bo'lim talabaning har tomonlama rivojlanishiga xizmat qiladi — nazariyadan tortib duelgacha.
+    </p>
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feat-icon purple">📚</div>
+        <h3>Darslar</h3>
+        <p>3 semestrga bo'lingan 45 ta mavzu. Har mavzuda 3 daraja (Boshlang'ich, O'rta, Yuqori), video dars va quiz. C# dasturlash bo'yicha to'liq kurs.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon green">💻</div>
+        <h3>Amaliyot & Kod tekshirish</h3>
+        <p>Har mavzuda 10 ta amaliy topshiriq va 1 ta loyiha. Kodingiz avtomatik kompilyatsiya qilinib, test case bilan solishtiriladi.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon pink">⚔️</div>
+        <h3>Duel tizimi</h3>
+        <p>Boshqa talabalar bilan real vaqtda algoritmik duellar. Tezkorlik va to'g'rilik baholanadi. Reyting uchun kurash!</p>
+      </div>
+<div class="feature-card">
+        <div class="feat-icon blue">🤖</div>
+        <h3>AI Yordamchi</h3>
+        <p>Sun'iy intellekt xatolarni tushuntiradi, kodni yaxshilash bo'yicha maslahat beradi va o'quv trayektoriyasi tahlilini taqdim etadi.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon orange">📊</div>
+        <h3>O'quv Trayektoriyasi</h3>
+        <p>Mavzudan mavzuga o'sishingizni kuzating. 4 mezon bo'yicha radar grafigi, zaif va kuchli tomonlar tahlili.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon purple">🔍</div>
+        <h3>Peer-Review</h3>
+        <p>Tengdoshlaringiz ishini baholang, o'zingizdagi ishni tahlil qiling. Refleksiv-baholovchi mezon orqali bilim mustahkamlanadi.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon green">📁</div>
+        <h3>Portfolio</h3>
+        <p>Yakunlangan loyihalar, mini-proyektlar va kreativ yechimlaringiz avtomatik portfolio shaklida saqlanadi.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon pink">🏰</div>
+        <h3>Clan & Jamoaviy loyihalar</h3>
+        <p>Clan yarating, jamoa bilan birgalikda loyihalar bajaring. Klan reytingida ustunlik uchun kurashing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SCORING MODEL ────────────────────────────────────────── -->
+<section id="scoring">
+  <div class="container">
+    <p class="section-tag">Baholash Modeli</p>
+    <h2 class="section-title">4 mezonli 100 ballik tizim</h2>
+    <p class="section-sub">
+      Har bir mavzu 4 ta mezon asosida 100 ball bilan baholanadi.
+      Bu model talabaning real o'quv faoliyatini to'liq aks ettiradi.
+    </p>
+    <div class="scoring-wrap reveal">
+      <div class="criteria-list">
+        <div class="criterion">
+          <div class="crit-bar-wrap">
+            <div class="crit-label"><span>🔥 Motivatsion mezon</span><span>15 ball</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="15" style="width:0;background:linear-gradient(90deg,#6c63ff,#a78bfa)"></div></div>
+          </div>
+        </div>
+        <div class="criterion">
+          <div class="crit-bar-wrap">
+            <div class="crit-label"><span>🧠 Kognitiv mezon</span><span>35 ball</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="35" style="width:0;background:linear-gradient(90deg,#4299e1,#63b3ed)"></div></div>
+          </div>
+        </div>
+        <div class="criterion">
+          <div class="crit-bar-wrap">
+            <div class="crit-label"><span>💻 Faoliyatli mezon</span><span>30 ball</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="30" style="width:0;background:linear-gradient(90deg,#43e97b,#38f9d7)"></div></div>
+          </div>
+        </div>
+        <div class="criterion">
+          <div class="crit-bar-wrap">
+            <div class="crit-label"><span>🔄 Refleksiv-baholovchi mezon</span><span>20 ball</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="20" style="width:0;background:linear-gradient(90deg,#ed8936,#f6ad55)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scoring-info">
+        <div class="info-box">
+          <h4>Asosiy formulalar</h4>
+          <code>
+TopicScore = Mo + Ko + Fa + Re<br>
+&nbsp;&nbsp;&nbsp;(max: 15+30+35+20 = 100)<br><br>
+RatingScore = Σ (barcha mavzu ballari)<br>
+&nbsp;&nbsp;&nbsp;(max: 45 × 100 = 4500)<br><br>
+AcademicScore = RatingScore ÷ CompletedTopics
+          </code>
+        </div>
+        <div class="info-box">
+          <h4>Mavzu yakunlash shartlari</h4>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem;">
+            <li style="display:flex;gap:.6rem;align-items:center;font-size:.85rem;color:var(--muted)"><span style="color:#43e97b">✓</span> Video darsni kamida 80% ko'rish</li>
+            <li style="display:flex;gap:.6rem;align-items:center;font-size:.85rem;color:var(--muted)"><span style="color:#43e97b">✓</span> Quiz ishlangan bo'lishi</li>
+            <li style="display:flex;gap:.6rem;align-items:center;font-size:.85rem;color:var(--muted)"><span style="color:#43e97b">✓</span> Topshiriqlarning kamida 60% bajarish</li>
+            <li style="display:flex;gap:.6rem;align-items:center;font-size:.85rem;color:var(--muted)"><span style="color:#43e97b">✓</span> Refleksiya formasi to'ldirish</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>Adaptiv ochish qoidasi</h4>
+          <div style="display:flex;flex-direction:column;gap:.5rem;">
+            <div style="display:flex;justify-content:space-between;font-size:.83rem;padding:.4rem .6rem;background:rgba(67,233,123,.08);border-radius:6px"><span>Topic score ≥ 85</span><span style="color:#43e97b">Yuqori daraja tavsiya</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.83rem;padding:.4rem .6rem;background:rgba(66,153,225,.08);border-radius:6px"><span>Score 70–84</span><span style="color:#4299e1">Keyingi mavzu ochiladi</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.83rem;padding:.4rem .6rem;background:rgba(255,165,0,.08);border-radius:6px"><span>Score 60–69</span><span style="color:#ffa500">Shartli ochiladi</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.83rem;padding:.4rem .6rem;background:rgba(255,101,132,.08);border-radius:6px"><span>Score &lt; 60</span><span style="color:#ff6584">Qayta ishlash kerak</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LEVELS ──────────────────────────────────────────────── -->
+<section id="levels">
+  <div class="container">
+    <p class="section-tag">Darajalar tizimi</p>
+    <h2 class="section-title">8 ta Level — Recruit'dan Titan'gacha</h2>
+    <p class="section-sub">Level Rating score asosida belgilanadi. Maksimal 4500 ball yig'ing va Titan unvoniga erishing!</p>
+    <div class="levels-grid reveal">
+      <div class="level-card lv-recruit">
+        <span class="lv-badge">Recruit</span>
+        <h3>⚔️ Yangi Jangchi</h3>
+        <div class="range">0 – 300 ball</div>
+        <p>Platformaga moslashuv, dastlabki mavzular bilan tanishish bosqichi.</p>
+      </div>
+      <div class="level-card lv-warden">
+        <span class="lv-badge">Warden</span>
+        <h3>🌿 Qo'riqchi</h3>
+        <div class="range">301 – 750 ball</div>
+        <p>Tayanch bilimlar shakllanishi, asosiy C# sintaksisini o'zlashtirish.</p>
+      </div>
+      <div class="level-card lv-knight">
+        <span class="lv-badge">Knight</span>
+        <h3>🛡️ Ritsar</h3>
+        <div class="range">751 – 1300 ball</div>
+        <p>Barqaror nazariy-amaliy o'zlashtirish, OOP asoslarini bilish.</p>
+      </div>
+      <div class="level-card lv-hero">
+        <span class="lv-badge">Hero</span>
+        <h3>🦸 Qahramon</h3>
+        <div class="range">1301 – 1900 ball</div>
+        <p>Mustaqil topshiriq bajarish ko'nikmasi, algoritmik fikrlash.</p>
+      </div>
+      <div class="level-card lv-legend">
+        <span class="lv-badge">Legend</span>
+        <h3>🔱 Afsona</h3>
+        <div class="range">1901 – 2600 ball</div>
+        <p>Murakkab masalalar va loyiha tayyorgarligi, LINQ va async.</p>
+      </div>
+      <div class="level-card lv-lord">
+        <span class="lv-badge">Lord</span>
+        <h3>👑 Lord</h3>
+        <div class="range">2601 – 3350 ball</div>
+        <p>Yuqori algoritmik-amaliy kompetensiya, Design Patterns.</p>
+      </div>
+      <div class="level-card lv-deity">
+        <span class="lv-badge">Deity</span>
+        <h3>🔮 Imperator</h3>
+        <div class="range">3351 – 4050 ball</div>
+        <p>Kreativ, adaptiv va refleksiv faoliyat, arxitektura dizayni.</p>
+      </div>
+      <div class="level-card lv-titan">
+        <span class="lv-badge">Titan ✨</span>
+        <h3>⚡ Titan</h3>
+        <div class="range">4051 – 4500 ball</div>
+        <p>Fan bo'yicha maksimalga yaqin kompleks kompetensiya. Eng yuqori daraja!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CHARACTERS ──────────────────────────────────────────── -->
+<section id="characters">
+  <div class="container">
+    <p class="section-tag">Personajlar</p>
+    <h2 class="section-title">O'z qahramoningizni tanlang</h2>
+    <p class="section-sub">5 ta unikal personajdan birini tanlang. Personajingiz vizual identifikatsiya, duel ko'rinishi va motivatsion elementlar uchun xizmat qiladi.</p>
+    <div class="chars-grid reveal">
+      <div class="char-card" onclick="selectChar(this)">
+        <div class="char-avatar"><img src="static/img/warrior.png" alt="Warrior"></div>
+        <h3>Jangchi</h3>
+        <div class="char-en">Warrior</div>
+        <div class="char-desc">Kuch va qat'iyat timsoli. Qiyin vazifalardan qo'rqmaydi.</div>
+      </div>
+      <div class="char-card" onclick="selectChar(this)">
+        <div class="char-avatar"><img src="static/img/ranger.png" alt="Ranger"></div>
+        <h3>Sarguzashtchi</h3>
+        <div class="char-en">Ranger</div>
+        <div class="char-desc">Tezkorlik va aniqlik timsoli. Samarali yechim topadi.</div>
+      </div>
+      <div class="char-card" onclick="selectChar(this)">
+        <div class="char-avatar"><img src="static/img/sorceress.png" alt="Sorceress"></div>
+        <h3>Sehrgar Ayol</h3>
+        <div class="char-en">Sorceress</div>
+        <div class="char-desc">Bilim va sehrli tafakkur timsoli. Algoritmni sehrga aylantiradi.</div>
+      </div>
+      <div class="char-card" onclick="selectChar(this)">
+        <div class="char-avatar"><img src="static/img/knight.png" alt="Knight"></div>
+        <h3>Ritsar</h3>
+        <div class="char-en">Knight</div>
+        <div class="char-desc">Adolat va himoya timsoli. Jamoani boshqaradi.</div>
+      </div>
+      <div class="char-card" onclick="selectChar(this)">
+        <div class="char-avatar"><img src="static/img/lady-knight.png" alt="Lady Knight"></div>
+        <h3>Ayol Ritsar</h3>
+        <div class="char-en">Lady Knight</div>
+        <div class="char-desc">Qat'iyat va himoya timsoli. Barcha cheklovlarni engib o'tadi.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EQUIPMENT ────────────────────────────────────────────── -->
+<section id="equipment">
+  <div class="container">
+    <p class="section-tag">Qurol-Aslahalar</p>
+    <h2 class="section-title">24 ta noyob qurol va aslaha</h2>
+    <p class="section-sub">Topshiriqlarni bajaring — tasodifiy qurol yutib oling. Har bir aslaha duelda kuch (+attack) va himoya (+defense) bonuslari beradi.</p>
+
+    <div class="equip-tabs">
+      <button class="equip-tab active" onclick="filterEquip('all',this)">Barchasi (24)</button>
+      <button class="equip-tab" onclick="filterEquip('weapon',this)">⚔️ Qurollar</button>
+      <button class="equip-tab" onclick="filterEquip('armor',this)">🛡️ Zirhlar</button>
+      <button class="equip-tab" onclick="filterEquip('helmet',this)">⛑️ Dubulg'alar</button>
+      <button class="equip-tab" onclick="filterEquip('shield',this)">🪵 Qalqonlar</button>
+      <button class="equip-tab" onclick="filterEquip('boots',this)">👟 Etiklar</button>
+      <button class="equip-tab" onclick="filterEquip('ring',this)">💍 Uzuklar</button>
+    </div>
+
+    <div class="equip-grid reveal" id="equipGrid">
+      <!-- Weapons: Sword -->
+      <div class="equip-card rarity-common" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/sword-common.png" alt="Oddiy Qilich">
+        <div class="equip-name">Oddiy Qilich</div>
+        <span class="equip-rarity">Oddiy</span>
+      </div>
+      <div class="equip-card rarity-rare" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/sword-rare.png" alt="Po'lat Qilich">
+        <div class="equip-name">Po'lat Qilich</div>
+        <span class="equip-rarity">Noyob</span>
+      </div>
+      <div class="equip-card rarity-legendary" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/sword-legendary.png" alt="Afsonaviy Qilich">
+        <div class="equip-name">Afsonaviy Qilich</div>
+        <span class="equip-rarity">Afsonaviy</span>
+      </div>
+      <!-- Weapons: Bow -->
+      <div class="equip-card rarity-common" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/bow-common.png" alt="Oddiy Kamon">
+        <div class="equip-name">Oddiy Kamon</div>
+        <span class="equip-rarity">Oddiy</span>
+      </div>
+      <div class="equip-card rarity-epic" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/bow-epic.png" alt="Jangchi Kamoni">
+        <div class="equip-name">Jangchi Kamoni</div>
+        <span class="equip-rarity">Epic</span>
+      </div>
+      <div class="equip-card rarity-legendary" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/bow-legendary.png" alt="Qirol Kamoni">
+        <div class="equip-name">Qirol Kamoni</div>
+        <span class="equip-rarity">Afsonaviy</span>
+      </div>
+      <!-- Weapons: Staff -->
+      <div class="equip-card rarity-common" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/staff-common.png" alt="Oddiy Asov">
+        <div class="equip-name">Oddiy Asov</div>
+        <span class="equip-rarity">Oddiy</span>
+      </div>
+      <div class="equip-card rarity-epic" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/staff-epic.png" alt="Sehrli Tayoqcha">
+        <div class="equip-name">Sehrli Tayoqcha</div>
+        <span class="equip-rarity">Epic</span>
+      </div>
+      <div class="equip-card rarity-legendary" data-type="weapon">
+        <img class="equip-img" src="static/img/equipment/staff-legendary.png" alt="Afsonaviy Sehrli Asov">
+        <div class="equip-name">Afsonaviy Sehrli Asov</div>
+        <span class="equip-rarity">Afsonaviy</span>
+      </div>
+      <!-- Armor -->
+      <div class="equip-card rarity-common" data-type="armor">
+        <img class="equip-img" src="static/img/equipment/armor-common.png" alt="Oddiy Zirh">
+        <div class="equip-name">Oddiy Zirh</div>
+        <span class="equip-rarity">Oddiy</span>
+      </div>
+      <div class="equip-card rarity-rare" data-type="armor">
+        <img class="equip-img" src="static/img/equipment/armor-rare.png" alt="Kumush Zirh">
+        <div class="equip-name">Kumush Zirh</div>
+        <span class="equip-rarity">Noyob</span>
+      </div>
+      <div class="equip-card rarity-legendary" data-type="armor">
+        <img class="equip-img" src="static/img/equipment/armor-legendary.png" alt="Afsonaviy Oltin Zirh">
+        <div class="equip-name">Afsonaviy Oltin Zirh</div>
+        <span class="equip-rarity">Afsonaviy</span>
+      </div>
+      <!-- Boots -->
+      <div class="equip-card rarity-common" data-type="boots">
+        <img class="equip-img" src="static/img/equipment/boots-common.png" alt="Oddiy Etik">
+        <div class="equip-name">Oddiy Etik</div>
+        <span class="equip-rarity">Oddiy</span>
+      </div>
+      <div class="equip-card rarity-rare" data-type="boots">
+        <img class="equip-img" src="static/img/equipment/boots-rare.png" alt="Jangchi Etigi">
+        <div class="equip-name">Jangchi Etigi</div>
+        <span class="equip-rarity">Noyob</span>
+      </div>
+      <div class="equip-card rarity-legendary" data-type="boots">
+        <img class="equip-img" src="static/img/equipment/boots-legendary.png" alt="Qirol Etigi">
+        <div class="equip-name">Qirol Etigi</div>
+        <span class="equip-rarity">Afsonaviy</span>
+      </div>
+      <!-- Ring -->
+      <div class="equip-card rarity-rare" data-type="ring">
+        <img class="equip-img" src="static/img/equipment/ring-rare.png" alt="Sehrli Kumush Uzuk">
+        <div class="equip-name">Sehrli Kumush Uzuk</div>
+        <span class="equip-rarity">Noyob</span>
+      </div>
+      <div class="equip-card rarity-epic" data-type="ring">
+        <img class="equip-img" src="static/img/equipment/ring-epic.png" alt="Sehrli Uzuk">
+        <div class="equip-name">Sehrli Uzuk</div>
+        <span class="equip-rarity">Epic</span>
+      </div>
+      <div class="equip-card rarity-legendary" data-type="ring">
+        <img class="equip-img" src="static/img/equipment/ring-legendary.png" alt="Sehrli Tilla Uzuk">
+        <div class="equip-name">Sehrli Tilla Uzuk</div>
+        <span class="equip-rarity">Afsonaviy</span>
+      </div>
+      <!-- Helmet -->
+      <div class="equip-card rarity-common" data-type="helmet">
+        <img class="equip-img" src="static/img/equipment/helmet-common.png" alt="Oddiy Dubulg'a">
+        <div class="equip-name">Oddiy Dubulg'a</div>
+        <span class="equip-rarity">Oddiy</span>
+      </div>
+      <div class="equip-card rarity-epic" data-type="helmet">
+        <img class="equip-img" src="static/img/equipment/helmet-epic.png" alt="Ritser Dubulg'asi">
+        <div class="equip-name">Ritser Dubulg'asi</div>
+        <span class="equip-rarity">Epic</span>
+      </div>
+      <div class="equip-card rarity-legendary" data-type="helmet">
+        <img class="equip-img" src="static/img/equipment/helmet-legendary.png" alt="Titan Dubulg'a">
+        <div class="equip-name">Titan Dubulg'a</div>
+        <span class="equip-rarity">Afsonaviy</span>
+      </div>
+      <!-- Shield -->
+      <div class="equip-card rarity-common" data-type="shield">
+        <img class="equip-img" src="static/img/equipment/shield-common.png" alt="Yog'och Qalqon">
+        <div class="equip-name">Yog'och Qalqon</div>
+        <span class="equip-rarity">Oddiy</span>
+      </div>
+      <div class="equip-card rarity-rare" data-type="shield">
+        <img class="equip-img" src="static/img/equipment/shield-rare.png" alt="Temir Qalqon">
+        <div class="equip-name">Temir Qalqon</div>
+        <span class="equip-rarity">Noyob</span>
+      </div>
+      <div class="equip-card rarity-epic" data-type="shield">
+        <img class="equip-img" src="static/img/equipment/shield-epic.png" alt="Qahramon Qalqoni">
+        <div class="equip-name">Qahramon Qalqoni</div>
+        <span class="equip-rarity">Epic</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.5rem;justify-content:center;">
+      <div style="background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.2);border-radius:12px;padding:.8rem 1.6rem;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:800;color:#94a3b8;">7</div>
+        <div style="color:var(--muted);font-size:.75rem;margin-top:.15rem;">Oddiy</div>
+      </div>
+      <div style="background:rgba(66,153,225,.08);border:1px solid rgba(66,153,225,.2);border-radius:12px;padding:.8rem 1.6rem;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:800;color:#4299e1;">5</div>
+        <div style="color:var(--muted);font-size:.75rem;margin-top:.15rem;">Noyob</div>
+      </div>
+      <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:.8rem 1.6rem;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:800;color:#c084fc;">5</div>
+        <div style="color:var(--muted);font-size:.75rem;margin-top:.15rem;">Epic</div>
+      </div>
+      <div style="background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2);border-radius:12px;padding:.8rem 1.6rem;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:800;color:#ffd700;">7</div>
+        <div style="color:var(--muted);font-size:.75rem;margin-top:.15rem;">Afsonaviy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MODULES ─────────────────────────────────────────────── -->
+<section id="modules">
+  <div class="container">
+    <p class="section-tag">Kurs tuzilmasi</p>
+    <h2 class="section-title">45 mavzu · 3 semestr</h2>
+    <p class="section-sub">C# bo'yicha to'liq kurs uchta semestrga bo'lingan. Har bir mavzu 3 darajada o'rgatiladi.</p>
+
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:2.5rem;">
+      <div style="background:rgba(108,99,255,0.1);border:1px solid var(--border);border-radius:14px;padding:1rem 1.5rem;text-align:center;flex:1;min-width:140px;">
+        <div style="font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">45</div>
+        <div style="color:var(--muted);font-size:.85rem;margin-top:.2rem;">Mavzu</div>
+      </div>
+      <div style="background:rgba(67,233,123,0.08);border:1px solid rgba(67,233,123,0.2);border-radius:14px;padding:1rem 1.5rem;text-align:center;flex:1;min-width:140px;">
+        <div style="font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#43e97b,#38f9d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">1350</div>
+        <div style="color:var(--muted);font-size:.85rem;margin-top:.2rem;">Test savoli</div>
+      </div>
+      <div style="background:rgba(66,153,225,0.08);border:1px solid rgba(66,153,225,0.2);border-radius:14px;padding:1rem 1.5rem;text-align:center;flex:1;min-width:140px;">
+        <div style="font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#4299e1,#63b3ed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">1350</div>
+        <div style="color:var(--muted);font-size:.85rem;margin-top:.2rem;">Topshiriq</div>
+      </div>
+      <div style="background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.2);border-radius:14px;padding:1rem 1.5rem;text-align:center;flex:1;min-width:140px;">
+        <div style="font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#ffa500,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">135</div>
+        <div style="color:var(--muted);font-size:.85rem;margin-top:.2rem;">Loyiha</div>
+      </div>
+    </div>
+
+    <div class="modules-grid reveal">
+      <div class="module-card">
+        <div class="module-num">Semestr 1</div>
+        <h3>C# Asoslari</h3>
+        <div class="semester">Mavzular 1–15</div>
+        <span class="topics-count">15 mavzu · 450 test · 450 topshiriq · 45 loyiha</span>
+        <div class="topic-tags">
+          <span class="topic-tag">C# ga kirish</span>
+          <span class="topic-tag">O'zgaruvchilar</span>
+          <span class="topic-tag">Shart operatorlari</span>
+          <span class="topic-tag">Tsikllar</span>
+          <span class="topic-tag">Massivlar</span>
+          <span class="topic-tag">Metodlar</span>
+          <span class="topic-tag">+9 ta mavzu</span>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">Semestr 2</div>
+        <h3>OOP va Ma'lumot Tuzilmalari</h3>
+        <div class="semester">Mavzular 16–26</div>
+        <span class="topics-count">11 mavzu · 330 test · 330 topshiriq · 33 loyiha</span>
+        <div class="topic-tags">
+          <span class="topic-tag">Sinflar</span>
+          <span class="topic-tag">Meros</span>
+          <span class="topic-tag">Polimorfizm</span>
+          <span class="topic-tag">Interfeyslar</span>
+          <span class="topic-tag">Generics</span>
+          <span class="topic-tag">Collections</span>
+          <span class="topic-tag">+5 ta mavzu</span>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-num">Semestr 3</div>
+        <h3>Ilg'or C# va Loyiha</h3>
+        <div class="semester">Mavzular 27–45</div>
+        <span class="topics-count">19 mavzu · 570 test · 570 topshiriq · 57 loyiha</span>
+        <div class="topic-tags">
+          <span class="topic-tag">LINQ</span>
+          <span class="topic-tag">Async/Await</span>
+          <span class="topic-tag">File I/O</span>
+          <span class="topic-tag">Design Patterns</span>
+          <span class="topic-tag">API integratsiya</span>
+          <span class="topic-tag">Yakuniy loyiha</span>
+          <span class="topic-tag">+13 ta mavzu</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ROLES ───────────────────────────────────────────────── -->
+<section id="roles">
+  <div class="container">
+    <p class="section-tag">Foydalanuvchi rollari</p>
+    <h2 class="section-title">Har kim uchun alohida rol</h2>
+    <p class="section-sub">Platforma to'rt asosiy rol bilan ishlaydi — har birining o'z imkoniyatlari va mas'uliyatlari bor.</p>
+    <div class="roles-grid reveal">
+      <div class="role-card">
+        <div class="role-icon">🦸‍♂️</div>
+        <h3>Superadmin</h3>
+        <p>Tizimni to'liq boshqaradi. Barcha sozlamalar, audit log va global konfiguratsiyalar.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">🏫</div>
+        <h3>Admin</h3>
+        <p>Universitet, yo'nalish, guruh, o'qituvchi va umumiy sozlamalarni boshqaradi.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">👨‍🏫</div>
+        <h3>O'qituvchi</h3>
+        <p>Mavzu, test, topshiriq, loyiha, baholash va hisobotlarni boshqaradi. AI hisobotlarni ko'radi.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">🎓</div>
+        <h3>Talaba</h3>
+        <p>O'qiydi, test ishlaydi, kod yuboradi, loyiha topshiradi, duelda qatnashadi, refleksiya yozadi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── ROADMAP ─────────────────────────────────────────────── -->
+<section id="roadmap">
+  <div class="container">
+    <p class="section-tag">Rivojlanish yo'li</p>
+    <h2 class="section-title">4 bosqichda ishlab chiqish</h2>
+    <p class="section-sub">Loyiha bosqichma-bosqich, MVP metodologiyasi asosida quriladi.</p>
+    <div class="roadmap-grid reveal">
+      <div class="mvp-card mvp1" data-mvp="1">
+        <div class="mvp-phase">MVP 1 — Yadro</div>
+        <h3>Ta'lim va Baholash yadrosi</h3>
+        <ul class="mvp-list">
+          <li>Registration & Email verification</li>
+          <li>Login / JWT / Role tizimi</li>
+          <li>Diagnostika testi</li>
+          <li>Personaj tanlash</li>
+          <li>Darslar (semestr, mavzu, daraja)</li>
+          <li>Quiz va test tizimi</li>
+          <li>Amaliyot & Kod submission</li>
+          <li>Test case avtomatik tekshiruv</li>
+          <li>4 mezonli baholash</li>
+          <li>Rating / Academic score / Level</li>
+          <li>Student & Teacher dashboard</li>
+        </ul>
+      </div>
+      <div class="mvp-card mvp2" data-mvp="2">
+        <div class="mvp-phase">MVP 2 — Gamifikatsiya</div>
+        <h3>Refleksiya va motivatsiya</h3>
+        <ul class="mvp-list">
+          <li>Badge (nishon) tizimi</li>
+          <li>Gear (qurol-aslahar) tizimi</li>
+          <li>Refleksiya moduli</li>
+          <li>Peer-review tizimi</li>
+          <li>Portfolio shakllanishi</li>
+          <li>AI feedback integratsiyasi</li>
+          <li>O'quv trayektoriyasi analitikasi</li>
+        </ul>
+      </div>
+      <div class="mvp-card mvp3" data-mvp="3">
+        <div class="mvp-phase">MVP 3 — Musobaqa</div>
+        <h3>Jamoaviy va real-time</h3>
+        <ul class="mvp-list">
+          <li>Duel tizimi (real-time)</li>
+          <li>Clan va jamoa loyihalari</li>
+          <li>Chat moduli</li>
+          <li>Kengaytirilgan o'qituvchi analitikasi</li>
+          <li>Excel / PDF hisobot export</li>
+        </ul>
+      </div>
+      <div class="mvp-card mvp4" data-mvp="4">
+        <div class="mvp-phase">MVP 4 — AI</div>
+        <h3>Aqlli adaptiv tizim</h3>
+        <ul class="mvp-list">
+          <li>AI-based recommendation engine</li>
+          <li>Zaif tomonlarni aniqlash</li>
+          <li>Adaptiv qo'shimcha topshiriqlar</li>
+          <li>AI o'qituvchi hisoboti</li>
+          <li>Shaxsiylashtirilgan o'quv yo'li</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ─────────────────────────────────────────────────── -->
+<section id="cta">
+  <div class="container">
+    <h2>C# ustasi bo'lishga tayyormisiz?</h2>
+    <p>Coders War platformasiga qo'shiling — o'yin orqali dasturlashni o'rganing, reytingda yuqori chiqing.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-primary">Bepul ro'yxatdan o'ting →</a>
+      <a href="#features" class="btn-outline">Platformani ko'rish</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-logo">CodersWar</div>
+  <p style="margin-bottom:.5rem">"Algoritmik tillar va dasturlash" kursi asosida qurilgan gamifikatsion-adaptiv o'quv platforma</p>
+  <p>© 2025 Coders War · "Algoritmik tillar va dasturlash" · C# dasturlash tili</p>
+</footer>
+
+<script>
+/* ── Particles ────────────────────────────────────────────── */
+(function(){
+  const c = document.getElementById('particles');
+  const ctx = c.getContext('2d');
+  let W, H, pts;
+  function resize(){ W=c.width=innerWidth; H=c.height=innerHeight; }
+  function init(){
+    pts = Array.from({length:70},()=>({
+      x:Math.random()*W, y:Math.random()*H,
+      vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+      r:Math.random()*1.5+.5
+    }));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(108,99,255,0.35)'; ctx.fill();
+    });
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<120){
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(108,99,255,${.15*(1-d/120)})`; ctx.lineWidth=.5;
+        ctx.stroke();
+      }
+    }));
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();init();});
+  resize(); init(); draw();
+})();
+
+/* ── Scroll reveal ────────────────────────────────────────── */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+/* ── Bar animation ────────────────────────────────────────── */
+const barObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.bar-fill').forEach(b=>{
+        b.style.width = b.dataset.w + '%';
+      });
+      barObs.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.scoring-wrap').forEach(el=>barObs.observe(el));
+
+/* ── Character select ─────────────────────────────────────── */
+function selectChar(card){
+  document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+/* ── Equipment filter ─────────────────────────────────────── */
+function filterEquip(type, btn){
+  document.querySelectorAll('.equip-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#equipGrid .equip-card').forEach(card=>{
+    card.style.display = (type==='all' || card.dataset.type===type) ? '' : 'none';
+  });
+}
+
+/* ── Navbar shrink ────────────────────────────────────────── */
+window.addEventListener('scroll',()=>{
+  document.querySelector('nav').style.padding = scrollY>50 ? '.6rem 2rem' : '1rem 2rem';
+});
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

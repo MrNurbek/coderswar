@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Reyting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .info .name{font-size:.88rem;font-weight:600}
+    .info .role{font-size:.72rem;color:var(--muted)}
+    /* main */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar h2{font-size:1.05rem;font-weight:700}
+    .topbar .bc{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .content{padding:2rem;flex:1}
+    /* podium */
+    .podium-wrap{background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(108,99,255,0.1) 0%,transparent 70%);border:1px solid var(--border);border-radius:24px;padding:2.5rem 2rem 2rem;margin-bottom:2rem;text-align:center}
+    .podium-title{font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:2rem}
+    .podium{display:flex;align-items:flex-end;justify-content:center;gap:1rem;flex-wrap:wrap}
+    .podium-slot{display:flex;flex-direction:column;align-items:center;gap:.6rem;min-width:110px}
+    .pod-avatar{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;border:3px solid;position:relative}
+    .pod-crown{position:absolute;top:-16px;font-size:1.1rem}
+    .pod-name{font-size:.88rem;font-weight:700}
+    .pod-score{font-size:.8rem;color:var(--muted)}
+    .pod-level{font-size:.72rem;font-weight:600;padding:.15rem .5rem;border-radius:6px}
+    .pod-bar{width:100%;border-radius:12px 12px 0 0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:.5rem;font-size:1.2rem;font-weight:900}
+    .p1 .pod-avatar{background:rgba(255,215,0,0.15);border-color:var(--gold)}
+    .p1 .pod-bar{height:100px;background:linear-gradient(180deg,rgba(255,215,0,0.2),rgba(255,215,0,0.05));border:1px solid rgba(255,215,0,0.3)}
+    .p1 .pod-level{background:rgba(255,215,0,0.15);color:var(--gold)}
+    .p2 .pod-avatar{background:rgba(192,192,192,0.15);border-color:#c0c0c0}
+    .p2 .pod-bar{height:70px;background:linear-gradient(180deg,rgba(192,192,192,0.15),rgba(192,192,192,0.03));border:1px solid rgba(192,192,192,0.2)}
+    .p2 .pod-level{background:rgba(192,192,192,0.12);color:#c0c0c0}
+    .p3 .pod-avatar{background:rgba(205,127,50,0.15);border-color:#cd7f32}
+    .p3 .pod-bar{height:50px;background:linear-gradient(180deg,rgba(205,127,50,0.15),rgba(205,127,50,0.03));border:1px solid rgba(205,127,50,0.2)}
+    .p3 .pod-level{background:rgba(205,127,50,0.12);color:#cd7f32}
+    /* filter tabs */
+    .filter-row{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+    .filter-tabs{display:flex;gap:.5rem;flex:1;flex-wrap:wrap}
+    .ftab{padding:.5rem 1.1rem;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);transition:all .2s}
+    .ftab:hover{border-color:var(--accent);color:var(--text)}
+    .ftab.active{background:rgba(108,99,255,0.15);border-color:var(--accent);color:#a78bfa}
+    .search-lb{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;display:flex;gap:.5rem;align-items:center;color:var(--muted);font-size:.85rem}
+    .search-lb input{background:none;border:none;outline:none;color:var(--text);font-size:.85rem;width:160px}
+    .search-lb input::placeholder{color:var(--muted)}
+    /* my rank card */
+    .my-rank{background:linear-gradient(135deg,rgba(108,99,255,0.12),rgba(255,101,132,0.06));border:1px solid rgba(108,99,255,0.3);border-radius:18px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+    .mr-label{font-size:.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+    .mr-rank{font-size:2rem;font-weight:900;color:#a78bfa;line-height:1}
+    .mr-info{flex:1}
+    .mr-name{font-size:.95rem;font-weight:700}
+    .mr-meta{font-size:.8rem;color:var(--muted);margin-top:.1rem}
+    .mr-score{text-align:right}
+    .mr-score-val{font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .mr-score-sub{font-size:.72rem;color:var(--muted)}
+    /* leaderboard table */
+    .lb-table{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+    .lb-thead{display:grid;grid-template-columns:60px 1fr 120px 120px 100px 80px;padding:.7rem 1.2rem;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+    .lb-row{display:grid;grid-template-columns:60px 1fr 120px 120px 100px 80px;padding:.85rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;transition:background .2s;cursor:pointer}
+    .lb-row:hover{background:rgba(108,99,255,0.06)}
+    .lb-row.me{background:rgba(108,99,255,0.08);border-left:3px solid var(--accent)}
+    .lb-row:last-child{border-bottom:none}
+    .rank-num{font-size:1rem;font-weight:800;text-align:center}
+    .rank-1{color:var(--gold)}.rank-2{color:#c0c0c0}.rank-3{color:#cd7f32}.rank-other{color:var(--muted)}
+    .user-cell{display:flex;align-items:center;gap:.8rem}
+    .user-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;flex-shrink:0;border:2px solid}
+    .user-name{font-size:.88rem;font-weight:600}
+    .user-meta{font-size:.72rem;color:var(--muted);margin-top:.1rem}
+    .score-cell{font-size:.9rem;font-weight:700;color:var(--accent)}
+    .academic-cell{font-size:.9rem;font-weight:700}
+    .ac-high{color:#43e97b}.ac-mid{color:#4299e1}.ac-low{color:#ffa500}
+    .level-badge{font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:8px}
+    .trend-cell{font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:.3rem}
+    .t-up{color:#43e97b}.t-down{color:#ff6584}.t-same{color:var(--muted)}
+    /* char icon */
+    .char-ic{font-size:1rem}
+    @media(max-width:900px){
+      .lb-thead{grid-template-columns:50px 1fr 90px 80px;display:none}
+      .lb-row{grid-template-columns:50px 1fr 90px 80px}
+      .lb-row>:nth-child(4),.lb-row>:nth-child(5){display:none}
+    }
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/leaderboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<aside class="sidebar">
+  <div class="sb-logo"><a href="index.html">⚔️ Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
+    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
+    <a class="nav-item active" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="av" data-user-init>?</div>
+      <div class="info"><div class="name" data-user-name>...</div><div class="role" data-user-role>Student</div></div>
+      <button class="logout-btn" onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div><h2>🏆 Global Reyting</h2><div class="bc">Dashboard › Reyting · 248 talaba</div></div>
+    <div style="display:flex;align-items:center;gap:.8rem">
+      <div style="font-size:.82rem;color:var(--muted)">Yangilandi: 2 daqiqa avval</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- PODIUM -->
+    <div class="podium-wrap">
+      <div class="podium-title">🏆 Top 3 — Bu hafta</div>
+      <div class="podium" id="podiumEl"></div>
+    </div>
+
+    <!-- MY RANK -->
+    <div class="my-rank" id="myRankBar" style="display:none">
+      <div style="text-align:center">
+        <div class="mr-label">Sizning o'rningiz</div>
+        <div class="mr-rank" id="myRankNum">#—</div>
+      </div>
+      <div class="user-av" id="myRankAv" style="width:44px;height:44px;background:linear-gradient(135deg,#6c63ff,#ff6584);border-color:var(--accent);font-size:1.1rem">?</div>
+      <div class="mr-info">
+        <div class="mr-name" id="myRankName">— <span style="font-size:.8rem">⚔️</span></div>
+        <div class="mr-meta" id="myRankMeta">—</div>
+      </div>
+      <div class="mr-score">
+        <div class="mr-score-val" id="myRankScore">—</div>
+        <div class="mr-score-sub">Rating score</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:1.1rem;font-weight:800;color:#43e97b" id="myRankAcad">—</div>
+        <div style="font-size:.72rem;color:var(--muted)">Academic score</div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filter-row">
+      <div class="filter-tabs">
+        <div class="ftab active" onclick="filterBy('global',this)">🌍 Umumiy</div>
+        <div class="ftab" onclick="filterBy('group',this)">👥 Guruh</div>
+        <div class="ftab" onclick="filterBy('faculty',this)">🏫 Yo'nalish</div>
+        <div class="ftab" onclick="filterBy('week',this)">📅 Bu hafta</div>
+        <div class="ftab" onclick="filterBy('month',this)">📅 Bu oy</div>
+      </div>
+      <div class="search-lb">🔍 <input type="text" placeholder="Talaba qidirish..." oninput="searchTable(this.value)"/></div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="lb-table">
+      <div class="lb-thead">
+        <div>#</div><div>Talaba</div><div>Rating</div><div>Academic</div><div>Daraja</div><div>Trend</div>
+      </div>
+      <div id="lbBody"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+
+const LEVEL_NAMES  = ['Recruit','Warden','Knight','Hero','Legend','Lord','Deity','Titan'];
+const LEVEL_COLORS = ['#94a3b8','#43e97b','#4299e1','#a78bfa','#ffa500','#ff6584','#f07167','#ffd700'];
+const LEVEL_ICONS  = ['🛡️','🗡️','⚔️','🦅','🔥','👑','🔮','⚡'];
+
+let allData = [];
+let myId    = null;
+
+function _levelIdx(rating) {
+  return rating>=4051?7:rating>=3351?6:rating>=2601?5:rating>=1901?4:rating>=1301?3:rating>=751?2:rating>=301?1:0;
+}
+
+function _mapEntry(entry, rank, myUserId) {
+  const sp     = entry.student_profile || {};
+  const rating = sp.rating_score || entry.rating_score || 0;
+  const acad   = sp.academic_score || entry.academic_score || 0;
+  const streak = sp.current_streak || entry.current_streak || 0;
+  const level  = sp.level || entry.level || '';
+  const lvIdx  = _levelIdx(rating);
+  const name   = entry.full_name || (entry.first_name ? `${entry.first_name} ${(entry.last_name||'')[0] || ''}.` : entry.username);
+  const univ   = sp.university || entry.university || '';
+  const group  = sp.group || entry.group || '';
+  return { rank, name, rating, academic: Math.round(acad), level: lvIdx, levelName: level || LEVEL_NAMES[lvIdx],
+           icon: LEVEL_ICONS[lvIdx], univ, group, streak, me: entry.id === myUserId };
+}
+
+function renderPodium(data) {
+  const top3 = data.slice(0, 3);
+  if (top3.length < 3) { document.getElementById('podiumEl').innerHTML = ''; return; }
+  const order  = [1, 0, 2];
+  const slots  = ['p2','p1','p3'];
+  const labels = ["🥈 2-o'rin","🥇 1-o'rin","🥉 3-o'rin"];
+  document.getElementById('podiumEl').innerHTML = order.map((di, si) => {
+    const d = top3[di];
+    if (!d) return '';
+    const lc = LEVEL_COLORS[d.level];
+    return `<div class="podium-slot ${slots[si]}">
+      <div class="pod-avatar">${si===1?'<div class="pod-crown">👑</div>':''}${d.icon}</div>
+      <div class="pod-name">${d.name}</div>
+      <div class="pod-score">⭐ ${d.rating.toLocaleString()} ball</div>
+      <div class="pod-level" style="color:${lc}">${d.levelName}</div>
+      <div class="pod-bar">${labels[si]}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTable(data) {
+  if (!data.length) {
+    document.getElementById('lbBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">Natija topilmadi</div>';
+    return;
+  }
+  document.getElementById('lbBody').innerHTML = data.map(d => {
+    const lc = LEVEL_COLORS[d.level];
+    const ac = d.academic >= 80 ? 'ac-high' : d.academic >= 65 ? 'ac-mid' : 'ac-low';
+    return `<div class="lb-row ${d.me?'me':''}" onclick="window.location.href='profile.html'">
+      <div class="rank-num ${d.rank<=3?'rank-'+d.rank:'rank-other'}">${d.rank<=3?['🥇','🥈','🥉'][d.rank-1]:d.rank}</div>
+      <div class="user-cell">
+        <div class="user-av" style="background:${lc}22;border-color:${lc}55">${d.icon}</div>
+        <div>
+          <div class="user-name">${d.name}${d.me?' <span style="background:rgba(108,99,255,0.2);color:#a78bfa;font-size:.65rem;padding:.1rem .4rem;border-radius:5px;margin-left:.3rem">Sen</span>':''}</div>
+          <div class="user-meta">${[d.univ, d.group].filter(Boolean).join(' · ')}${d.streak?' · 🔥 '+d.streak+' kun':''}</div>
+        </div>
+      </div>
+      <div class="score-cell">⭐ ${d.rating.toLocaleString()}</div>
+      <div class="academic-cell ${ac}">${d.academic}/100</div>
+      <div><span class="level-badge" style="background:${lc}22;color:${lc}">${d.levelName}</span></div>
+      <div class="trend-cell"><span class="t-same">— Barqaror</span></div>
+    </div>`;
+  }).join('');
+}
+
+function filterBy(type, el) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  let data = [...allData];
+  if (type === 'week')   data = [...data].sort((a,b) => b.streak - a.streak);
+  else if (type === 'month') data = [...data]; // same as global for now
+  renderTable(data.slice(0, 30));
+}
+
+function searchTable(q) {
+  const d = q ? allData.filter(r => r.name.toLowerCase().includes(q.toLowerCase())) : allData;
+  renderTable(d.slice(0, 30));
+}
+
+async function initLeaderboard() {
+  Auth.fillUserUI();
+
+  // My profile for "my rank" bar
+  try {
+    const me = await api.me();
+    myId = me.id;
+    const sp = me.student_profile || {};
+    document.getElementById('myRankAv').textContent   = (me.first_name||me.username||'?')[0].toUpperCase();
+    document.getElementById('myRankName').innerHTML   = `${me.first_name || ''} ${me.last_name || ''} <span style="font-size:.8rem">⚔️</span>`.trim();
+    document.getElementById('myRankScore').textContent = sp.rating_score || '—';
+    document.getElementById('myRankAcad').textContent  = sp.academic_score ? Math.round(sp.academic_score) : '—';
+    const streak = sp.current_streak || 0;
+    const level  = sp.level || '';
+    document.getElementById('myRankMeta').textContent  = [level, sp.university, sp.group, streak ? '🔥 '+streak+' kun' : ''].filter(Boolean).join(' · ');
+  } catch(e) {}
+
+  // Leaderboard data
+  try {
+    document.getElementById('lbBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">⏳ Yuklanmoqda...</div>';
+    const res = await api.leaderboard();
+    const raw = Array.isArray(res) ? res : (res.results || []);
+    allData = raw.map((entry, i) => _mapEntry(entry, i+1, myId));
+
+    // Find my rank
+    const myEntry = allData.find(d => d.me);
+    if (myEntry) {
+      document.getElementById('myRankNum').textContent = '#' + myEntry.rank;
+      document.getElementById('myRankBar').style.display = 'flex';
+    }
+
+    renderPodium(allData);
+    renderTable(allData.slice(0, 30));
+
+    // Update topbar count
+    document.querySelector('.bc').textContent = `Dashboard › Reyting · ${allData.length} talaba`;
+  } catch(e) {
+    document.getElementById('lbBody').innerHTML = `<div style="text-align:center;padding:2rem;color:#ff8fab">❌ Yuklab bo'lmadi: ${e.message}</div>`;
+  }
+}
+
+initLeaderboard();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Peer Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .sb-user .info .name{font-size:.88rem;font-weight:600}
+    .sb-user .info .role{font-size:.72rem;color:var(--muted)}
+    .logout-btn{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.3rem;border-radius:8px;transition:color .2s}
+    .logout-btn:hover{color:var(--accent2)}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-left h2{font-size:1.05rem;font-weight:700}
+    .topbar-left .breadcrumb{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .topbar-right{display:flex;align-items:center;gap:1rem}
+    .btn{padding:.55rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,#6c63ff,#8b5cf6);color:#fff}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .content{padding:2rem;flex:1}
+
+    /* CARD */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+    .card-title{font-size:.95rem;font-weight:700}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem}
+    @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+    .stat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+    .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .stat-box::after{content:attr(data-icon);position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:.08}
+    .stat-box .label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem}
+    .stat-box .value{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:.3rem}
+    .stat-box .sub{font-size:.78rem;color:var(--muted)}
+    .trend-up{color:#43e97b}
+
+    /* TABS */
+    .tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border)}
+    .tab-btn{padding:.65rem 1.2rem;border-radius:10px 10px 0 0;font-size:.85rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;position:relative;bottom:-1px;border:1px solid transparent;border-bottom:none}
+    .tab-btn.active{background:var(--bg2);color:#a78bfa;border-color:var(--border);border-bottom-color:var(--bg2)}
+    .tab-btn:hover:not(.active){color:var(--text)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* GRID */
+    .grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    .grid-1-1{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:1000px){.grid-2-1,.grid-1-1{grid-template-columns:1fr}}
+
+    /* REVIEW QUEUE */
+    .review-queue{display:flex;flex-direction:column;gap:.9rem}
+    .review-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:1.2rem;transition:border-color .2s;cursor:pointer}
+    .review-card:hover{border-color:var(--accent)}
+    .review-card.urgent{border-left:3px solid var(--accent2)}
+    .rc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+    .rc-student{display:flex;align-items:center;gap:.7rem}
+    .rc-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
+    .rc-name{font-size:.88rem;font-weight:600}
+    .rc-task{font-size:.75rem;color:var(--muted)}
+    .rc-badges{display:flex;align-items:center;gap:.5rem}
+    .badge-pill{font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:8px}
+    .bp-pending{background:rgba(255,215,0,0.12);color:var(--gold)}
+    .bp-urgent{background:rgba(255,101,132,0.12);color:var(--accent2)}
+    .bp-done{background:rgba(67,233,123,0.12);color:#43e97b}
+    .bp-new{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .rc-code-preview{background:#0d1117;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:.8rem 1rem;font-family:'Cascadia Code','Fira Code',monospace;font-size:.78rem;color:#c9d1d9;line-height:1.6;margin-bottom:.8rem;max-height:100px;overflow:hidden;position:relative}
+    .rc-code-preview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(transparent,rgba(13,17,23,0.9))}
+    .rc-footer{display:flex;align-items:center;justify-content:space-between}
+    .rc-meta{font-size:.75rem;color:var(--muted)}
+    .rc-actions{display:flex;gap:.5rem}
+    .rc-btn{padding:.4rem .9rem;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+    .rc-btn-review{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .rc-btn-review:hover{background:rgba(108,99,255,0.25)}
+    .rc-btn-skip{background:rgba(255,255,255,0.05);color:var(--muted)}
+    .rc-btn-skip:hover{background:rgba(255,255,255,0.08)}
+
+    /* REVIEW FORM (inline) */
+    .review-form{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+    .review-form.open{display:block}
+    .criteria-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-bottom:1rem}
+    .criterion-row{display:flex;flex-direction:column;gap:.3rem;background:rgba(255,255,255,0.03);border-radius:10px;padding:.7rem}
+    .cr-label{font-size:.75rem;font-weight:600;color:var(--muted);display:flex;justify-content:space-between}
+    .cr-label span{color:#a78bfa;font-weight:700}
+    .cr-slider{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);outline:none;cursor:pointer}
+    .cr-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#6c63ff;cursor:pointer;transition:transform .2s}
+    .cr-slider::-webkit-slider-thumb:hover{transform:scale(1.3)}
+    .comment-area{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;color:var(--text);font-size:.85rem;outline:none;resize:vertical;min-height:80px;font-family:inherit;transition:border-color .2s;margin-bottom:.8rem}
+    .comment-area:focus{border-color:var(--accent)}
+    .review-submit-row{display:flex;gap:.7rem;justify-content:flex-end}
+
+    /* CODE DIFF VIEW */
+    .diff-view{background:#0d1117;border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden}
+    .diff-header{background:rgba(255,255,255,0.04);padding:.6rem 1rem;display:flex;align-items:center;gap:.8rem;border-bottom:1px solid rgba(255,255,255,0.07)}
+    .diff-lang{font-size:.75rem;font-weight:600;color:#a78bfa;background:rgba(108,99,255,0.12);padding:.15rem .5rem;border-radius:6px}
+    .diff-file{font-size:.8rem;color:var(--muted)}
+    .diff-body{padding:1rem;font-family:'Cascadia Code','Fira Code',monospace;font-size:.8rem;line-height:1.7;color:#c9d1d9;max-height:320px;overflow-y:auto}
+    .line{display:flex;gap:.8rem}
+    .ln{color:rgba(255,255,255,0.2);min-width:28px;user-select:none;text-align:right}
+    .lc{flex:1;white-space:pre}
+    .line.add .lc{color:#3fb950;background:rgba(63,185,80,0.07)}
+    .line.del .lc{color:#f85149;background:rgba(248,81,73,0.07);text-decoration:line-through}
+    .line.add .ln::before{content:'+';color:#3fb950}
+    .line.del .ln::before{content:'-';color:#f85149}
+
+    /* MY REVIEWS */
+    .my-review-list{display:flex;flex-direction:column;gap:.7rem}
+    .mr-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1rem 1.2rem}
+    .mr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+    .mr-title{font-size:.88rem;font-weight:600}
+    .mr-meta{font-size:.75rem;color:var(--muted)}
+    .star-row{display:flex;gap:.2rem;font-size:1.1rem;margin-bottom:.4rem}
+    .star-empty{opacity:.2}
+    .mr-comment{font-size:.82rem;color:var(--muted);line-height:1.5;font-style:italic}
+    .score-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+    .score-chip{font-size:.72rem;padding:.15rem .55rem;border-radius:8px;background:rgba(108,99,255,0.1);color:#a78bfa;font-weight:600}
+
+    /* FEEDBACK RECEIVED */
+    .feedback-list{display:flex;flex-direction:column;gap:.8rem}
+    .fb-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1rem 1.2rem;transition:border-color .2s}
+    .fb-item:hover{border-color:var(--accent)}
+    .fb-header{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem}
+    .fb-reviewer{font-size:.85rem;font-weight:600;flex:1}
+    .fb-date{font-size:.72rem;color:var(--muted)}
+    .fb-topic{font-size:.78rem;color:var(--accent);margin-bottom:.4rem}
+    .fb-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.6rem}
+    .fb-score-item{background:rgba(255,255,255,0.03);border-radius:8px;padding:.4rem .6rem;text-align:center}
+    .fb-score-label{font-size:.65rem;color:var(--muted)}
+    .fb-score-val{font-size:.88rem;font-weight:700}
+    .fb-comment{font-size:.82rem;color:var(--muted);line-height:1.5;font-style:italic;border-left:2px solid var(--accent);padding-left:.7rem}
+
+    /* LEADERBOARD */
+    .reviewer-list{display:flex;flex-direction:column;gap:.5rem}
+    .rv-item{display:flex;align-items:center;gap:.9rem;padding:.7rem .9rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px}
+    .rv-item.highlight{border-color:var(--accent);background:rgba(108,99,255,0.07)}
+    .rv-pos{width:26px;font-weight:900;text-align:center;font-size:.9rem}
+    .rv-pos.gold{color:var(--gold)}.rv-pos.silver{color:#c0c0c0}.rv-pos.bronze{color:#cd7f32}
+    .rv-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0}
+    .rv-info{flex:1}
+    .rv-name{font-size:.85rem;font-weight:600}
+    .rv-meta{font-size:.72rem;color:var(--muted)}
+    .rv-pts{font-size:.88rem;font-weight:700;color:var(--accent)}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:2rem;width:100%;max-width:760px;position:relative;animation:fadeUp .3s ease;max-height:90vh;overflow-y:auto}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;padding:.3rem;border-radius:8px;transition:color .2s}
+    .modal-close:hover{color:var(--text)}
+
+    /* NOTIFICATION DOT */
+    .notif-wrap{position:relative;display:inline-block}
+    .notif-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--accent2);border:2px solid var(--bg2)}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/peer-review.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <a href="index.html">⚔️ Coders War</a>
+    <div class="sub">Algoritmik tillar va dasturlash</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
+    <a class="nav-item active" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
+    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="avatar" data-user-init>?</div>
+      <div class="info">
+        <div class="name" data-user-name>...</div>
+        <div class="role" data-user-role>Student</div>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2>🔍 Peer Review</h2>
+      <div class="breadcrumb">Shaxsiy • O'zaro tekshirish</div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-wrap">
+        <button class="btn btn-outline" id="pendingBtn">📬 Kutayotganlar <strong style="color:var(--accent2)" id="pendingCount">—</strong></button>
+        <span class="notif-dot" id="pendingDot" style="display:none"></span>
+      </div>
+      <button class="btn btn-primary" onclick="openGuide()">📖 Qo'llanma</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box" data-icon="🔍">
+        <div class="label">Tekshirganlarim</div>
+        <div class="value" style="color:#a78bfa" id="statGiven">—</div>
+        <div class="sub">Jami baholash</div>
+      </div>
+      <div class="stat-box" data-icon="📥">
+        <div class="label">Men olgan</div>
+        <div class="value" style="color:#43e97b" id="statReceived">—</div>
+        <div class="sub">Peer review</div>
+      </div>
+      <div class="stat-box" data-icon="⏳">
+        <div class="label">Navbatdagi</div>
+        <div class="value" style="color:#ffd700" id="statQueue">—</div>
+        <div class="sub">Baholash kutmoqda</div>
+      </div>
+      <div class="stat-box" data-icon="⭐">
+        <div class="label">O'rtacha reyting</div>
+        <div class="value" style="color:#ff6584" id="statRating">—</div>
+        <div class="sub">/ 5.0 yulduz</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabQueueBtn" onclick="switchTab('queue')">⏳ Navbat (<span id="queueCount">0</span>)</button>
+      <button class="tab-btn" onclick="switchTab('myreviews')">✅ Tekshirganlarim</button>
+      <button class="tab-btn" onclick="switchTab('received')">📥 Men olganlar</button>
+      <button class="tab-btn" onclick="switchTab('leaderboard')">🏆 Top Reviewerlar</button>
+    </div>
+
+    <!-- TAB: QUEUE -->
+    <div id="tab-queue" class="tab-content active">
+      <div class="grid-2-1">
+        <div>
+          <div style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.88rem;color:var(--muted)" id="queueCountText">Yuklanmoqda...</span>
+          </div>
+          <div class="review-queue" id="reviewQueue"></div>
+        </div>
+        <!-- HOW IT WORKS -->
+        <div>
+          <div class="card" style="margin-bottom:1.5rem">
+            <div class="card-header"><span class="card-title">💡 Peer Review nima?</span></div>
+            <div style="display:flex;flex-direction:column;gap:.9rem;font-size:.85rem">
+              <div style="display:flex;gap:.8rem;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">1</div>
+                <div><strong>Kod tekshirish</strong><br><span style="color:var(--muted)">Guruh do'stingizning kodini o'qing va tushunib chiqing</span></div>
+              </div>
+              <div style="display:flex;gap:.8rem;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">2</div>
+                <div><strong>Mezon bo'yicha baholash</strong><br><span style="color:var(--muted)">6 ta mezon bo'yicha har birini 0–10 balda baholang</span></div>
+              </div>
+              <div style="display:flex;gap:.8rem;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">3</div>
+                <div><strong>Izoh yozish</strong><br><span style="color:var(--muted)">Konstruktiv fikr va tavsiyalar yozing</span></div>
+              </div>
+              <div style="display:flex;gap:.8rem;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">4</div>
+                <div><strong>Ball qozonish</strong><br><span style="color:var(--muted)">Har bir review uchun siz ham Reflektiv (Re) baholash ball olasiz</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">📊 Baholash mezoni</span></div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.82rem">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(108,99,255,0.06);border-radius:8px">
+                <span>🧠 Kognitiv (Ko)</span><span style="color:#a78bfa;font-weight:700">20 ball</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(67,233,123,0.05);border-radius:8px">
+                <span>⚙️ Faoliyat (Fa)</span><span style="color:#43e97b;font-weight:700">30 ball</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,215,0,0.05);border-radius:8px">
+                <span>🎯 Adaptiv (Ad)</span><span style="color:var(--gold);font-weight:700">15 ball</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,101,132,0.05);border-radius:8px">
+                <span>💡 Kreativ (Kr)</span><span style="color:#ff6584;font-weight:700">15 ball</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,255,255,0.04);border-radius:8px">
+                <span>💬 Reflektiv (Re)</span><span style="color:var(--muted);font-weight:700">10 ball</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MY REVIEWS -->
+    <div id="tab-myreviews" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">✅ Men bergan peer reviewlar (<span id="givenCount">0</span> ta)</span>
+          <span style="font-size:.82rem;color:var(--muted)" id="givenAvg"></span>
+        </div>
+        <div class="my-review-list" id="myReviews"></div>
+      </div>
+    </div>
+
+    <!-- TAB: RECEIVED -->
+    <div id="tab-received" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📥 Men olgan peer reviewlar (<span id="receivedCount">0</span> ta)</span>
+          <span style="font-size:.82rem;color:var(--accent3)" id="receivedAvg"></span>
+        </div>
+        <div class="feedback-list" id="feedbackList"></div>
+      </div>
+    </div>
+
+    <!-- TAB: LEADERBOARD -->
+    <div id="tab-leaderboard" class="tab-content">
+      <div class="grid-1-1">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🏆 Top Reviewerlar — Bu oy</span>
+          </div>
+          <div class="reviewer-list" id="reviewerList"></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:1.5rem">
+            <div class="card-header"><span class="card-title">🎖️ Reviewer nishonlari</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+              <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:.8rem;text-align:center">
+                <div style="font-size:1.8rem;margin-bottom:.3rem">🌟</div>
+                <div style="font-size:.82rem;font-weight:600;margin-bottom:.15rem">Super Reviewer</div>
+                <div style="font-size:.72rem;color:var(--muted)">10+ review bir oyda</div>
+              </div>
+              <div style="background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.15);border-radius:12px;padding:.8rem;text-align:center">
+                <div style="font-size:1.8rem;margin-bottom:.3rem">🎯</div>
+                <div style="font-size:.82rem;font-weight:600;margin-bottom:.15rem">Aniq Baholovchi</div>
+                <div style="font-size:.72rem;color:var(--muted)">4.8+ o'rtacha reyting</div>
+              </div>
+              <div style="background:rgba(67,233,123,0.06);border:1px solid rgba(67,233,123,0.15);border-radius:12px;padding:.8rem;text-align:center">
+                <div style="font-size:1.8rem;margin-bottom:.3rem">⚡</div>
+                <div style="font-size:.82rem;font-weight:600;margin-bottom:.15rem">Tez Javob</div>
+                <div style="font-size:.72rem;color:var(--muted)">2 soat ichida review</div>
+              </div>
+              <div style="background:rgba(255,101,132,0.06);border:1px solid rgba(255,101,132,0.15);border-radius:12px;padding:.8rem;text-align:center;opacity:.4">
+                <div style="font-size:1.8rem;margin-bottom:.3rem">🔒</div>
+                <div style="font-size:.82rem;font-weight:600;margin-bottom:.15rem">Mentor</div>
+                <div style="font-size:.72rem;color:var(--muted)">50+ review qilish</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">📈 Review faolligim</span></div>
+            <div style="display:flex;flex-direction:column;gap:.7rem;font-size:.83rem">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span>Bu oy</span><span style="color:#a78bfa;font-weight:700">8 ta review</span></div>
+                <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:80%;height:100%;background:linear-gradient(90deg,#6c63ff,#a78bfa);border-radius:3px"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span>O'tgan oy</span><span style="color:#a78bfa;font-weight:700">6 ta review</span></div>
+                <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:60%;height:100%;background:linear-gradient(90deg,#6c63ff,#a78bfa);border-radius:3px"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span>Jami (bu semestr)</span><span style="color:#a78bfa;font-weight:700">24 ta review</span></div>
+                <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px"><div style="width:48%;height:100%;background:linear-gradient(90deg,#6c63ff,#a78bfa);border-radius:3px"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('reviewModal')">✕</button>
+    <h3 style="margin-bottom:.3rem">🔍 Kodni baholash</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem" id="reviewModalMeta">Mavzu: Rekursiya asoslari</p>
+
+    <!-- CODE VIEW -->
+    <div class="diff-view" style="margin-bottom:1.5rem">
+      <div class="diff-header">
+        <span class="diff-lang">C#</span>
+        <span class="diff-file">Fibonacci.cs — Bobur Nazarov</span>
+      </div>
+      <div class="diff-body" id="modalCode"></div>
+    </div>
+
+    <!-- CRITERIA SCORING -->
+    <div style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">📊 Baholash mezoni</div>
+    <div class="criteria-grid" id="criteriaGrid"></div>
+
+    <!-- STAR RATING -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:.85rem;font-weight:600;margin-bottom:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">⭐ Umumiy baho</div>
+      <div class="star-picker" style="display:flex;gap:.5rem;font-size:1.8rem;cursor:pointer">
+        <span class="sp-star" onclick="setStars(1)">☆</span>
+        <span class="sp-star" onclick="setStars(2)">☆</span>
+        <span class="sp-star" onclick="setStars(3)">☆</span>
+        <span class="sp-star" onclick="setStars(4)">☆</span>
+        <span class="sp-star" onclick="setStars(5)">☆</span>
+      </div>
+    </div>
+
+    <!-- COMMENT -->
+    <div style="font-size:.85rem;font-weight:600;margin-bottom:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">💬 Izoh va tavsiyalar</div>
+    <textarea class="comment-area" id="reviewComment" placeholder="Kodni o'qib chiqgach, nima yaxshi, nima yaxshilanishi mumkin — konstruktiv fikr yozing..."></textarea>
+
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:.82rem;color:var(--muted)">Jami ball: <strong id="totalScore" style="color:#a78bfa">0 / 90</strong></div>
+      <div class="review-submit-row">
+        <button class="btn btn-outline" onclick="closeModal('reviewModal')">Bekor qilish</button>
+        <button class="btn btn-primary" onclick="submitReview()">✅ Yuborish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <button class="modal-close" onclick="closeModal('successModal')">✕</button>
+    <div style="font-size:3.5rem;margin-bottom:1rem">🎉</div>
+    <h3 style="margin-bottom:.5rem">Review muvaffaqiyatli yuborildi!</h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">Siz ushbu review uchun +5 Reflektiv (Re) ball oldingiz</p>
+    <div style="background:rgba(67,233,123,0.1);border:1px solid rgba(67,233,123,0.2);border-radius:14px;padding:1rem;margin-bottom:1.5rem">
+      <div style="font-size:1.6rem;font-weight:900;color:#43e97b">+5 Re</div>
+      <div style="font-size:.8rem;color:var(--muted)">Reflektiv baholash balli</div>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="closeModal('successModal')">Davom etish</button>
+  </div>
+</div>
+
+<!-- GUIDE MODAL -->
+<div class="modal-overlay" id="guideModal">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('guideModal')">✕</button>
+    <h3 style="margin-bottom:.5rem">📖 Peer Review qo'llanmasi</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.5rem">Sifatli review qilish uchun quyidagi ko'rsatmalarga amal qiling</p>
+    <div style="display:flex;flex-direction:column;gap:1rem;font-size:.85rem">
+      <div style="padding:1rem;background:rgba(108,99,255,0.06);border-radius:12px;border-left:3px solid var(--accent)">
+        <strong>✅ Kodni diqqat bilan o'qing</strong><br>
+        <span style="color:var(--muted)">Shoshilmay kodni tushunib chiqing. Nima qilmoqchi bo'lganini aniqlang.</span>
+      </div>
+      <div style="padding:1rem;background:rgba(67,233,123,0.05);border-radius:12px;border-left:3px solid #43e97b">
+        <strong>✅ Konstruktiv tanqid qiling</strong><br>
+        <span style="color:var(--muted)">"Bu yomon" emas, "bu qismni quyidagicha yaxshilash mumkin" deb yozing.</span>
+      </div>
+      <div style="padding:1rem;background:rgba(255,215,0,0.05);border-radius:12px;border-left:3px solid var(--gold)">
+        <strong>✅ Yaxshi tomonlarini ham aytib o'ting</strong><br>
+        <span style="color:var(--muted)">Nima yaxshi bajarilgani ham muhim. Bu motivatsiya beradi.</span>
+      </div>
+      <div style="padding:1rem;background:rgba(255,101,132,0.05);border-radius:12px;border-left:3px solid var(--accent2)">
+        <strong>❌ Shaxsiy haqoratdan tiyiling</strong><br>
+        <span style="color:var(--muted)">Kodni baholang, odamni emas. Professional muloqot tilda yozing.</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:1.5rem" onclick="closeModal('guideModal')">Tushundim</button>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+Auth.fillUserUI();
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let _queueData = [];
+let _myRevData = [];
+let _fbData    = [];
+let _lbData    = [];
+let activeTopicScoreId = null;
+let selectedStars = 3;
+
+// ─── Criteria config ─────────────────────────────────────────────────────────
+const criteria = [
+  {name:'Kognitiv (Ko)', max:20, key:'ko_score'},
+  {name:'Faoliyat (Fa)', max:30, key:'fa_score'},
+  {name:'Adaptiv (Ad)',  max:15, key:'ad_score'},
+  {name:'Kreativ (Kr)',  max:15, key:'kr_score'},
+  {name:'Reflektiv (Re)',max:10, key:'re_score'},
+];
+const scores = {ko_score:0, fa_score:0, ad_score:0, kr_score:0, re_score:0};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+function setText(id, v) { const el = $(id); if (el) el.textContent = v; }
+function fmtDate(s) {
+  if (!s) return '';
+  return new Date(s).toLocaleDateString('uz-UZ', {day:'numeric', month:'short'});
+}
+function avatarColors(idx) {
+  const cs = [
+    'linear-gradient(135deg,#6c63ff,#ff6584)',
+    'linear-gradient(135deg,#43e97b,#38f9d7)',
+    'linear-gradient(135deg,#f97316,#ffd700)',
+    'linear-gradient(135deg,#4facfe,#00f2fe)',
+    'linear-gradient(135deg,#ff6584,#ff416c)',
+  ];
+  return cs[idx % cs.length];
+}
+function levelLabel(l) {
+  return l === 'beginner' ? "Boshlang'ich" : l === 'intermediate' ? "O'rta" : 'Yuqori';
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+(async () => {
+  try {
+    const [queue, given, received, lb] = await Promise.all([
+      api.peerReviewQueue().catch(() => []),
+      api.myReviews('given').catch(() => []),
+      api.myReviews('received').catch(() => []),
+      api.peerReviewLeaderboard().catch(() => []),
+    ]);
+
+    _queueData = Array.isArray(queue)    ? queue    : (queue.results    || []);
+    _myRevData = Array.isArray(given)    ? given    : (given.results    || []);
+    _fbData    = Array.isArray(received) ? received : (received.results || []);
+    _lbData    = Array.isArray(lb)       ? lb       : (lb.results       || []);
+
+    renderStats();
+    renderQueue();
+    renderMyReviews();
+    renderReceived();
+    renderLeaderboard();
+  } catch(e) {
+    console.error('Peer review data yuklanmadi:', e);
+  }
+})();
+
+// ─── Stats ────────────────────────────────────────────────────────────────────
+function renderStats() {
+  const qN = _queueData.length;
+  setText('statGiven',    _myRevData.length);
+  setText('statReceived', _fbData.length);
+  setText('statQueue',    qN);
+  setText('queueCount',   qN);
+  setText('pendingCount', qN);
+  setText('givenCount',   _myRevData.length);
+  setText('receivedCount',_fbData.length);
+
+  const pendingDot = $('pendingDot');
+  if (pendingDot) pendingDot.style.display = qN > 0 ? 'block' : 'none';
+
+  const cText = $('queueCountText');
+  if (cText) cText.textContent = qN + " ta baholash kutmoqda";
+
+  if (_fbData.length > 0) {
+    const avg = _fbData.reduce((s, r) => s + (r.star_rating || 0), 0) / _fbData.length;
+    setText('statRating', avg.toFixed(1));
+    setText('receivedAvg', `⭐ ${avg.toFixed(1)} / 5.0 o'rtacha`);
+  } else {
+    setText('statRating', '—');
+  }
+
+  if (_myRevData.length > 0) {
+    const avg = _myRevData.reduce((s, r) => s + (r.star_rating || 0), 0) / _myRevData.length;
+    setText('givenAvg', `O'rtacha bergan: ${avg.toFixed(1)}/5`);
+  }
+}
+
+// ─── Queue ────────────────────────────────────────────────────────────────────
+function renderQueue() {
+  const el = $('reviewQueue');
+  el.innerHTML = '';
+  if (!_queueData.length) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">🎉 Hozircha baholash navbati bo\'sh!</div>';
+    return;
+  }
+  _queueData.forEach((ts, i) => {
+    const init = (ts.topic_title || 'M')[0].toUpperCase();
+    const div = document.createElement('div');
+    div.className = 'review-card';
+    div.innerHTML = `
+      <div class="rc-header">
+        <div class="rc-student">
+          <div class="rc-avatar" style="background:${avatarColors(i)}">${init}</div>
+          <div>
+            <div class="rc-name">Mavzu ${ts.topic_number || ''}: ${ts.topic_title || "Noma'lum mavzu"}</div>
+            <div class="rc-task">${levelLabel(ts.level)} daraja • Baholashga tayyor</div>
+          </div>
+        </div>
+        <div class="rc-badges"><span class="badge-pill bp-new">Yangi</span></div>
+      </div>
+      <div style="background:#0d1117;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:.8rem 1rem;font-size:.82rem;color:var(--muted);margin-bottom:.8rem">
+        📊 Talaba ushbu mavzu bo'yicha barcha topshiriqlarni yakunlagan. Mezon bo'yicha baholang.
+      </div>
+      <div class="rc-footer">
+        <span class="rc-meta">📚 Mavzu ${ts.topic_number || ''} • C#</span>
+        <div class="rc-actions">
+          <button class="rc-btn rc-btn-review" onclick="openReview(${ts.id})">🔍 Baholash</button>
+        </div>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+// ─── My Reviews (given) ───────────────────────────────────────────────────────
+function renderMyReviews() {
+  const el = $('myReviews');
+  el.innerHTML = '';
+  if (!_myRevData.length) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">Hali review bermadingiz</div>';
+    return;
+  }
+  _myRevData.forEach(r => {
+    const stars = r.star_rating || 0;
+    const starsHtml = '⭐'.repeat(stars) + '<span class="star-empty">' + '⭐'.repeat(5 - stars) + '</span>';
+    const chips = ['ko_score','fa_score','ad_score','kr_score','re_score']
+      .map(k => `<span class="score-chip">${k.replace('_score','').toUpperCase()}: ${r[k] || 0}</span>`).join('');
+    const reviewee = r.reviewee ? (r.reviewee.full_name || r.reviewee.username || 'Talaba') : 'Talaba';
+    el.innerHTML += `<div class="mr-item">
+      <div class="mr-header">
+        <div>
+          <div class="mr-title">Mavzu ${r.topic_number || ''}: ${r.topic_title || ''} — ${reviewee}</div>
+          <div class="mr-meta">${fmtDate(r.created_at)}</div>
+        </div>
+      </div>
+      <div class="star-row">${starsHtml}</div>
+      <div class="score-chips">${chips}</div>
+      <div class="mr-comment" style="margin-top:.5rem">"${r.comment || ''}"</div>
+    </div>`;
+  });
+}
+
+// ─── Received ─────────────────────────────────────────────────────────────────
+function renderReceived() {
+  const el = $('feedbackList');
+  el.innerHTML = '';
+  if (!_fbData.length) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">Hali peer review olmadingiz</div>';
+    return;
+  }
+  _fbData.forEach(f => {
+    const reviewer = f.reviewer ? (f.reviewer.full_name || f.reviewer.username || 'Reviewer') : 'Reviewer';
+    const init = reviewer[0].toUpperCase();
+    const scoreItems = ['ko_score','fa_score','ad_score','kr_score','re_score']
+      .map(k => `<div class="fb-score-item"><div class="fb-score-label">${k.replace('_score','').toUpperCase()}</div><div class="fb-score-val" style="color:#a78bfa">${f[k] || 0}</div></div>`).join('');
+    el.innerHTML += `<div class="fb-item">
+      <div class="fb-header">
+        <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">${init}</div>
+        <div class="fb-reviewer">${reviewer}</div>
+        <div class="fb-date">${fmtDate(f.created_at)}</div>
+      </div>
+      <div class="fb-topic">📚 Mavzu ${f.topic_number || ''}: ${f.topic_title || ''}</div>
+      <div class="fb-scores">${scoreItems}</div>
+      <div class="fb-comment">"${f.comment || ''}"</div>
+    </div>`;
+  });
+}
+
+// ─── Leaderboard ──────────────────────────────────────────────────────────────
+function renderLeaderboard() {
+  const el = $('reviewerList');
+  el.innerHTML = '';
+  if (!_lbData.length) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">Hali leaderboard mavjud emas</div>';
+    return;
+  }
+  // Try to get current user id for "me" highlight
+  let myId = null;
+  try { const u = JSON.parse(localStorage.getItem('cw_user') || '{}'); myId = u.id; } catch {}
+
+  const medalBgs = [
+    'linear-gradient(135deg,#f97316,#ffd700)',
+    'linear-gradient(135deg,#c0c0c0,#e8e8e8)',
+    'linear-gradient(135deg,#cd7f32,#b8860b)',
+  ];
+
+  _lbData.forEach((item, idx) => {
+    const user  = item.user || {};
+    const name  = user.full_name || user.username || 'Talaba';
+    const init  = name[0].toUpperCase();
+    const rank  = item.rank || (idx + 1);
+    const isMe  = myId && user.id === myId;
+    const posClass = rank===1?'gold': rank===2?'silver': rank===3?'bronze':'';
+    const posIcon  = rank===1?'🥇':  rank===2?'🥈':    rank===3?'🥉': rank;
+    const bg = medalBgs[rank - 1] || avatarColors(idx);
+
+    el.innerHTML += `<div class="rv-item ${isMe ? 'highlight' : ''}">
+      <span class="rv-pos ${posClass}">${posIcon}</span>
+      <div class="rv-av" style="background:${bg}">${init}</div>
+      <div class="rv-info">
+        <div class="rv-name">${name}${isMe ? ' <span style="font-size:.65rem;color:var(--accent)">(men)</span>' : ''}</div>
+        <div class="rv-meta">${item.review_count || 0} ta review</div>
+      </div>
+      <span class="rv-pts">${item.review_count || 0} ta</span>
+    </div>`;
+  });
+}
+
+// ─── Criteria Grid ────────────────────────────────────────────────────────────
+function buildCriteriaGrid() {
+  const grid = $('criteriaGrid');
+  grid.innerHTML = '';
+  Object.keys(scores).forEach(k => scores[k] = 0);
+  criteria.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'criterion-row';
+    div.innerHTML = `<div class="cr-label">${c.name} <span id="val-${c.key}">0/${c.max}</span></div>
+      <input type="range" class="cr-slider" min="0" max="${c.max}" value="0" oninput="updateScore('${c.key}',this.value,${c.max})"/>`;
+    grid.appendChild(div);
+  });
+}
+
+function updateScore(key, val, max) {
+  scores[key] = parseInt(val);
+  $('val-' + key).textContent = val + '/' + max;
+  const total = Object.values(scores).reduce((a, b) => a + b, 0);
+  $('totalScore').textContent = total + ' / 90';
+}
+
+// ─── Star picker ──────────────────────────────────────────────────────────────
+function setStars(n) {
+  selectedStars = n;
+  document.querySelectorAll('.star-picker .sp-star').forEach((s, i) => {
+    s.textContent = i < n ? '⭐' : '☆';
+  });
+}
+
+// ─── Open Review Modal ────────────────────────────────────────────────────────
+function openReview(topicScoreId) {
+  activeTopicScoreId = topicScoreId;
+  const ts = _queueData.find(t => t.id === topicScoreId);
+  if (!ts) return;
+
+  $('reviewModalMeta').textContent = `Mavzu ${ts.topic_number || ''}: ${ts.topic_title || ''} • ${levelLabel(ts.level)} daraja`;
+
+  // Hide code diff view (no submission code available from this endpoint)
+  const diffView = document.querySelector('.diff-view');
+  if (diffView) diffView.style.display = 'none';
+
+  buildCriteriaGrid();
+  setStars(3);
+  $('reviewComment').value = '';
+  openModal('reviewModal');
+}
+
+async function submitReview() {
+  const comment = $('reviewComment').value;
+  if (!comment.trim()) { alert("Iltimos, izoh yozing!"); return; }
+  if (!selectedStars)  { alert("Iltimos, yulduz reytingini tanlang!"); return; }
+  if (!activeTopicScoreId) return;
+
+  const btn = document.querySelector('#reviewModal .btn-primary');
+  try {
+    if (btn) { btn.disabled = true; btn.textContent = 'Yuborilmoqda...'; }
+
+    await api.submitPeerReview({
+      topic_score: activeTopicScoreId,
+      ko_score:    scores.ko_score,
+      fa_score:    scores.fa_score,
+      ad_score:    scores.ad_score,
+      kr_score:    scores.kr_score,
+      re_score:    scores.re_score,
+      comment,
+      star_rating: selectedStars,
+    });
+
+    // Remove submitted item from queue
+    _queueData = _queueData.filter(t => t.id !== activeTopicScoreId);
+    renderQueue();
+    renderStats();
+
+    closeModal('reviewModal');
+    setTimeout(() => openModal('successModal'), 200);
+
+    // Refresh "my reviews" tab in background
+    api.myReviews('given').then(data => {
+      _myRevData = Array.isArray(data) ? data : (data.results || []);
+      renderMyReviews();
+      renderStats();
+    }).catch(() => {});
+
+  } catch(e) {
+    alert('Xatolik: ' + (e.message || 'Noma\'lum xato'));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '✅ Yuborish'; }
+  }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    const tabs = ['queue','myreviews','received','leaderboard'];
+    b.classList.toggle('active', tabs[i] === id);
+  });
+  document.querySelectorAll('.tab-content').forEach(t => {
+    t.classList.toggle('active', t.id === 'tab-' + id);
+  });
+}
+
+// ─── Modals ───────────────────────────────────────────────────────────────────
+function openModal(id)  { $(id).classList.add('open'); }
+function closeModal(id) { $(id).classList.remove('open'); }
+function openGuide()    { openModal('guideModal'); }
+document.querySelectorAll('.modal-overlay').forEach(m =>
+  m.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); }));
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

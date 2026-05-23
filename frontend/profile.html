@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Profil & Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.topbar h2,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .info .name{font-size:.88rem;font-weight:600}
+    .info .role{font-size:.72rem;color:var(--muted)}
+    /* main */
+    .main{margin-left:var(--sidebar);flex:1}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;sticky;top:0;z-index:40;position:sticky}
+    .topbar h2{font-size:1.05rem;font-weight:700}
+    .topbar .bc{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .content{padding:2rem;max-width:1200px}
+    /* profile hero */
+    .profile-hero{background:linear-gradient(135deg,rgba(108,99,255,0.12),rgba(255,101,132,0.06));border:1px solid var(--border);border-radius:24px;padding:2rem;margin-bottom:2rem;display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap;position:relative;overflow:hidden}
+    .profile-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(108,99,255,0.15) 0%,transparent 70%)}
+    .ph-avatar-wrap{position:relative;flex-shrink:0}
+    .ph-avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;border:3px solid rgba(108,99,255,0.4)}
+    .ph-char{position:absolute;bottom:-4px;right:-4px;width:32px;height:32px;border-radius:50%;background:var(--bg2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .ph-info{flex:1;min-width:200px}
+    .ph-name{font-size:1.5rem;font-weight:900;margin-bottom:.2rem}
+    .ph-meta{color:var(--muted);font-size:.88rem;margin-bottom:.8rem;display:flex;gap:1rem;flex-wrap:wrap}
+    .ph-meta span{display:flex;align-items:center;gap:.3rem}
+    .ph-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem}
+    .ph-tag{font-size:.75rem;font-weight:600;padding:.25rem .7rem;border-radius:8px;border:1px solid}
+    .t-level{background:rgba(108,99,255,0.15);border-color:rgba(108,99,255,0.3);color:#a78bfa}
+    .t-streak{background:rgba(255,101,132,0.12);border-color:rgba(255,101,132,0.25);color:#ff8fab}
+    .t-rank{background:rgba(255,215,0,0.12);border-color:rgba(255,215,0,0.25);color:var(--gold)}
+    .ph-bio{color:var(--muted);font-size:.88rem;line-height:1.6;max-width:480px}
+    .ph-stats{display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto}
+    .ph-stat{text-align:center;min-width:72px}
+    .ph-stat .v{font-size:1.6rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .ph-stat .l{font-size:.72rem;color:var(--muted)}
+    .edit-btn{position:absolute;top:1.5rem;right:1.5rem;background:var(--card);border:1px solid var(--border);color:var(--text);padding:.5rem 1rem;border-radius:10px;font-size:.82rem;cursor:pointer;font-weight:600;transition:border-color .2s}
+    .edit-btn:hover{border-color:var(--accent)}
+    /* tabs */
+    .profile-tabs{display:flex;gap:0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.3rem;margin-bottom:1.5rem;flex-wrap:wrap}
+    .ptab{flex:1;text-align:center;padding:.55rem;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted);transition:all .2s;white-space:nowrap}
+    .ptab.active{background:rgba(108,99,255,0.2);color:#a78bfa}
+    .ptab:hover:not(.active){color:var(--text)}
+    .tab-content{display:none}.tab-content.show{display:block}
+    /* score overview */
+    .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+    @media(max-width:800px){.score-grid{grid-template-columns:repeat(2,1fr)}}
+    .sc-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;text-align:center}
+    .sc-box .v{font-size:1.8rem;font-weight:900;margin-bottom:.3rem}
+    .sc-box .l{font-size:.75rem;color:var(--muted)}
+    /* radar large */
+    .radar-section{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:700px){.radar-section{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem}
+    .card-title{font-size:.92rem;font-weight:700;margin-bottom:1.2rem}
+    /* badges full */
+    .badges-full{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.8rem}
+    .bf-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem;text-align:center;transition:border-color .2s,transform .2s;cursor:pointer;position:relative}
+    .bf-item:hover{border-color:var(--accent);transform:translateY(-3px)}
+    .bf-item.locked{opacity:.35;filter:grayscale(1)}
+    .bf-icon{font-size:2rem;margin-bottom:.4rem}
+    .bf-name{font-size:.78rem;font-weight:600;margin-bottom:.2rem}
+    .bf-desc{font-size:.68rem;color:var(--muted)}
+    .bf-date{font-size:.65rem;color:var(--accent);margin-top:.3rem}
+    .w-chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:.18rem .55rem;font-size:.72rem;color:var(--text)}
+    /* inventory */
+    .inv-card{background:var(--card);border:2px solid rgba(255,255,255,0.07);border-radius:16px;padding:1.1rem;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+    .inv-card:hover{transform:translateY(-3px)}
+    .inv-card.equipped{box-shadow:0 0 18px rgba(108,99,255,0.35)}
+    .inv-card .inv-icon{font-size:2.2rem;margin-bottom:.4rem;display:block}
+    .inv-card .inv-name{font-size:.85rem;font-weight:700;margin-bottom:.2rem}
+    .inv-card .inv-rarity{font-size:.68rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:.5rem}
+    .inv-card .inv-stats{font-size:.75rem;color:var(--muted);line-height:1.6}
+    .inv-card .inv-equip-btn{margin-top:.7rem;background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:#a78bfa;font-size:.75rem;font-weight:600;padding:.3rem .8rem;border-radius:8px;cursor:pointer;transition:all .2s;width:100%}
+    .inv-card .inv-equip-btn:hover{background:rgba(108,99,255,0.3)}
+    .inv-card .inv-equip-btn.on{background:rgba(67,233,123,0.15);border-color:rgba(67,233,123,0.3);color:#43e97b}
+    .inv-equipped-badge{position:absolute;top:.5rem;right:.5rem;background:#43e97b;color:#000;font-size:.6rem;font-weight:800;padding:.1rem .4rem;border-radius:5px}
+    /* portfolio */
+    .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
+    .port-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem;transition:border-color .3s,transform .3s;cursor:pointer}
+    .port-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 30px rgba(108,99,255,0.12)}
+    .pc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.8rem}
+    .pc-icon{font-size:1.8rem}
+    .pc-type{font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:6px}
+    .type-mini{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .type-assign{background:rgba(67,233,123,0.12);color:#43e97b}
+    .type-duel{background:rgba(255,101,132,0.12);color:#ff8fab}
+    .pc-title{font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+    .pc-topic{font-size:.78rem;color:var(--muted);margin-bottom:.7rem}
+    .pc-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.7rem}
+    .pc-tag{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:.15rem .5rem;font-size:.7rem;color:var(--muted)}
+    .pc-bottom{display:flex;align-items:center;justify-content:space-between;font-size:.78rem;color:var(--muted)}
+    .pc-score{font-weight:700;color:#43e97b}
+    /* reflection */
+    .refl-list{display:flex;flex-direction:column;gap:1rem}
+    .refl-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem}
+    .ri-top{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+    .ri-topic{font-size:.82rem;font-weight:700;color:var(--accent)}
+    .ri-date{font-size:.72rem;color:var(--muted);margin-left:auto}
+    .ri-score{font-size:.78rem;font-weight:700;color:#43e97b;background:rgba(67,233,123,0.1);padding:.15rem .5rem;border-radius:6px}
+    .ri-text{font-size:.88rem;color:var(--muted);line-height:1.7;font-style:italic}
+    .ri-text strong{color:var(--text);font-style:normal}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.tt-head,.tt-row{grid-template-columns:40px 1fr 70px 70px}}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/profile.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<aside class="sidebar">
+  <div class="sb-logo"><a href="index.html">⚔️ Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
+    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item active" href="profile.html"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="av" data-user-init>?</div>
+      <div class="info"><div class="name" data-user-name>...</div><div class="role" data-user-role>Student</div></div>
+      <button class="logout-btn" onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div><h2>👤 Profil & Portfolio</h2><div class="bc">Dashboard › Profil</div></div>
+    <div style="display:flex;gap:.8rem">
+      <button style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:.5rem 1rem;border-radius:10px;font-size:.82rem;cursor:pointer;font-weight:600">📤 Export PDF</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- PROFILE HERO -->
+    <div class="profile-hero">
+      <button class="edit-btn">✏️ Tahrirlash</button>
+      <div class="ph-avatar-wrap" style="cursor:pointer" onclick="document.getElementById('avatarFileInput').click()" title="Avatar o'zgartirish">
+        <div class="ph-avatar" id="phAvatar">?</div>
+        <div class="ph-char" id="phChar">⚔️</div>
+        <div style="position:absolute;bottom:0;right:0;background:var(--accent);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.75rem;border:2px solid var(--bg)">📷</div>
+        <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none" onchange="handleAvatarUpload(event)"/>
+      </div>
+      <div class="ph-info">
+        <div class="ph-name" id="phName">—</div>
+        <div class="ph-meta" id="phMeta">
+          <span>⏳ Yuklanmoqda...</span>
+        </div>
+        <div class="ph-tags" id="phTags"></div>
+        <div class="ph-bio" id="phBio"></div>
+        <!-- Personaj + qurollar -->
+        <div id="phCharBlock" style="display:none;margin-top:.7rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
+          <span id="phCharAva" style="font-size:1.5rem"></span>
+          <span id="phCharName" style="font-size:.85rem;font-weight:700;color:var(--text)"></span>
+          <div id="phCharWeapons" style="display:flex;flex-wrap:wrap;gap:.3rem"></div>
+        </div>
+      </div>
+      <div class="ph-stats">
+        <div class="ph-stat"><div class="v" id="phRating">—</div><div class="l">Rating</div></div>
+        <div class="ph-stat"><div class="v" id="phAcademic" style="background:linear-gradient(135deg,#43e97b,#38f9d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div><div class="l">Academic</div></div>
+        <div class="ph-stat"><div class="v" id="phBadges" style="background:linear-gradient(135deg,#ffd700,#ffa500);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div><div class="l">Badge</div></div>
+        <div class="ph-stat"><div class="v" id="phDuels" style="background:linear-gradient(135deg,#ff6584,#ff8fab);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div><div class="l">Duel yutdi</div></div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="profile-tabs">
+      <div class="ptab active" onclick="showTab('portfolio',this)">📁 Portfolio</div>
+      <div class="ptab" onclick="showTab('badges',this)">🏅 Nishonlar</div>
+      <div class="ptab" onclick="showTab('inventory',this)">⚔️ Inventar</div>
+      <div class="ptab" onclick="showTab('reflection',this)">🔄 Refleksiya</div>
+    </div>
+
+    <!-- PORTFOLIO TAB -->
+    <div class="tab-content show" id="tab-portfolio">
+      <div class="portfolio-grid" id="portfolioGrid"></div>
+    </div>
+
+    <!-- BADGES TAB -->
+    <div class="tab-content" id="tab-badges">
+      <div class="badges-full" id="badgesFull"></div>
+    </div>
+
+    <!-- INVENTORY TAB -->
+    <div class="tab-content" id="tab-inventory">
+      <div id="equippedBonusBar" style="display:none;background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.25);border-radius:14px;padding:.9rem 1.2rem;margin-bottom:1.2rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap">
+        <span style="font-size:.82rem;font-weight:700;color:#a78bfa">⚔️ Kiyilgan bonuslar:</span>
+        <span id="invAtkBonus" style="font-size:.85rem;color:#43e97b">+0% Hujum</span>
+        <span id="invDefBonus" style="font-size:.85rem;color:#4299e1">+0% Himoya</span>
+        <span style="font-size:.75rem;color:var(--muted);margin-left:auto">Duelda avtomatik ishlatiladi</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.9rem" id="invGrid">
+        <div style="color:var(--muted);padding:2rem;text-align:center;grid-column:1/-1">⏳ Yuklanmoqda...</div>
+      </div>
+    </div>
+
+    <!-- REFLECTION TAB -->
+    <div class="tab-content" id="tab-reflection">
+      <div class="refl-list" id="reflList"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+
+function showTab(id, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('show'));
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('show');
+  el.classList.add('active');
+}
+
+/* ── Helpers ── */
+const scColor = s => s>=85?'color:#43e97b':s>=70?'color:#4299e1':s>=60?'color:#ffa500':'color:#ff6584';
+const CHAR_DATA = {
+  warrior:    {avatar:'⚔️', name:'Jangchi',      en:'Warrior',    weapons:['⚔️ Qilich','🏹 Nayza','🛡️ Zirh']},
+  ranger:     {avatar:'🏹', name:'Sarguzashtchi', en:'Ranger',     weapons:['🏹 Nayza','👟 Etik','🥋 Engil Zirh']},
+  sorceress:  {avatar:'🔮', name:'Sehrgar Ayol',  en:'Sorceress',  weapons:['🪄 Tayoqcha','💍 Uzuk']},
+  knight:     {avatar:'🛡️', name:'Ritsar',        en:'Knight',     weapons:['⚔️ Qilich','🛡️ Qalqon','🏰 Zirh']},
+  ladyknight: {avatar:'⚜️', name:'Ayol Ritsar',   en:'Lady Knight',weapons:['⚔️ Qilich','🛡️ Qalqon','🏰 Zirh','💍 Uzuk']},
+};
+const LEVEL_META = {
+  recruit:    {icon:'🛡️', name:'Recruit'},
+  warden:     {icon:'🗡️', name:'Warden'},
+  knight:     {icon:'⚔️', name:'Knight'},
+  hero:       {icon:'🦅', name:'Hero'},
+  legend:     {icon:'🔥', name:'Legend'},
+  lord:       {icon:'👑', name:'Lord'},
+  deity:      {icon:'🔮', name:'Imperator'},
+  titan:      {icon:'⚡', name:'Titan'},
+};
+function _relDate(iso) {
+  if (!iso) return '';
+  const d = Math.floor((Date.now() - new Date(iso)) / 86400000);
+  if (d === 0) return 'Bugun';
+  if (d === 1) return 'Kecha';
+  if (d < 7)  return d + ' kun avval';
+  if (d < 30) return Math.floor(d/7) + ' hafta avval';
+  return Math.floor(d/30) + ' oy avval';
+}
+
+/* ── Main init ── */
+async function initProfile() {
+  Auth.fillUserUI();
+  try {
+    const [me, scores, badges, reflections, inventory] = await Promise.all([
+      api.me(),
+      api.scores(),
+      api.myBadges(),
+      api.reflections(),
+      api.inventory().catch(() => []),
+    ]);
+    Auth.setUser(me);  // localStorage yangilaymiz
+    const sp = me.student_profile || {};
+    const lv = LEVEL_META[sp.level] || {icon:'⚔️', name: sp.level || 'Student'};
+
+    // Hero section
+    const initials = (me.first_name||me.username||'?')[0].toUpperCase();
+    document.getElementById('phAvatar').textContent = initials;
+
+    // phChar — tanlangan personaj avatari
+    const ch = CHAR_DATA[sp.character] || CHAR_DATA.warrior;
+    document.getElementById('phChar').textContent = ch.avatar;
+
+    // Personaj nomi + qurollar bloki
+    document.getElementById('phCharAva').textContent   = ch.avatar;
+    document.getElementById('phCharName').textContent  = `${ch.name} · ${ch.en}`;
+    document.getElementById('phCharWeapons').innerHTML =
+      ch.weapons.map(w => `<span class="w-chip">${w}</span>`).join('');
+    document.getElementById('phCharBlock').style.display = 'flex';
+    document.getElementById('phName').textContent   = `${me.first_name||''} ${me.last_name||''}`.trim() || me.username;
+
+    const metaParts = [
+      sp.university && `🏫 ${sp.university}`,
+      sp.direction  && `📚 ${sp.direction}`,
+      sp.year       && `📅 ${sp.year}-kurs`,
+      sp.group      && `👥 ${sp.group}`,
+      me.phone      && `📞 ${me.phone}`,
+    ].filter(Boolean);
+    document.getElementById('phMeta').innerHTML = metaParts.map(p=>`<span>${p}</span>`).join('') || '<span>—</span>';
+
+    const completedTopics = Array.isArray(scores) ? scores.filter(s=>s.is_completed).length : 0;
+    document.getElementById('phTags').innerHTML = `
+      <span class="ph-tag t-level">${lv.icon} ${lv.name}</span>
+      ${sp.current_streak ? `<span class="ph-tag t-streak">🔥 ${sp.current_streak} kun streak</span>` : ''}
+      <span class="ph-tag" style="background:rgba(67,233,123,0.1);border-color:rgba(67,233,123,0.25);color:#43e97b">✅ ${completedTopics}/45 mavzu</span>`;
+    document.getElementById('phBio').textContent = sp.bio || me.bio || '';
+
+    const rating  = sp.rating_score || 0;
+    const academic = sp.academic_score ? Math.round(sp.academic_score*10)/10 : '—';
+    document.getElementById('phRating').textContent   = rating;
+    document.getElementById('phAcademic').textContent = academic;
+    document.getElementById('phBadges').textContent   = Array.isArray(badges) ? badges.length : '—';
+    document.getElementById('phDuels').textContent    = sp.duels_won || 0;
+
+    // Trajectory tab
+    // Portfolio — real submissions (completed tasks)
+    const typeMap = {exercise:'type-assign Topshiriq', project:'type-mini Mini-loyiha'};
+    const PORT_SCORES = (Array.isArray(scores) ? scores.filter(s=>s.is_completed) : []).slice(0, 12);
+    document.getElementById('portfolioGrid').innerHTML = PORT_SCORES.length
+      ? PORT_SCORES.map(s => {
+          const [cls, lbl] = (typeMap.exercise).split(' ');
+          return `<div class="port-card">
+            <div class="pc-top"><div class="pc-icon">✅</div><span class="pc-type ${cls}">${lbl}</span></div>
+            <div class="pc-title">${s.topic_title || s.topic_name || `Mavzu ${s.topic}`}</div>
+            <div class="pc-topic">${s.total_score || 0} / 100 ball</div>
+            <div class="pc-tags"><span class="pc-tag">C#</span></div>
+            <div class="pc-bottom"><span>${_relDate(s.updated_at || s.created_at)}</span><span class="pc-score">+${Math.round(s.total_score||0)} ball</span></div>
+          </div>`;
+        }).join('')
+      : '<div style="text-align:center;padding:2rem;color:var(--muted)">Hali yakunlangan mavzu yo\'q</div>';
+
+    // Badges tab
+    const earnedBadges  = Array.isArray(badges) ? badges.map(ub => ub.badge || ub).filter(Boolean) : [];
+    const lockedBadges  = [{icon:'📚',name:'Bookworm',desc:'5 mavzu yakunla'},{icon:'🎯',name:'Perfectionist',desc:'Mavzu 100 ball'},{icon:'🚀',name:'Rocket',desc:'1000 Rating score'},{icon:'👑',name:'Legend',desc:'Legend levelga yet'},{icon:'🏰',name:'Clan Lord',desc:'Clan yasat'},{icon:'🔮',name:'Sorcerer',desc:'AI tahlil top'}];
+    document.getElementById('badgesFull').innerHTML = [
+      ...earnedBadges.map(b=>`
+        <div class="bf-item">
+          <div class="bf-icon">${b.icon || b.emoji || '🏅'}</div>
+          <div class="bf-name">${b.name}</div>
+          <div class="bf-desc">${b.description || b.desc || ''}</div>
+          <div class="bf-date">${_relDate(b.earned_at || b.created_at)}</div>
+        </div>`),
+      ...lockedBadges.map(b=>`
+        <div class="bf-item locked">
+          <div class="bf-icon">${b.icon}</div>
+          <div class="bf-name">${b.name}</div>
+          <div class="bf-desc">${b.desc}</div>
+          <div class="bf-date" style="color:var(--muted)">🔒 Qulflangan</div>
+        </div>`),
+    ].join('');
+
+    // Reflections tab
+    const reflArr = Array.isArray(reflections) ? reflections : (reflections.results || []);
+    document.getElementById('reflList').innerHTML = reflArr.length
+      ? reflArr.map(r => `
+          <div class="refl-item">
+            <div class="ri-top">
+              <span class="ri-topic">${r.topic_title || r.topic_name || `Mavzu ${r.topic}`}</span>
+              <span class="ri-score">Re: ${r.re_score||r.score||'—'}/20</span>
+              <span class="ri-date">${_relDate(r.created_at)}</span>
+            </div>
+            <div class="ri-text">${r.text || r.content || ''}</div>
+          </div>`).join('')
+      : '<div style="text-align:center;padding:2rem;color:var(--muted)">Hali refleksiya yozilmagan</div>';
+
+    // Inventory tab
+    renderInventory(Array.isArray(inventory) ? inventory : (inventory.results || []));
+
+  } catch(e) {
+    console.error('Profile yuklanmadi:', e);
+  }
+}
+
+/* ── Inventory ── */
+const RARITY_COLORS = {
+  common:'#94a3b8', rare:'#4299e1', epic:'#a855f7', legendary:'#ffd700'
+};
+const RARITY_UZ = {
+  common:'Oddiy', rare:'Noyob', epic:'Epic', legendary:'Afsonaviy'
+};
+const TYPE_UZ = {
+  weapon:'Qurol', armor:'Zirh', ring:'Uzuk', boots:'Etik'
+};
+
+function renderInventory(items) {
+  const grid = document.getElementById('invGrid');
+  if (!grid) return;
+
+  if (!items.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted);grid-column:1/-1">⚔️ Hali qurol-aslaha topilmagan.<br><small>Topshiriq va loyihalarni bajaring!</small></div>';
+    return;
+  }
+
+  // Bonus bar
+  const atk = items.filter(i=>i.is_equipped).reduce((s,i)=>s+(i.equipment.attack_bonus||0),0);
+  const def = items.filter(i=>i.is_equipped).reduce((s,i)=>s+(i.equipment.defense_bonus||0),0);
+  const bar = document.getElementById('equippedBonusBar');
+  if (bar) {
+    bar.style.display = 'flex';
+    document.getElementById('invAtkBonus').textContent = `+${atk}% Hujum`;
+    document.getElementById('invDefBonus').textContent = `+${def}% Himoya`;
+  }
+
+  grid.innerHTML = items.map(ue => {
+    const eq = ue.equipment;
+    const col = RARITY_COLORS[eq.rarity] || '#94a3b8';
+    return `
+    <div class="inv-card ${ue.is_equipped?'equipped':''}" style="border-color:${ue.is_equipped?col:'rgba(255,255,255,0.07)'}">
+      ${ue.is_equipped ? '<span class="inv-equipped-badge">KIYILGAN</span>' : ''}
+      <span class="inv-icon">${eq.icon}</span>
+      <div class="inv-name">${eq.name}</div>
+      <div class="inv-rarity" style="color:${col}">${RARITY_UZ[eq.rarity]||eq.rarity} · ${TYPE_UZ[eq.eq_type]||eq.eq_type}</div>
+      <div class="inv-stats">
+        ${eq.attack_bonus  ? `⚔️ +${eq.attack_bonus}% hujum<br>` : ''}
+        ${eq.defense_bonus ? `🛡️ +${eq.defense_bonus}% himoya<br>` : ''}
+        <span style="font-size:.68rem">${eq.description}</span>
+      </div>
+      <button class="inv-equip-btn ${ue.is_equipped?'on':''}"
+        onclick="toggleEquip(${ue.id}, ${ue.is_equipped}, this)">
+        ${ue.is_equipped ? '✓ Kiyilgan — Yechish' : '▶ Kiyish'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+async function toggleEquip(ueId, isEquipped, btn) {
+  btn.disabled = true;
+  try {
+    const action = isEquipped ? 'unequip' : 'equip';
+    await api.equipItem(ueId, action);
+    // Inventarni qayta yuklaymiz
+    const inv = await api.inventory().catch(()=>[]);
+    renderInventory(Array.isArray(inv) ? inv : []);
+  } catch(e) {
+    btn.disabled = false;
+  }
+}
+
+initProfile();
+
+// ── Avatar upload ──────────────────────────────────────────────────────────
+async function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Fayl hajmi 2MB dan oshmasligi kerak.');
+    return;
+  }
+
+  const avatarEl = document.getElementById('phAvatar');
+  const origContent = avatarEl.textContent;
+  avatarEl.textContent = '⏳';
+
+  try {
+    const result = await api.uploadAvatar(file);
+
+    // Avatar tasvirini ko'rsatish
+    const img = document.createElement('img');
+    img.src = result.avatar;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
+    avatarEl.textContent = '';
+    avatarEl.appendChild(img);
+
+    // localStorage ni yangilash
+    const user = Auth.getUser();
+    if (user) { user.avatar = result.avatar; Auth.setUser(user); }
+
+    // Mini bildiruv
+    const toast = document.createElement('div');
+    toast.textContent = '✅ Avatar yangilandi!';
+    toast.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;background:#43e97b;color:#0a0e1a;padding:.7rem 1.2rem;border-radius:12px;font-weight:700;z-index:9999;animation:fadeIn .3s';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  } catch(e) {
+    avatarEl.textContent = origContent;
+    alert(e.message || 'Avatar yuklashda xatolik.');
+  }
+
+  // Input ni tozalash (bir xil faylni qayta tanlash uchun)
+  event.target.value = '';
+}
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

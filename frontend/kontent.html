@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Kontent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--red:#ff6584;--green:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem}
+    .sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .av-t{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#43e97b,#38f9d7);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .t-name{font-size:.88rem;font-weight:600}
+    .t-role{font-size:.72rem;color:var(--muted)}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar h2{font-size:1.05rem;font-weight:700}
+    .content{padding:1.8rem;flex:1}
+
+    /* CARD */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;margin-bottom:1.2rem}
+    .card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+    .card-title{font-size:.9rem;font-weight:700}
+    .btn-primary{padding:.55rem 1.4rem;border:none;border-radius:10px;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;font-weight:700;cursor:pointer;font-size:.85rem;transition:transform .15s;white-space:nowrap}
+    .btn-primary:hover{transform:scale(1.03)}
+    .btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .btn-ghost{padding:.55rem 1.2rem;border:1px solid var(--border);border-radius:10px;background:none;color:var(--muted);font-weight:600;cursor:pointer;font-size:.85rem}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+
+    /* STEP NAV */
+    .step-nav{display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem}
+    .step-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 1.4rem;border-radius:12px;cursor:pointer;border:1px solid var(--border);color:var(--muted);font-size:.85rem;font-weight:600;transition:all .2s;background:var(--card)}
+    .step-item:hover{border-color:var(--accent);color:var(--text)}
+    .step-item.active{border-color:var(--accent);background:rgba(108,99,255,0.12);color:#a78bfa}
+    .step-num{width:24px;height:24px;border-radius:50%;background:rgba(108,99,255,0.2);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0}
+    .step-item.active .step-num{background:var(--accent);color:#fff}
+    .step-sep{color:var(--muted);font-size:1.2rem;padding:0 .2rem}
+
+    /* SEMESTER BUTTONS */
+    .sem-btns{display:flex;gap:.5rem;margin-bottom:1.2rem}
+    .sem-btn{padding:.55rem 1.4rem;border-radius:12px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:.85rem;font-weight:700;color:var(--muted);transition:all .2s}
+    .sem-btn.active{background:rgba(108,99,255,0.18);border-color:var(--accent);color:#a78bfa}
+
+    /* STEP 1: Name grid */
+    .name-grid-hd{display:grid;grid-template-columns:48px 1fr 130px 28px;gap:.5rem;padding:.35rem .3rem .6rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+    .name-row{display:grid;grid-template-columns:48px 1fr 130px 28px;gap:.5rem;align-items:center;padding:.45rem .3rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .name-row:last-child{border-bottom:none}
+    .name-num{font-size:.75rem;font-weight:800;color:var(--accent);text-align:center}
+    .name-input{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:9px;padding:.45rem .8rem;color:var(--text);font-size:.84rem;outline:none;width:100%;font-family:inherit;transition:border-color .2s}
+    .name-input:focus{border-color:var(--accent)}
+    .name-input.saved{border-color:rgba(67,233,123,0.4)}
+    .diff-select{background:#0d1124;border:1px solid var(--border);border-radius:9px;padding:.45rem .6rem;color:var(--text);font-size:.78rem;outline:none;cursor:pointer;width:100%}
+    .diff-select option{background:#0d1124}
+    .save-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.1);flex-shrink:0;justify-self:center}
+    .save-dot.ok{background:#43e97b}
+
+    /* STEP 2: Two panel */
+    .kt-layout{display:grid;grid-template-columns:270px 1fr;gap:1.2rem;align-items:start}
+    @media(max-width:900px){.kt-layout{grid-template-columns:1fr}}
+
+    .kt-list-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:sticky;top:5rem}
+    .kt-list-hd{padding:.8rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .kt-list-hd-title{font-size:.82rem;font-weight:700}
+    .kt-list-hd-count{font-size:.72rem;color:var(--muted)}
+
+    .sem-mini{display:flex;border-bottom:1px solid var(--border)}
+    .sem-mini-btn{flex:1;padding:.55rem;text-align:center;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--muted);border:none;background:none;border-bottom:2px solid transparent;transition:all .2s}
+    .sem-mini-btn.active{color:#a78bfa;border-bottom-color:var(--accent)}
+
+    .ktr-row{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background .15s}
+    .ktr-row:last-child{border-bottom:none}
+    .ktr-row:hover{background:rgba(108,99,255,0.07)}
+    .ktr-row.active{background:rgba(108,99,255,0.15);border-left:3px solid var(--accent)}
+    .ktr-num{font-size:.7rem;font-weight:700;color:var(--accent);min-width:26px;text-align:center;flex-shrink:0}
+    .ktr-name{flex:1;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ktr-arrow{color:var(--muted);font-size:1rem;flex-shrink:0}
+    .ktr-row.active .ktr-arrow{color:var(--accent)}
+
+    .kt-content-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+    .kt-content-hd{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem}
+    .kt-content-hd-title{font-size:.95rem;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .kt-content-body{padding:1.2rem}
+
+    .lv-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.2rem;width:fit-content}
+    .lv-tab{padding:.55rem 1.4rem;cursor:pointer;font-size:.82rem;font-weight:700;color:var(--muted);border:none;background:none;transition:all .2s}
+    .lv-tab:not(:last-child){border-right:1px solid var(--border)}
+    .lv-tab.active-b{background:rgba(67,233,123,0.15);color:#43e97b}
+    .lv-tab.active-o{background:rgba(255,152,0,0.15);color:#ff9800}
+    .lv-tab.active-y{background:rgba(255,101,132,0.15);color:#ff6584}
+
+    .kt-section{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;padding:1.1rem;margin-bottom:1rem}
+    .kt-sec-hd{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.9rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    .kt-label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .kt-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;color:var(--text);font-size:.84rem;outline:none;resize:vertical;font-family:inherit;line-height:1.6}
+    .kt-textarea:focus{border-color:var(--accent)}
+    .kt-input{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;color:var(--text);font-size:.84rem;outline:none;font-family:inherit}
+    .kt-input:focus{border-color:var(--accent)}
+    .kt-save-btn{padding:.5rem 1.2rem;border:none;border-radius:10px;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;font-weight:700;cursor:pointer;font-size:.82rem;white-space:nowrap;transition:transform .15s}
+    .kt-save-btn:hover{transform:scale(1.03)}
+    .kt-save-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .kt-status{font-size:.8rem;color:var(--muted);margin-left:.4rem}
+
+    .q-block{border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:.85rem 1rem;margin-bottom:.6rem;background:rgba(255,255,255,0.02)}
+    .q-num-lbl{font-size:.7rem;font-weight:700;color:var(--accent);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
+    .opt-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin:.45rem 0}
+    .opt-wrap{display:flex;align-items:center;gap:.4rem}
+    .opt-lbl{font-size:.72rem;font-weight:700;color:var(--muted);width:16px;text-align:center;flex-shrink:0}
+    .opt-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:.4rem .6rem;color:var(--text);font-size:.8rem;outline:none;font-family:inherit}
+    .opt-input:focus{border-color:var(--accent)}
+    .correct-row{display:flex;gap:.5rem;align-items:center;margin-top:.4rem;flex-wrap:wrap}
+    .correct-lbl{font-size:.7rem;color:var(--muted)}
+    .radio-opt{display:flex;align-items:center;gap:.25rem;cursor:pointer;font-size:.78rem;font-weight:600}
+    .radio-opt input{accent-color:var(--accent);cursor:pointer}
+
+    .task-list-item{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:.4rem;background:rgba(255,255,255,0.02)}
+    .ti-num{font-size:.7rem;font-weight:700;color:var(--accent);width:28px;text-align:center;flex-shrink:0}
+    .ti-title{flex:1;font-size:.83rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ti-cat{font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:6px}
+    .cat-ex{background:rgba(108,99,255,0.12);color:#a78bfa}
+    .cat-pr{background:rgba(255,215,0,0.12);color:var(--gold)}
+    .ti-btn{background:none;border:1px solid rgba(255,255,255,0.1);border-radius:7px;color:var(--muted);cursor:pointer;padding:.25rem .6rem;font-size:.75rem;transition:all .2s}
+    .ti-btn:hover{border-color:var(--accent);color:#a78bfa}
+    .ti-btn.del:hover{border-color:#ff6584;color:#ff6584}
+
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px)}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:min(680px,96vw);max-height:90vh;overflow-y:auto}
+    .modal-head{padding:1.2rem 1.6rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:5}
+    .modal-body{padding:1.2rem 1.6rem 1.6rem}
+    .mt-row{margin-bottom:.9rem}
+    .mt-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.3rem;display:block}
+
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(108,99,255,0.3);border-radius:3px}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <a href="dashboard.html">⚔️ Coders War</a>
+    <div class="sub">O'qituvchi Paneli</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">Boshqaruv</div>
+    <a class="nav-item" href="teacher-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item active" href="kontent.html"><span class="icon">📚</span> Kontent</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="av-t" data-user-init>?</div>
+      <div>
+        <div class="t-name" data-user-name>...</div>
+        <div class="t-role">👨‍🏫 O'qituvchi</div>
+      </div>
+      <button onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <h2>📚 Kontent Boshqaruvi</h2>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.1rem">Mavzu nomlari · Video · Maruza · Test · Topshiriqlar</div>
+    </div>
+    <a href="teacher-dashboard.html" style="color:var(--muted);text-decoration:none;font-size:.84rem">← Dashboard</a>
+  </div>
+
+  <div class="content">
+
+    <!-- Step navigation -->
+    <div class="step-nav">
+      <div class="step-item active" id="stepBtn1" onclick="showStep(1)">
+        <span class="step-num">1</span> Mavzu nomlari
+      </div>
+      <span class="step-sep">→</span>
+      <div class="step-item" id="stepBtn2" onclick="showStep(2)">
+        <span class="step-num">2</span> Kontent kiritish
+      </div>
+    </div>
+
+    <!-- ══ STEP 1: Mavzu nomlari ══ -->
+    <div id="step1">
+
+      <div class="sem-btns">
+        <button class="sem-btn active" id="semBtn1" onclick="selectSem(1,this)">📗 1-Semestr</button>
+        <button class="sem-btn" id="semBtn2" onclick="selectSem(2,this)">📘 2-Semestr</button>
+        <button class="sem-btn" id="semBtn3" onclick="selectSem(3,this)">📙 3-Semestr</button>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <div class="card-title" id="s1Title">1-Semestr · Mavzu nomlari</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Mavzu nomlarini kiriting va saqlang</div>
+          </div>
+          <button class="btn-primary" id="saveNamesBtn" onclick="saveAllNames()">💾 Saqlash</button>
+        </div>
+        <div class="name-grid-hd">
+          <div style="font-size:.65rem;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.5px">T#</div>
+          <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Mavzu nomi</div>
+          <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Daraja</div>
+          <div></div>
+        </div>
+        <div id="nameGrid">
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:.85rem">Yuklanmoqda...</div>
+        </div>
+        <div id="saveStatus" style="margin-top:.8rem;font-size:.83rem"></div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn-primary" onclick="showStep(2)" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#0a0e1a">
+          Kontent kiritishga o'tish →
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ══ STEP 2: Kontent kiritish ══ -->
+    <div id="step2" style="display:none">
+
+      <div class="kt-layout">
+
+        <!-- LEFT: Mavzu ro'yxati -->
+        <div class="kt-list-panel">
+          <div class="kt-list-hd">
+            <span class="kt-list-hd-title">Mavzular</span>
+            <span class="kt-list-hd-count" id="listCount">—</span>
+          </div>
+          <div class="sem-mini">
+            <button class="sem-mini-btn active" id="smb1" onclick="selectSem2(1,this)">1-Sem</button>
+            <button class="sem-mini-btn" id="smb2" onclick="selectSem2(2,this)">2-Sem</button>
+            <button class="sem-mini-btn" id="smb3" onclick="selectSem2(3,this)">3-Sem</button>
+          </div>
+          <div id="topicList2">
+            <div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:.82rem">Yuklanmoqda...</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Kontent muharrir -->
+        <div class="kt-content-panel">
+
+          <div id="editorEmpty" style="padding:4rem 2rem;text-align:center;color:var(--muted)">
+            <div style="font-size:2.5rem;margin-bottom:.8rem">📝</div>
+            <div style="font-size:.9rem;font-weight:600;margin-bottom:.3rem">Mavzu tanlanmagan</div>
+            <div style="font-size:.8rem">Chap tomondan mavzuni bosing</div>
+          </div>
+
+          <div id="editor" style="display:none">
+            <div class="kt-content-hd">
+              <div style="font-size:1.1rem">📚</div>
+              <div class="kt-content-hd-title" id="editorTitle">Mavzu nomi</div>
+            </div>
+            <div class="kt-content-body">
+
+              <!-- Daraja tablar -->
+              <div class="lv-tabs">
+                <button class="lv-tab active-b" id="lvTabB" onclick="switchLevel('beginner')">🟢 Boshlang'ich</button>
+                <button class="lv-tab" id="lvTabO" onclick="switchLevel('intermediate')">🟠 O'rta</button>
+                <button class="lv-tab" id="lvTabY" onclick="switchLevel('advanced')">🔴 Yuqori</button>
+              </div>
+
+              <!-- 1. Video & Maruza -->
+              <div class="kt-section">
+                <div class="kt-sec-hd">
+                  🎬 Video &amp; Maruza
+                  <button class="kt-save-btn" id="saveContentBtn" onclick="saveContent()">✅ Saqlash</button>
+                </div>
+                <div style="margin-bottom:.7rem">
+                  <label class="kt-label" style="display:block;margin-bottom:.3rem">YouTube / Video URL</label>
+                  <input class="kt-input" id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." style="width:100%">
+                </div>
+                <div>
+                  <label class="kt-label" style="display:block;margin-bottom:.3rem">Maruza matni</label>
+                  <textarea class="kt-textarea" id="lectureText" rows="7" placeholder="Maruza matni..."></textarea>
+                </div>
+                <div style="margin-top:.6rem"><span id="contentStatus" class="kt-status"></span></div>
+              </div>
+
+              <!-- 2. Test -->
+              <div class="kt-section">
+                <div class="kt-sec-hd">
+                  📝 Daraja testi (10 savol)
+                  <button class="kt-save-btn" id="saveTestBtn" onclick="saveTest()">✅ Saqlash</button>
+                </div>
+                <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem">
+                  <div style="flex:1;min-width:180px">
+                    <label class="kt-label" style="display:block;margin-bottom:.3rem">Test nomi</label>
+                    <input class="kt-input" id="testTitle" placeholder="masalan: Boshlang'ich daraja testi" style="width:100%">
+                  </div>
+                  <div>
+                    <label class="kt-label" style="display:block;margin-bottom:.3rem">O'tish balli</label>
+                    <input class="kt-input" id="passScore" type="number" min="1" max="10" value="7" style="width:75px">
+                  </div>
+                </div>
+                <div id="questionsArea"></div>
+                <div style="margin-top:.5rem"><span id="testStatus" class="kt-status"></span></div>
+              </div>
+
+              <!-- 3. Topshiriqlar -->
+              <div class="kt-section">
+                <div class="kt-sec-hd">
+                  💻 Topshiriqlar
+                  <button class="kt-save-btn" onclick="openTaskModal(null,'exercise')" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#0a0e1a">+ Exercise</button>
+                </div>
+                <div style="margin-bottom:.8rem">
+                  <div style="font-size:.7rem;font-weight:700;color:#a78bfa;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px">Exercise (10 ta)</div>
+                  <div id="exerciseList"><div style="color:var(--muted);font-size:.82rem;padding:.3rem 0">—</div></div>
+                </div>
+                <div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+                    <div style="font-size:.7rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px">Loyiha (1 ta)</div>
+                    <button class="kt-save-btn" onclick="openTaskModal(null,'project')" style="background:linear-gradient(135deg,#ffd700,#ffa500);color:#0a0e1a;font-size:.75rem;padding:.35rem .9rem">+ Loyiha</button>
+                  </div>
+                  <div id="projectList"><div style="color:var(--muted);font-size:.82rem;padding:.3rem 0">—</div></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <strong id="taskModalTitle">Topshiriq</strong>
+      <button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem" onclick="closeTaskModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="taskModalId">
+      <input type="hidden" id="taskModalCat">
+      <div class="mt-row">
+        <label class="mt-label">Sarlavha</label>
+        <input class="kt-input" id="taskTitle" placeholder="Topshiriq sarlavhasi" style="width:100%">
+      </div>
+      <div class="mt-row">
+        <label class="mt-label">Tavsif</label>
+        <textarea class="kt-textarea" id="taskDesc" rows="5" placeholder="Masalaning to'liq tavsifi..."></textarea>
+      </div>
+      <div class="mt-row">
+        <label class="mt-label">Boshlang'ich kod (ixtiyoriy)</label>
+        <textarea class="kt-textarea" id="taskStarterCode" rows="4" placeholder="using System;&#10;&#10;class Solution {&#10;    // ...&#10;}"></textarea>
+      </div>
+      <div class="mt-row">
+        <label class="mt-label">Test cases (JSON)</label>
+        <textarea class="kt-textarea" id="taskTestCases" rows="3" placeholder='[{"input":"5","expected":"25"}]'></textarea>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Format: [{"input":"...","expected":"..."}, ...]</div>
+      </div>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.2rem">
+        <div>
+          <label class="mt-label" style="display:block;margin-bottom:.3rem">Tartib #</label>
+          <input class="kt-input" id="taskOrder" type="number" min="0" value="0" style="width:75px">
+        </div>
+        <div>
+          <label class="mt-label" style="display:block;margin-bottom:.3rem">Max ball</label>
+          <input class="kt-input" id="taskMaxScore" type="number" min="1" value="1" style="width:75px">
+        </div>
+        <div>
+          <label class="mt-label" style="display:block;margin-bottom:.3rem">Tur</label>
+          <select class="diff-select" id="taskType" style="width:auto;min-width:160px">
+            <option value="algorithm">Algoritmik</option>
+            <option value="debug">Xatoni tuzatish</option>
+            <option value="refactor">Qayta ishlash</option>
+            <option value="mini_project">Mini-loyiha</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:.7rem;justify-content:flex-end">
+        <button class="btn-ghost" onclick="closeTaskModal()">Bekor</button>
+        <button class="btn-primary" onclick="saveTask()">✅ Saqlash</button>
+      </div>
+      <div style="margin-top:.5rem;text-align:right"><span id="taskModalStatus" class="kt-status"></span></div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+(function(){
+  if (!Auth.requireAuth()) return;
+  const u = Auth.getUser();
+  if (u && !['teacher','admin','superadmin'].includes(u.role)) {
+    window.location.href = ROUTES ? ROUTES.dashboard : 'dashboard.html';
+  }
+  Auth.fillUserUI();
+})();
+
+// ── State ────────────────────────────────────────────────────
+let ALL_TOPICS = [];
+let CUR_SEM    = 1;
+let CUR_SEM2   = 1;
+let CUR_TOPIC  = null;
+let CUR_LEVEL  = 'beginner';
+let CONTENT_ID = null;
+let TEST_ID    = null;
+
+// ── Init ─────────────────────────────────────────────────────
+async function initPage() {
+  try {
+    const data = await api.topics({ page_size: 100 });
+    ALL_TOPICS = Array.isArray(data) ? data : (data?.results || []);
+    renderNameGrid(CUR_SEM);
+    renderTopicList2(CUR_SEM2);
+  } catch(e) {
+    document.getElementById('nameGrid').innerHTML =
+      `<div style="padding:1rem;color:#ff6584;font-size:.82rem">❌ Mavzular yuklanmadi: ${e.message||''}</div>`;
+  }
+}
+
+// ── Step navigation ──────────────────────────────────────────
+function showStep(n) {
+  document.getElementById('step1').style.display = n === 1 ? '' : 'none';
+  document.getElementById('step2').style.display = n === 2 ? '' : 'none';
+  document.getElementById('stepBtn1').classList.toggle('active', n === 1);
+  document.getElementById('stepBtn2').classList.toggle('active', n === 2);
+  if (n === 2) renderTopicList2(CUR_SEM2);
+}
+
+// ══ STEP 1 ═══════════════════════════════════════════════════
+
+function selectSem(n, el) {
+  CUR_SEM = n;
+  document.querySelectorAll('.sem-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderNameGrid(n);
+}
+
+function renderNameGrid(semNum) {
+  const SEM_NAMES = { 1:'1-Semestr', 2:'2-Semestr', 3:'3-Semestr' };
+  document.getElementById('s1Title').textContent = `${SEM_NAMES[semNum]} · Mavzu nomlari`;
+
+  const topics = ALL_TOPICS
+    .filter(t => (t.module_number || t.module) === semNum)
+    .sort((a, b) => (a.number||0) - (b.number||0));
+
+  if (!topics.length) {
+    document.getElementById('nameGrid').innerHTML =
+      '<div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:.82rem">Bu semestrda mavzular topilmadi</div>';
+    return;
+  }
+
+  const DIFF = [
+    { v:'easy',   l:'Oson' },
+    { v:'medium', l:"O'rta" },
+    { v:'hard',   l:'Qiyin' },
+  ];
+
+  document.getElementById('nameGrid').innerHTML = topics.map(t => {
+    const opts = DIFF.map(d =>
+      `<option value="${d.v}" ${t.difficulty===d.v?'selected':''}>${d.l}</option>`
+    ).join('');
+    const hasSaved = t.title?.trim();
+    return `<div class="name-row">
+      <span class="name-num">T${t.number}</span>
+      <input class="name-input ${hasSaved?'saved':''}" id="tn-${t.id}"
+        value="${(t.title||'').replace(/"/g,'&quot;')}"
+        placeholder="Mavzu nomini kiriting..."
+        oninput="this.classList.remove('saved');document.getElementById('dot-${t.id}').classList.remove('ok')">
+      <select class="diff-select" id="td-${t.id}">${opts}</select>
+      <span class="save-dot ${hasSaved?'ok':''}" id="dot-${t.id}"></span>
+    </div>`;
+  }).join('');
+}
+
+async function saveAllNames() {
+  const btn  = document.getElementById('saveNamesBtn');
+  const stat = document.getElementById('saveStatus');
+  btn.disabled = true;
+  stat.textContent = '⏳ Saqlanmoqda...';
+  stat.style.color = 'var(--muted)';
+
+  const topics = ALL_TOPICS
+    .filter(t => (t.module_number || t.module) === CUR_SEM)
+    .sort((a,b) => (a.number||0) - (b.number||0));
+
+  let saved = 0, skipped = 0, errors = 0;
+
+  await Promise.allSettled(topics.map(async t => {
+    const nameEl = document.getElementById(`tn-${t.id}`);
+    const diffEl = document.getElementById(`td-${t.id}`);
+    const newTitle = nameEl?.value?.trim();
+    const newDiff  = diffEl?.value;
+    if (!newTitle) return;
+    if (newTitle === t.title && newDiff === t.difficulty) {
+      skipped++;
+      document.getElementById(`dot-${t.id}`)?.classList.add('ok');
+      nameEl?.classList.add('saved');
+      return;
+    }
+    try {
+      await api.patch(`/courses/topics/${t.id}/`, { title: newTitle, difficulty: newDiff });
+      t.title = newTitle;
+      t.difficulty = newDiff;
+      document.getElementById(`dot-${t.id}`)?.classList.add('ok');
+      nameEl?.classList.add('saved');
+      saved++;
+    } catch { errors++; }
+  }));
+
+  btn.disabled = false;
+  if (errors) {
+    stat.textContent = `⚠️ ${saved} ta saqlandi, ${errors} ta xatolik`;
+    stat.style.color = '#ffa500';
+  } else {
+    stat.textContent = `✅ ${saved} ta yangilandi, ${skipped} ta o'zgarmagan`;
+    stat.style.color = '#43e97b';
+  }
+}
+
+// ══ STEP 2 ═══════════════════════════════════════════════════
+
+function selectSem2(n, el) {
+  CUR_SEM2 = n;
+  document.querySelectorAll('.sem-mini-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  CUR_TOPIC = null;
+  document.getElementById('editorEmpty').style.display = '';
+  document.getElementById('editor').style.display = 'none';
+  renderTopicList2(n);
+}
+
+function renderTopicList2(semNum) {
+  const topics = ALL_TOPICS
+    .filter(t => (t.module_number || t.module) === semNum)
+    .sort((a,b) => (a.number||0) - (b.number||0));
+
+  document.getElementById('listCount').textContent = `${topics.length} ta`;
+  document.getElementById('topicList2').innerHTML = topics.length
+    ? topics.map(t => `
+      <div class="ktr-row" id="ktr-${t.id}" onclick="selectTopic(${t.id})">
+        <span class="ktr-num">T${t.number}</span>
+        <span class="ktr-name">${t.title || '<em style="color:var(--muted)">Nomsiz</em>'}</span>
+        <span class="ktr-arrow">›</span>
+      </div>`).join('')
+    : '<div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:.82rem">Mavzular topilmadi</div>';
+}
+
+async function selectTopic(topicId) {
+  document.querySelectorAll('.ktr-row').forEach(r => r.classList.remove('active'));
+  document.getElementById(`ktr-${topicId}`)?.classList.add('active');
+
+  CUR_TOPIC = ALL_TOPICS.find(t => t.id === topicId);
+  document.getElementById('editorTitle').textContent = `T${CUR_TOPIC?.number}. ${CUR_TOPIC?.title || ''}`;
+  document.getElementById('editorEmpty').style.display = 'none';
+  document.getElementById('editor').style.display = 'block';
+  document.getElementById('contentStatus').textContent = '⏳';
+  document.getElementById('testStatus').textContent    = '⏳';
+
+  try {
+    const [contents, tests] = await Promise.all([
+      api.topicContents(topicId),
+      api.topicTests(topicId),
+    ]);
+    window._contents = Array.isArray(contents) ? contents : [];
+    window._tests    = Array.isArray(tests)    ? tests    : [];
+    CUR_LEVEL = 'beginner';
+    switchLevel('beginner');
+  } catch(e) {
+    document.getElementById('contentStatus').textContent = '❌ ' + (e.message || 'Xatolik');
+  }
+}
+
+function switchLevel(level) {
+  CUR_LEVEL = level;
+  const tMap = { beginner:'B', intermediate:'O', advanced:'Y' };
+  const aMap = { beginner:'active-b', intermediate:'active-o', advanced:'active-y' };
+  ['beginner','intermediate','advanced'].forEach(lv => {
+    const btn = document.getElementById(`lvTab${tMap[lv]}`);
+    btn.className = 'lv-tab';
+    if (lv === level) btn.classList.add(aMap[lv]);
+  });
+  fillContentForm();
+  fillTestForm();
+  loadTasks();
+}
+
+function fillContentForm() {
+  const c = (window._contents||[]).find(x => x.level === CUR_LEVEL);
+  CONTENT_ID = c?.id || null;
+  document.getElementById('videoUrl').value    = c?.video_url    || '';
+  document.getElementById('lectureText').value = c?.lecture_text || '';
+  document.getElementById('contentStatus').textContent =
+    c ? '📄 Mavjud kontent yuklandi' : '➕ Yangi kontent yaratiladi';
+}
+
+function fillTestForm() {
+  const test = (window._tests||[]).find(t => t.level === CUR_LEVEL);
+  TEST_ID = test?.id || null;
+  const LN = { beginner:"Boshlang'ich", intermediate:"O'rta", advanced:"Yuqori" };
+  document.getElementById('testTitle').value  = test?.title      || `${LN[CUR_LEVEL]} daraja testi`;
+  document.getElementById('passScore').value  = test?.pass_score ?? 7;
+  document.getElementById('testStatus').textContent = test
+    ? `📄 ${test.question_count||0} ta savol mavjud` : '➕ Test hali yaratilmagan';
+
+  const qs   = test?.questions || [];
+  const area = document.getElementById('questionsArea');
+  area.innerHTML = Array.from({length: 10}, (_, i) => {
+    const q    = qs[i] || {};
+    const opts = q.options || ['','','',''];
+    const ca   = q.correct_answer ?? 0;
+    return `<div class="q-block">
+      <div class="q-num-lbl">Savol ${i+1}</div>
+      <textarea class="kt-textarea" id="qq-text-${i}" rows="2" placeholder="Savol matni...">${q.question||''}</textarea>
+      <div class="opt-row">
+        ${['A','B','C','D'].map((l,oi) => `
+          <div class="opt-wrap">
+            <span class="opt-lbl">${l}</span>
+            <input class="opt-input" id="qq-opt-${i}-${oi}" placeholder="Variant ${l}" value="${(opts[oi]||'').replace(/"/g,'&quot;')}">
+          </div>`).join('')}
+      </div>
+      <div class="correct-row">
+        <span class="correct-lbl">To'g'ri javob:</span>
+        ${['A','B','C','D'].map((l,oi) => `
+          <label class="radio-opt">
+            <input type="radio" name="qq-correct-${i}" value="${oi}" ${ca===oi?'checked':''}> ${l}
+          </label>`).join('')}
+      </div>
+      <div style="margin-top:.4rem">
+        <input class="opt-input" id="qq-exp-${i}" placeholder="Izoh (ixtiyoriy)"
+          value="${(q.explanation||'').replace(/"/g,'&quot;')}" style="width:100%">
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function saveContent() {
+  if (!CUR_TOPIC?.id) return;
+  const btn  = document.getElementById('saveContentBtn');
+  const stat = document.getElementById('contentStatus');
+  btn.disabled = true; stat.textContent = '⏳ Saqlanmoqda...';
+  try {
+    let res;
+    if (CONTENT_ID) {
+      res = await api.contentUpdate(CUR_TOPIC.id, CONTENT_ID, {
+        video_url:    document.getElementById('videoUrl').value.trim(),
+        lecture_text: document.getElementById('lectureText').value,
+      });
+      const idx = (window._contents||[]).findIndex(c => c.id === CONTENT_ID);
+      if (idx >= 0) window._contents[idx] = { ...window._contents[idx], ...res };
+    } else {
+      res = await api.contentCreate(CUR_TOPIC.id, {
+        level:        CUR_LEVEL,
+        video_url:    document.getElementById('videoUrl').value.trim(),
+        lecture_text: document.getElementById('lectureText').value,
+      });
+      CONTENT_ID = res?.id;
+      (window._contents = window._contents || []).push(res);
+    }
+    stat.textContent = '✅ Saqlandi!';
+  } catch(e) {
+    stat.textContent = '❌ ' + (e.message||'Xatolik');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function saveTest() {
+  if (!CUR_TOPIC?.id) return;
+  const btn  = document.getElementById('saveTestBtn');
+  const stat = document.getElementById('testStatus');
+  btn.disabled = true; stat.textContent = '⏳ Saqlanmoqda...';
+
+  const title     = document.getElementById('testTitle').value.trim();
+  const passScore = parseInt(document.getElementById('passScore').value) || 7;
+  if (!title) { stat.textContent = '⚠️ Test nomini kiriting'; btn.disabled = false; return; }
+
+  try {
+    let test;
+    if (TEST_ID) {
+      test = await api.testUpdate(CUR_TOPIC.id, TEST_ID, { title, pass_score: passScore });
+    } else {
+      test = await api.testCreate(CUR_TOPIC.id, { level: CUR_LEVEL, title, pass_score: passScore });
+      TEST_ID = test?.id;
+      (window._tests = window._tests || []).push(test);
+    }
+
+    const questions = Array.from({length: 10}, (_,i) => {
+      const correct = document.querySelector(`input[name="qq-correct-${i}"]:checked`);
+      return {
+        question:       document.getElementById(`qq-text-${i}`)?.value?.trim() || '',
+        options:        [0,1,2,3].map(oi => document.getElementById(`qq-opt-${i}-${oi}`)?.value?.trim() || ''),
+        correct_answer: correct ? parseInt(correct.value) : 0,
+        explanation:    document.getElementById(`qq-exp-${i}`)?.value?.trim() || '',
+        order:          i,
+      };
+    }).filter(q => q.question);
+
+    let savedQuestions = [];
+    if (questions.length) {
+      const res = await api.testSetQuestions(CUR_TOPIC.id, TEST_ID, questions);
+      savedQuestions = res?.questions || questions;
+    }
+
+    const idx = (window._tests||[]).findIndex(t => t.id === TEST_ID);
+    if (idx >= 0) {
+      window._tests[idx].question_count = questions.length;
+      window._tests[idx].title          = title;
+      window._tests[idx].questions      = savedQuestions;
+    }
+    stat.textContent = `✅ Saqlandi! ${questions.length} ta savol.`;
+  } catch(e) {
+    stat.textContent = '❌ ' + (e.message||'Xatolik');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function loadTasks() {
+  if (!CUR_TOPIC?.id) return;
+  try {
+    const tasks = await api.topicTasksList(CUR_TOPIC.id, CUR_LEVEL);
+    const list  = Array.isArray(tasks) ? tasks : (tasks?.results || []);
+    window._tasks = list;
+    renderTaskList('exerciseList', list.filter(t => t.task_category === 'exercise'), 'exercise');
+    renderTaskList('projectList',  list.filter(t => t.task_category === 'project'),  'project');
+  } catch {
+    document.getElementById('exerciseList').innerHTML = '<div style="color:var(--muted);font-size:.82rem">Topilmadi</div>';
+  }
+}
+
+function renderTaskList(elId, tasks, cat) {
+  const el = document.getElementById(elId);
+  if (!tasks.length) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:.82rem;padding:.4rem 0">Hali topshiriq yo'q</div>`;
+    return;
+  }
+  el.innerHTML = tasks.map((t,i) => `
+    <div class="task-list-item">
+      <span class="ti-num">${i+1}</span>
+      <span class="ti-title">${t.title}</span>
+      <span class="ti-cat ${cat==='exercise'?'cat-ex':'cat-pr'}">${cat==='exercise'?'Exercise':'Loyiha'}</span>
+      <button class="ti-btn" onclick="openTaskModal(${t.id})">✏️</button>
+      <button class="ti-btn del" onclick="deleteTask(${t.id},this)">🗑️</button>
+    </div>`).join('');
+}
+
+function openTaskModal(taskId, defaultCat) {
+  if (!CUR_TOPIC?.id) { alert('⚠️ Avval mavzuni tanlang'); return; }
+  document.getElementById('taskModalStatus').textContent = '';
+  if (taskId) {
+    const t = (window._tasks||[]).find(x => x.id === taskId);
+    if (!t) return;
+    document.getElementById('taskModalTitle').textContent = '✏️ Topshiriqni tahrirlash';
+    document.getElementById('taskModalId').value          = t.id;
+    document.getElementById('taskModalCat').value         = t.task_category;
+    document.getElementById('taskTitle').value            = t.title || '';
+    document.getElementById('taskDesc').value             = t.description || '';
+    document.getElementById('taskStarterCode').value      = t.starter_code || '';
+    document.getElementById('taskTestCases').value        = JSON.stringify(t.test_cases || []);
+    document.getElementById('taskOrder').value            = t.order ?? 0;
+    document.getElementById('taskMaxScore').value         = t.max_score ?? 1;
+    document.getElementById('taskType').value             = t.task_type || 'algorithm';
+  } else {
+    const cat = defaultCat || 'exercise';
+    document.getElementById('taskModalTitle').textContent = cat === 'project' ? '+ Yangi loyiha' : '+ Yangi exercise';
+    document.getElementById('taskModalId').value          = '';
+    document.getElementById('taskModalCat').value         = cat;
+    document.getElementById('taskTitle').value            = '';
+    document.getElementById('taskDesc').value             = '';
+    document.getElementById('taskStarterCode').value      = '';
+    document.getElementById('taskTestCases').value        = '[]';
+    document.getElementById('taskOrder').value            = 0;
+    document.getElementById('taskMaxScore').value         = cat === 'project' ? 5 : 1;
+    document.getElementById('taskType').value             = cat === 'project' ? 'mini_project' : 'algorithm';
+  }
+  document.getElementById('taskModal').classList.add('open');
+}
+
+function closeTaskModal() {
+  document.getElementById('taskModal').classList.remove('open');
+}
+
+async function saveTask() {
+  const topicId = CUR_TOPIC?.id;
+  const taskId  = document.getElementById('taskModalId').value;
+  const stat    = document.getElementById('taskModalStatus');
+  if (!topicId) { stat.textContent = '⚠️ Avval mavzuni tanlang'; return; }
+
+  let testCases = [];
+  try { testCases = JSON.parse(document.getElementById('taskTestCases').value || '[]'); }
+  catch { stat.textContent = "⚠️ Test cases JSON formati noto'g'ri"; return; }
+
+  const data = {
+    topic:         topicId,
+    level:         CUR_LEVEL,
+    task_category: document.getElementById('taskModalCat').value,
+    task_type:     document.getElementById('taskType').value,
+    title:         document.getElementById('taskTitle').value.trim(),
+    description:   document.getElementById('taskDesc').value.trim(),
+    starter_code:  document.getElementById('taskStarterCode').value,
+    test_cases:    testCases,
+    order:         parseInt(document.getElementById('taskOrder').value) || 0,
+    max_score:     parseInt(document.getElementById('taskMaxScore').value) || 1,
+  };
+  if (!data.title) { stat.textContent = '⚠️ Sarlavha kiriting'; return; }
+  stat.textContent = '⏳ Saqlanmoqda...';
+  try {
+    taskId ? await api.taskUpdate(taskId, data) : await api.taskCreate(data);
+    stat.textContent = '✅ Saqlandi!';
+    setTimeout(() => { closeTaskModal(); loadTasks(); }, 800);
+  } catch(e) {
+    stat.textContent = '❌ ' + (e.message||'Xatolik');
+  }
+}
+
+async function deleteTask(taskId, btn) {
+  if (!confirm("Topshiriqni o'chirishni tasdiqlaysizmi?")) return;
+  btn.disabled = true;
+  try {
+    await api.taskDelete(taskId);
+    loadTasks();
+  } catch(e) {
+    alert('❌ ' + (e.message||'Xatolik'));
+    btn.disabled = false;
+  }
+}
+
+initPage();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

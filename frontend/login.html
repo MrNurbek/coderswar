@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Kirish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--accent:#6c63ff;--accent2:#ff6584;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.25);--glow:0 0 30px rgba(108,99,255,0.3)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,.logo a{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
+    .auth-wrap{width:100%;max-width:440px;padding:1.5rem;position:relative;z-index:1}
+    .logo{text-align:center;margin-bottom:2rem}
+    .logo a{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:1px}
+    .logo p{color:var(--muted);font-size:.9rem;margin-top:.3rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;backdrop-filter:blur(20px)}
+    .card h2{font-size:1.5rem;font-weight:800;margin-bottom:.4rem}
+    .card .sub{color:var(--muted);font-size:.9rem;margin-bottom:2rem}
+    .form-group{margin-bottom:1.2rem}
+    .form-group label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.5rem;color:var(--text)}
+    .form-group input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:.85rem 1rem;color:var(--text);font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s}
+    .form-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.15)}
+    .form-group input::placeholder{color:var(--muted)}
+    .input-icon{position:relative}
+    .input-icon input{padding-left:2.8rem}
+    .input-icon .icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--muted)}
+    .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;font-size:.85rem}
+    .remember{display:flex;align-items:center;gap:.5rem;color:var(--muted);cursor:pointer}
+    .remember input{width:auto;margin:0}
+    .forgot{color:var(--accent);text-decoration:none;font-weight:600}
+    .forgot:hover{text-decoration:underline}
+    .btn{width:100%;background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;padding:1rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(108,99,255,0.35)}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,99,255,0.5)}
+    .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--muted);font-size:.85rem}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.08)}
+    .oauth-btn{width:100%;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:.85rem;border-radius:12px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.7rem;transition:border-color .2s,background .2s}
+    .oauth-btn:hover{border-color:var(--accent);background:rgba(108,99,255,0.08)}
+    .switch{text-align:center;margin-top:1.5rem;font-size:.9rem;color:var(--muted)}
+    .switch a{color:var(--accent);font-weight:600;text-decoration:none}
+    .switch a:hover{text-decoration:underline}
+    .error-msg{background:rgba(255,101,132,0.1);border:1px solid rgba(255,101,132,0.3);border-radius:10px;padding:.75rem 1rem;font-size:.85rem;color:#ff8fab;margin-bottom:1.2rem;display:none}
+    .toggle-pass{position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/login.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+
+<div class="auth-wrap">
+  <div class="logo">
+    <a href="index.html">CodersWar</a>
+    <p>Gamifikatsion C# o'quv platformasi</p>
+  </div>
+  <div class="card">
+    <h2>Xush kelibsiz! 👋</h2>
+    <p class="sub">Akkauntingizga kiring</p>
+
+    <div class="error-msg" id="errMsg">Login yoki parol noto'g'ri. Qayta urinib ko'ring.</div>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Login yoki Email</label>
+        <div class="input-icon">
+          <span class="icon">👤</span>
+          <input type="text" id="loginInput" placeholder="username yoki email" autocomplete="username" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Parol</label>
+        <div class="input-icon">
+          <span class="icon">🔒</span>
+          <input type="password" id="passInput" placeholder="parolingizni kiriting" autocomplete="current-password" required/>
+          <button type="button" class="toggle-pass" onclick="togglePass()">👁️</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="remember"><input type="checkbox"/> Eslab qolish</label>
+        <a href="/forgot-password.html" class="forgot">Parolni unutdim?</a>
+      </div>
+      <button type="submit" class="btn" id="loginBtn">Kirish →</button>
+    </form>
+
+    <div class="divider">yoki</div>
+    <button class="oauth-btn" onclick="demoLogin()">
+      <span>🎮</span> Demo akkaunt bilan kirish
+    </button>
+
+    <div class="switch">
+      Akkauntingiz yo'qmi? <a href="register.html">Ro'yxatdan o'ting</a>
+    </div>
+  </div>
+</div>
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script>
+// Allaqachon login bo'lgan bo'lsa — dashboardga o'tish
+Auth.redirectIfAuthed();
+
+function togglePass(){
+  const i = document.getElementById('passInput');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+
+function showError(msg) {
+  const el = document.getElementById('errMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  const errEl = document.getElementById('errMsg');
+  errEl.style.display = 'none';
+  btn.textContent = 'Kirish...';
+  btn.disabled = true;
+
+  const username = document.getElementById('loginInput').value.trim();
+  const password = document.getElementById('passInput').value;
+
+  try {
+    const user = await Auth.login(username, password);
+    // Rolga qarab yo'naltirish
+    if (user.role === 'teacher' || user.role === 'admin' || user.role === 'superadmin') {
+      window.location.href = '/teacher-dashboard.html';
+    } else {
+      // Diagnostik test o'tganmi?
+      window.location.href = user.student_profile ? '/dashboard.html' : '/diagnostic.html';
+    }
+  } catch (err) {
+    showError(err.message || 'Login yoki parol noto\'g\'ri.');
+    btn.textContent = 'Kirish →';
+    btn.disabled = false;
+  }
+}
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>

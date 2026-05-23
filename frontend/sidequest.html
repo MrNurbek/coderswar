@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Amaliyot · Kod Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome@0.2.0/dist/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px;--editor-bg:#0d1117}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow:hidden}
+    /* sidebar */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border);margin-top:auto}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .avatar-sm{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .info .name{font-size:.88rem;font-weight:600}
+    .info .role{font-size:.72rem;color:var(--muted)}
+    /* task list panel */
+    .task-panel{width:280px;background:var(--bg2);border-right:1px solid var(--border);margin-left:var(--sidebar);display:flex;flex-direction:column;height:100vh;position:fixed;left:var(--sidebar);top:0;overflow-y:auto}
+    .tp-header{padding:1rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg2);z-index:5}
+    .tp-header h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+    .tp-header .tp-meta{font-size:.75rem;color:var(--muted)}
+    .tp-progress{margin-top:.6rem}
+    .tp-prog-info{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:.3rem}
+    .tp-bar{height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+    .tp-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#6c63ff,#a78bfa);transition:width .5s}
+    .task-list-inner{padding:.6rem}
+    .task-item{padding:.75rem .8rem;border-radius:12px;cursor:pointer;margin-bottom:.3rem;border:1px solid transparent;transition:all .2s;position:relative}
+    .task-item:hover{background:rgba(108,99,255,0.08);border-color:rgba(108,99,255,0.2)}
+    .task-item.active{background:rgba(108,99,255,0.15);border-color:var(--accent)}
+    .task-item.done{opacity:.7}
+    .ti-row{display:flex;align-items:center;gap:.6rem}
+    .ti-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+    .tn-done{background:rgba(67,233,123,0.2);color:#43e97b}
+    .tn-active{background:rgba(108,99,255,0.25);color:#a78bfa}
+    .tn-todo{background:rgba(255,255,255,0.07);color:var(--muted)}
+    .ti-name{font-size:.83rem;font-weight:500;line-height:1.3;flex:1}
+    .ti-score{font-size:.72rem;font-weight:700;flex-shrink:0}
+    .ti-diff{font-size:.65rem;padding:.1rem .45rem;border-radius:6px;margin-top:.3rem;display:inline-block}
+    .d-easy{background:rgba(67,233,123,0.12);color:#43e97b}
+    .d-med{background:rgba(255,165,0,0.12);color:#ffa500}
+    .d-hard{background:rgba(255,101,132,0.12);color:#ff6584}
+    .sep-line{height:1px;background:var(--border);margin:.5rem .6rem}
+    /* level selector tabs */
+    .level-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:.6rem 0 .2rem}
+    .lv-tab{flex:1;padding:.42rem .3rem;text-align:center;font-size:.72rem;font-weight:700;cursor:pointer;color:var(--muted);background:none;border:none;transition:all .2s}
+    .lv-tab.lb{}.lv-tab.lo{}.lv-tab.ly{}
+    .lv-tab.active-lb{background:rgba(67,233,123,0.15);color:#43e97b}
+    .lv-tab.active-lo{background:rgba(255,152,0,0.15);color:#ff9800}
+    .lv-tab.active-ly{background:rgba(255,101,132,0.15);color:#ff6584}
+    .lv-tab.locked-lv{opacity:.35;cursor:not-allowed}
+    /* project item */
+    .mini-proj{background:linear-gradient(135deg,rgba(108,99,255,0.1),rgba(255,101,132,0.05));border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:.75rem .8rem;margin:.3rem 0;cursor:pointer;transition:border-color .2s}
+    .mini-proj:hover{border-color:var(--accent)}
+    .mini-proj.done{border-color:rgba(67,233,123,0.4);background:rgba(67,233,123,0.04)}
+    .mp-label{font-size:.65rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:.2rem}
+    .mp-name{font-size:.83rem;font-weight:600}
+    /* level badge on header */
+    .lv-badge{font-size:.68rem;font-weight:700;padding:.15rem .55rem;border-radius:8px}
+    .lv-badge.b{background:rgba(67,233,123,0.15);color:#43e97b}
+    .lv-badge.o{background:rgba(255,152,0,0.15);color:#ff9800}
+    .lv-badge.y{background:rgba(255,101,132,0.15);color:#ff6584}
+    /* editor area */
+    .editor-area{margin-left:calc(var(--sidebar) + 280px);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    .editor-topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.7rem 1.2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;flex-shrink:0}
+    .task-title-bar{flex:1;min-width:0}
+    .task-title-bar .ttb-topic{font-size:.72rem;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+    .task-title-bar h3{font-size:.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topbar-actions{display:flex;gap:.6rem;flex-shrink:0}
+    .tb-btn{padding:.45rem .9rem;border-radius:9px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .2s;white-space:nowrap}
+    .tb-btn:hover{border-color:var(--accent)}
+    .tb-btn.run{background:linear-gradient(135deg,#43e97b,#38f9d7);border-color:transparent;color:#000}
+    .tb-btn.submit{background:linear-gradient(135deg,#6c63ff,#a78bfa);border-color:transparent;color:#fff}
+    .tb-btn.run:hover,.tb-btn.submit:hover{transform:translateY(-1px)}
+    /* editor + output split */
+    .editor-split{flex:1;display:flex;overflow:hidden}
+    .left-pane{flex:1;display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden}
+    .right-pane{width:340px;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+    @media(max-width:1100px){.right-pane{width:280px}}
+    /* tabs */
+    .pane-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+    .pane-tab{padding:.55rem 1rem;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+    .pane-tab.active{color:#a78bfa;border-bottom-color:var(--accent)}
+    .pane-tab:hover{color:var(--text)}
+    /* code editor simulation */
+    .code-editor{flex:1;background:var(--editor-bg);overflow:auto;position:relative;display:flex}
+    .line-nums{width:44px;background:#0a0f1a;border-right:1px solid rgba(255,255,255,0.06);padding:.8rem 0;display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;user-select:none}
+    .ln{height:22px;line-height:22px;padding-right:.6rem;font-size:.8rem;font-family:'Consolas',monospace;color:rgba(136,146,176,0.4)}
+    .ln.active-ln{color:var(--muted)}
+    .code-area{flex:1;outline:none;background:transparent;border:none;resize:none;color:#e8eaf6;font-family:'Consolas','Courier New',monospace;font-size:.88rem;line-height:22px;padding:.8rem .6rem;caret-color:#a78bfa;tab-size:4;white-space:pre;overflow:auto}
+    .code-area:focus{outline:none}
+    /* task description pane */
+    .task-desc-pane{flex:1;overflow-y:auto;padding:1.2rem;display:none}
+    .task-desc-pane.show{display:block}
+    .task-editor-pane{flex:1;display:flex;overflow:hidden}
+    .task-editor-pane.hide{display:none}
+    .td-section{margin-bottom:1.2rem}
+    .td-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:.5rem}
+    .td-text{font-size:.87rem;color:var(--muted);line-height:1.7}
+    .td-code{background:rgba(0,0,0,0.4);border:1px solid rgba(108,99,255,0.15);border-radius:10px;padding:.9rem 1rem;font-family:'Consolas',monospace;font-size:.83rem;color:#a78bfa;line-height:1.7;white-space:pre;overflow-x:auto;margin:.5rem 0}
+    .td-example{background:rgba(67,233,123,0.05);border:1px solid rgba(67,233,123,0.2);border-radius:10px;padding:.8rem 1rem;font-size:.83rem;margin:.3rem 0}
+    .td-example .ex-label{font-size:.68rem;font-weight:700;color:#43e97b;margin-bottom:.3rem}
+    .td-example .ex-io{font-family:'Consolas',monospace;font-size:.82rem;color:var(--text)}
+    /* output panel */
+    .output-panel{flex:1;overflow:hidden;display:flex;flex-direction:column}
+    .output-content{flex:1;overflow-y:auto;padding:1rem;font-family:'Consolas','Courier New',monospace;font-size:.83rem;line-height:1.6}
+    .out-line{padding:.15rem 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .out-success{color:#43e97b}
+    .out-error{color:#ff8fab}
+    .out-info{color:#63b3ed}
+    .out-warn{color:#ffa500}
+    .out-normal{color:var(--text)}
+    .test-results{padding:0}
+    .tc-row{display:flex;align-items:center;gap:.7rem;padding:.55rem .5rem;border-radius:8px;margin-bottom:.3rem;font-size:.8rem;border:1px solid transparent}
+    .tc-pass{background:rgba(67,233,123,0.06);border-color:rgba(67,233,123,0.2)}
+    .tc-fail{background:rgba(255,101,132,0.06);border-color:rgba(255,101,132,0.2)}
+    .tc-pending{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.06)}
+    .tc-icon{font-size:.9rem;flex-shrink:0}
+    .tc-info{flex:1}
+    .tc-label{font-weight:600;margin-bottom:.1rem}
+    .tc-pass .tc-label{color:#43e97b}
+    .tc-fail .tc-label{color:#ff8fab}
+    .tc-pending .tc-label{color:var(--muted)}
+    .tc-detail{font-size:.72rem;color:var(--muted)}
+    .tc-time{font-size:.7rem;color:var(--muted);flex-shrink:0}
+    /* ai feedback */
+    .ai-feedback{padding:1rem;display:none;overflow-y:auto;flex:1}
+    .ai-feedback.show{display:block}
+    .ai-bubble{background:rgba(108,99,255,0.07);border:1px solid rgba(108,99,255,0.18);border-radius:14px;padding:1rem;margin-bottom:.8rem}
+    .ai-bubble .ai-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;font-size:.78rem;font-weight:700;color:#a78bfa}
+    .ai-bubble p{font-size:.83rem;color:var(--muted);line-height:1.7}
+    .ai-bubble code{background:rgba(0,0,0,0.3);border-radius:4px;padding:.1rem .4rem;font-family:'Consolas',monospace;font-size:.8rem;color:#a78bfa}
+    /* status bar */
+    .status-bar{background:#060a14;border-top:1px solid var(--border);padding:.3rem 1rem;display:flex;align-items:center;gap:1.5rem;font-size:.72rem;color:var(--muted);flex-shrink:0}
+    .sb-item{display:flex;align-items:center;gap:.3rem}
+    .sb-dot{width:8px;height:8px;border-radius:50%}
+    .sb-ready{background:#43e97b}
+    .sb-run{background:#ffa500;animation:blink 1s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    /* result banner */
+    .result-banner{padding:.7rem 1.2rem;display:none;flex-align:center;gap:.8rem;font-size:.88rem;font-weight:600;border-bottom:1px solid;flex-shrink:0}
+    .result-banner.success{background:rgba(67,233,123,0.1);border-color:rgba(67,233,123,0.3);color:#43e97b;display:flex}
+    .result-banner.error{background:rgba(255,101,132,0.08);border-color:rgba(255,101,132,0.25);color:#ff8fab;display:flex}
+    .rb-score{margin-left:auto;background:rgba(67,233,123,0.15);border-radius:8px;padding:.15rem .6rem;font-size:.8rem}
+    /* score modal */
+    .score-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+    .score-modal-overlay.open{display:flex}
+    .score-modal{background:#0f1628;border:1px solid var(--border);border-radius:24px;padding:2.5rem;max-width:420px;width:90%;text-align:center}
+    .sm-icon{font-size:3.5rem;margin-bottom:.8rem}
+    .sm-title{font-size:1.4rem;font-weight:900;margin-bottom:.4rem}
+    .sm-sub{color:var(--muted);font-size:.9rem;margin-bottom:1.5rem}
+    .sm-score{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#43e97b,#38f9d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem}
+    .sm-of{color:var(--muted);font-size:.85rem;margin-bottom:1.5rem}
+    .sm-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+    .sm-btn{padding:.8rem 1.5rem;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;transition:transform .2s}
+    .sm-btn-next{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;box-shadow:0 4px 18px rgba(108,99,255,0.35)}
+    .sm-btn-next:hover{transform:translateY(-2px)}
+    .sm-btn-out{background:transparent;color:var(--text);border:1px solid var(--border)}
+    .sm-btn-out:hover{border-color:var(--accent)}
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/sidequest.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo"><a href="index.html">⚔️ Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
+  <nav class="sb-nav" style="padding:.8rem .7rem">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
+    <a class="nav-item active" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
+    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="avatar-sm" data-user-init>?</div>
+      <div class="info"><div class="name" data-user-name>...</div><div class="role" data-user-role>Student</div></div>
+      <button onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- TASK PANEL -->
+<div class="task-panel">
+  <div class="tp-header">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+      <h3 style="flex:1">💻 Amaliyot</h3>
+      <span class="lv-badge b" id="lvBadge">Boshlang'ich</span>
+    </div>
+    <div class="tp-meta" id="tpMeta">9-mavzu · Stringlar bilan ishlash</div>
+    <!-- Daraja tanlov tablar -->
+    <div class="level-tabs">
+      <button class="lv-tab lb active-lb" id="lvTabB" onclick="switchLevel('beginner')">🟢 Bosh.</button>
+      <button class="lv-tab lo" id="lvTabO" onclick="switchLevel('intermediate')">🟠 O'rta</button>
+      <button class="lv-tab ly" id="lvTabY" onclick="switchLevel('advanced')">🔴 Yuqori</button>
+    </div>
+    <div class="tp-progress">
+      <div class="tp-prog-info"><span id="tpProgLabel">0 / 10 topshiriq</span><span style="color:#43e97b" id="tpBall">+0 ball</span></div>
+      <div class="tp-bar"><div class="tp-bar-fill" id="taskBar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="task-list-inner">
+    <div id="taskListEl"></div>
+    <div class="sep-line"></div>
+    <div class="mini-proj" id="projectItem" onclick="loadProject()">
+      <div class="mp-label">🚀 Loyiha</div>
+      <div class="mp-name" id="projectName">Matn tahlilchisi yaratish</div>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR AREA -->
+<div class="editor-area">
+  <!-- top bar -->
+  <div class="editor-topbar">
+    <div class="task-title-bar">
+      <div class="ttb-topic">9-mavzu · Topshiriq <span id="curTaskNum">1</span></div>
+      <h3 id="curTaskName">String uzunligini hisoblash</h3>
+    </div>
+    <div class="topbar-actions">
+      <button class="tb-btn" onclick="switchView('desc')" id="btnDesc">📋 Topshiriq</button>
+      <button class="tb-btn" onclick="switchView('code')" id="btnCode" style="border-color:var(--accent);color:#a78bfa">💻 Kod</button>
+      <button class="tb-btn run" id="runBtn" onclick="runCode()">▶ Run</button>
+      <button class="tb-btn submit" id="submitBtn" onclick="submitCode()">✅ Submit</button>
+    </div>
+  </div>
+
+  <!-- result banner -->
+  <div class="result-banner" id="resultBanner">
+    <span id="resultMsg"></span>
+    <span class="rb-score" id="resultScore"></span>
+  </div>
+
+  <!-- split -->
+  <div class="editor-split">
+    <!-- LEFT: desc or code editor -->
+    <div class="left-pane">
+      <!-- Task description -->
+      <div class="task-desc-pane" id="descPane">
+        <div class="td-section">
+          <div class="td-label">📋 Vazifa</div>
+          <div class="td-text" id="tdText"></div>
+        </div>
+        <div class="td-section">
+          <div class="td-label">💡 Maslahat</div>
+          <div class="td-code" id="tdHint"></div>
+        </div>
+        <div class="td-section">
+          <div class="td-label">📥 Kiritish / 📤 Chiqarish</div>
+          <div id="tdExamples"></div>
+        </div>
+        <div class="td-section">
+          <div class="td-label">🔗 Foydali metodlar</div>
+          <div class="td-text" id="tdMethods"></div>
+        </div>
+      </div>
+      <!-- Code editor -->
+      <div class="task-editor-pane hide" id="editorPane">
+        <div class="code-editor">
+          <div class="line-nums" id="lineNums"></div>
+          <textarea class="code-area" id="codeArea" spellcheck="false" autocomplete="off"
+            oninput="updateLines()" onkeydown="handleTab(event)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: output + AI -->
+    <div class="right-pane">
+      <div class="pane-tabs">
+        <div class="pane-tab active" id="tab-out" onclick="switchTab('out')">🖥️ Output</div>
+        <div class="pane-tab" id="tab-tests" onclick="switchTab('tests')">🧪 Test Cases</div>
+        <div class="pane-tab" id="tab-ai" onclick="switchTab('ai')">🤖 AI Tahlil</div>
+      </div>
+      <div class="output-panel" id="outPanel">
+        <div class="output-content" id="outputContent">
+          <div class="out-line out-info">// Kodni yozib, ▶ Run bosing yoki ✅ Submit qiling</div>
+          <div class="out-line out-info">// Platforma: C# · Judge0 API</div>
+        </div>
+      </div>
+      <div class="output-panel" id="testsPanel" style="display:none">
+        <div class="output-content test-results" id="testContent"></div>
+      </div>
+      <div class="ai-feedback" id="aiFeedback"></div>
+    </div>
+  </div>
+
+  <!-- status bar -->
+  <div class="status-bar">
+    <div class="sb-item"><div class="sb-dot sb-ready" id="statusDot"></div><span id="statusTxt">Tayyor</span></div>
+    <div class="sb-item">📁 C# · .NET 8</div>
+    <div class="sb-item">📝 <span id="lineCount">1</span> qator</div>
+    <div class="sb-item" style="margin-left:auto">⭐ <span id="sbRating">—</span> ball · 🔥 <span id="sbStreak">—</span> kun</div>
+  </div>
+</div>
+
+<!-- SCORE MODAL -->
+<div class="score-modal-overlay" id="scoreModal">
+  <div class="score-modal">
+    <div class="sm-icon" id="smIcon">🎉</div>
+    <div class="sm-title" id="smTitle">Topshiriq qabul qilindi!</div>
+    <div class="sm-sub" id="smSub">Barcha test caselar o'tdi</div>
+    <div class="sm-score" id="smScore">+12</div>
+    <div class="sm-of">ball qo'shildi</div>
+    <div class="sm-btns">
+      <button class="sm-btn sm-btn-next" onclick="nextTask()">Keyingi topshiriq →</button>
+      <button class="sm-btn sm-btn-out" onclick="closeModal()">Dashboard →</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+if (!Auth.requireAuth()) throw 0;
+
+// ── URL params ──────────────────────────────────────
+const _params  = new URLSearchParams(location.search);
+const TOPIC_ID = parseInt(_params.get('topic')) || null;
+const INIT_LVL = _params.get('level') || 'beginner';
+
+// ══════════════════════════════════════════════════════════════
+// DARAJA BO'YICHA TOPSHIRIQLAR (API dan yuklanadi)
+// ══════════════════════════════════════════════════════════════
+const LEVEL_TASKS_DEMO = {   // API ishlamagan holda fallback
+  beginner: [
+    {n:1,name:"String uzunligini hisoblash",status:'done',score:8,diff:'easy',
+     desc:"Foydalanuvchidan string kiriting va uning uzunligini ekranga chiqaring.",
+     hint:`string s = Console.ReadLine();\nConsole.WriteLine(s.Length);`,
+     examples:[{in:"Hello",out:"5"},{in:"Coders War",out:"10"}],
+     methods:"string.Length — string uzunligini qaytaradi",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Uzunlikni hisoblang va chiqaring\n        \n    }\n}`,
+     testCases:[{inp:"Hello",exp:"5",pass:true},{inp:"Coders War",exp:"10",pass:true},{inp:"",exp:"0",pass:true}]},
+    {n:2,name:"Katta harfga o'tkazish",status:'done',score:8,diff:'easy',
+     desc:"Kiritilgan stringni to'liq katta harflarga o'tkazib chiqaring.",
+     hint:`Console.WriteLine(s.ToUpper());`,
+     examples:[{in:"salom",out:"SALOM"},{in:"hello world",out:"HELLO WORLD"}],
+     methods:"string.ToUpper() · string.ToLower()",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Katta harfga o'tkazib chiqaring\n        \n    }\n}`,
+     testCases:[{inp:"salom",exp:"SALOM",pass:true},{inp:"hello",exp:"HELLO",pass:true},{inp:"cSharp",exp:"CSHARP",pass:true}]},
+    {n:3,name:"Stringni teskari aylantirish",status:'done',score:8,diff:'easy',
+     desc:"Berilgan stringni teskari tartibda chiqaring. Masalan: 'abc' → 'cba'",
+     hint:`char[] arr = s.ToCharArray();\nArray.Reverse(arr);\nConsole.WriteLine(new string(arr));`,
+     examples:[{in:"hello",out:"olleh"},{in:"12345",out:"54321"}],
+     methods:"string.ToCharArray() · Array.Reverse() · new string(char[])",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Teskari aylantiring\n        \n    }\n}`,
+     testCases:[{inp:"hello",exp:"olleh",pass:true},{inp:"abc",exp:"cba",pass:true},{inp:"racecar",exp:"racecar",pass:true}]},
+    {n:4,name:"So'zlar sonini hisoblash",status:'done',score:8,diff:'easy',
+     desc:"Kiritilgan jumlada nechta so'z borligini aniqlang.",
+     hint:`string[] words = s.Split(' ');\nConsole.WriteLine(words.Length);`,
+     examples:[{in:"Salom dunyo",out:"2"},{in:"Men C# o'rganaman",out:"4"}],
+     methods:"string.Split(char) · array.Length",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // So'zlar sonini hisoblang\n        \n    }\n}`,
+     testCases:[{inp:"Salom dunyo",exp:"2",pass:true},{inp:"a b c d",exp:"4",pass:true},{inp:"bitta",exp:"1",pass:true}]},
+    {n:5,name:"String boshini tekshirish",status:'todo',score:null,diff:'easy',
+     desc:"Kiritilgan string 'Hello' bilan boshlanadimi? true/false chiqaring.",
+     hint:`Console.WriteLine(s.StartsWith("Hello"));`,
+     examples:[{in:"Hello World",out:"true"},{in:"Goodbye",out:"false"}],
+     methods:"string.StartsWith() · string.EndsWith()",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // StartsWith tekshiring\n        \n    }\n}`,
+     testCases:[{inp:"Hello World",exp:"true",pass:null},{inp:"Goodbye",exp:"false",pass:null}]},
+    {n:6,name:"Bo'shliqlarni tozalash",status:'todo',score:null,diff:'easy',
+     desc:"Kiritilgan stringning bosh va oxiridagi bo'shliqlarni olib tashlang.",
+     hint:`Console.WriteLine(s.Trim());`,
+     examples:[{in:"  salom  ",out:"salom"},{in:" hello ",out:"hello"}],
+     methods:"string.Trim() · string.TrimStart() · string.TrimEnd()",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Trim qiling\n        \n    }\n}`,
+     testCases:[{inp:"  salom  ",exp:"salom",pass:null},{inp:" hello ",exp:"hello",pass:null}]},
+    {n:7,name:"Qism string topish",status:'todo',score:null,diff:'easy',
+     desc:"'csharp' so'zi kiritilgan string ichida bormi? Contains() yordamida tekshiring.",
+     hint:`Console.WriteLine(s.ToLower().Contains("csharp"));`,
+     examples:[{in:"I love csharp",out:"true"},{in:"Python is great",out:"false"}],
+     methods:"string.Contains() · string.ToLower()",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Contains tekshiring\n        \n    }\n}`,
+     testCases:[{inp:"I love csharp",exp:"true",pass:null},{inp:"Python is great",exp:"false",pass:null}]},
+    {n:8,name:"String almashtirish",status:'todo',score:null,diff:'easy',
+     desc:"Jumlada birinchi so'zni ikkinchi so'z bilan almashtiring (3 qator kiritish).",
+     hint:`string result = sentence.Replace(oldWord, newWord);`,
+     examples:[{in:"Salom dunyo\nSalom\nXayr",out:"Xayr dunyo"}],
+     methods:"string.Replace(old, new)",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string sentence = Console.ReadLine();\n        string oldWord  = Console.ReadLine();\n        string newWord  = Console.ReadLine();\n        \n    }\n}`,
+     testCases:[{inp:"Salom dunyo\nSalom\nXayr",exp:"Xayr dunyo",pass:null}]},
+    {n:9,name:"Raqam stringmi?",status:'todo',score:null,diff:'easy',
+     desc:"Kiritilgan string faqat raqamlardan iboratmi tekshiring.",
+     hint:`bool isNum = s.All(char.IsDigit);`,
+     examples:[{in:"12345",out:"true"},{in:"12a34",out:"false"}],
+     methods:"LINQ: .All() · char.IsDigit()",
+     template:`using System;\nusing System.Linq;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Faqat raqam ekanini tekshiring\n        \n    }\n}`,
+     testCases:[{inp:"12345",exp:"true",pass:null},{inp:"12a34",exp:"false",pass:null}]},
+    {n:10,name:"String birlashtirish",status:'todo',score:null,diff:'easy',
+     desc:"N ta stringni kiritib, hammasini bitta qatorda birlashtiring (bo'sh joy bilan).",
+     hint:`string[] lines = new string[n];\n// for loop bilan o'qing\nConsole.WriteLine(string.Join(" ", lines));`,
+     examples:[{in:"3\nSalom\nDunyo\nC#",out:"Salom Dunyo C#"}],
+     methods:"string.Join() · Console.ReadLine() · int.Parse()",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        int n = int.Parse(Console.ReadLine());\n        string[] parts = new string[n];\n        for (int i = 0; i < n; i++) parts[i] = Console.ReadLine();\n        // Birlashtiring\n        \n    }\n}`,
+     testCases:[{inp:"3\nSalom\nDunyo\nC#",exp:"Salom Dunyo C#",pass:null}]},
+  ],
+  beginner_project: {
+    name:"Matn tahlilchisi",score:null,done:false,
+    desc:"Matn tahlilchisi dastur yarating: foydalanuvchidan matn qabul qilib, so'zlar soni, harflar soni (bo'sh joysiz), eng uzun so'z va palindrom so'zlar ro'yxatini chiqaring.",
+    hint:`string[] words = text.Split(' ');\n// So'zlar: words.Length\n// Harflar: text.Replace(" ", "").Length\n// Eng uzun: words.OrderByDescending(w => w.Length).First()`,
+    examples:[{in:"racecar is a palindrome test",out:"So'zlar: 5\nHarflar: 28\nEng uzun: palindrome\nPalindromlar: racecar, a"}],
+    template:`using System;\nusing System.Linq;\n\nclass MiniProject {\n    static void Main() {\n        string text = Console.ReadLine();\n        string[] words = text.Split(' ');\n        \n        // 1. So'zlar sonini chiqaring\n        \n        // 2. Harflar sonini chiqaring (bo'sh joysiz)\n        \n        // 3. Eng uzun so'zni toping\n        \n        // 4. Palindromlarni toping va chiqaring\n        \n    }\n}`,
+    testCases:[{inp:"racecar is a test",exp:"So'zlar: 4",pass:null}],
+  },
+
+  intermediate: [
+    {n:1,name:"Palindrom tekshirish",status:'todo',score:null,diff:'medium',
+     desc:"Kiritilgan so'z palindrommi yoki yo'qligini aniqlang. Palindrom — teskari o'qilganda ham bir xil.",
+     hint:`bool isPalin = s == new string(s.ToCharArray().Reverse().ToArray());`,
+     examples:[{in:"racecar",out:"true"},{in:"hello",out:"false"}],
+     methods:"LINQ: .Reverse().ToArray() · string comparison",
+     template:`using System;\nusing System.Linq;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Palindrom tekshiring\n        \n    }\n}`,
+     testCases:[{inp:"racecar",exp:"true",pass:null},{inp:"hello",exp:"false",pass:null},{inp:"madam",exp:"true",pass:null}]},
+    {n:2,name:"Email tekshirish",status:'todo',score:null,diff:'medium',
+     desc:"Kiritilgan email manzili to'g'ri formatdami yoki yo'qligini aniqlang (@, nuqta mavjud).",
+     hint:`bool valid = email.Contains("@") && email.IndexOf('.') > email.IndexOf('@');`,
+     examples:[{in:"user@email.com",out:"valid"},{in:"notanemail",out:"invalid"}],
+     methods:"string.Contains() · string.IndexOf()",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string email = Console.ReadLine();\n        // Email to'g'riligini tekshiring\n        \n    }\n}`,
+     testCases:[{inp:"user@email.com",exp:"valid",pass:null},{inp:"bad",exp:"invalid",pass:null}]},
+    {n:3,name:"Eng uzun so'zni topish",status:'todo',score:null,diff:'medium',
+     desc:"Kiritilgan jumladan eng uzun so'zni toping.",
+     hint:`string longest = words.OrderByDescending(w => w.Length).First();`,
+     examples:[{in:"Men dasturlashni yaxshi ko'raman",out:"dasturlashni"}],
+     methods:"LINQ: OrderByDescending · .First()",
+     template:`using System;\nusing System.Linq;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Eng uzun so'zni toping\n        \n    }\n}`,
+     testCases:[{inp:"Men dasturlashni sevaman",exp:"dasturlashni",pass:null}]},
+    {n:4,name:"Harflar chastotasi",status:'todo',score:null,diff:'medium',
+     desc:"Kiritilgan stringdagi har bir harfning necha marta uchrashini chiqaring (kichik harf, alfavit tartibida).",
+     hint:`var freq = s.ToLower().Where(char.IsLetter).GroupBy(c=>c).OrderBy(g=>g.Key);`,
+     examples:[{in:"hello",out:"e:1\nh:1\nl:2\no:1"}],
+     methods:"LINQ: GroupBy · OrderBy · Where · char.IsLetter",
+     template:`using System;\nusing System.Linq;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // Harflar chastotasini chiqaring\n        \n    }\n}`,
+     testCases:[{inp:"hello",exp:"e:1\nh:1\nl:2\no:1",pass:null}]},
+    {n:5,name:"Caesar shifri",status:'todo',score:null,diff:'medium',
+     desc:"Caesar shifri: har bir harfni N pozitsiyaga siljiting (faqat kichik ingliz harflari).",
+     hint:`char shifted = (char)(((c - 'a' + n) % 26) + 'a');`,
+     examples:[{in:"abc\n3",out:"def"},{in:"xyz\n3",out:"abc"}],
+     methods:"char arithmetic · modulo % 26",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine().ToLower();\n        int n   = int.Parse(Console.ReadLine());\n        // Harflarni shifrlang\n        \n    }\n}`,
+     testCases:[{inp:"abc\n3",exp:"def",pass:null},{inp:"xyz\n3",exp:"abc",pass:null}]},
+    {n:6,name:"Anagram tekshirish",status:'todo',score:null,diff:'medium',
+     desc:"Ikki so'z anagrammami tekshiring (bir xil harflar, boshqa tartib).",
+     hint:`string sorted1 = new string(s1.OrderBy(c=>c).ToArray());\nbool ok = sorted1 == new string(s2.OrderBy(c=>c).ToArray());`,
+     examples:[{in:"listen\nsilent",out:"true"},{in:"hello\nworld",out:"false"}],
+     methods:"LINQ: OrderBy · string comparison",
+     template:`using System;\nusing System.Linq;\n\nclass Solution {\n    static void Main() {\n        string s1 = Console.ReadLine().ToLower();\n        string s2 = Console.ReadLine().ToLower();\n        // Anagram tekshiring\n        \n    }\n}`,
+     testCases:[{inp:"listen\nsilent",exp:"true",pass:null},{inp:"hello\nworld",exp:"false",pass:null}]},
+    {n:7,name:"So'zlarni teskari tartiblash",status:'todo',score:null,diff:'medium',
+     desc:"Jumlaning so'zlarini teskari tartibda chiqaring.",
+     hint:`string result = string.Join(" ", words.Reverse());`,
+     examples:[{in:"Salom aziz dunyo",out:"dunyo aziz Salom"}],
+     methods:"LINQ: .Reverse() · string.Join()",
+     template:`using System;\nusing System.Linq;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine();\n        // So'zlarni teskari tartibga keltiring\n        \n    }\n}`,
+     testCases:[{inp:"Salom aziz dunyo",exp:"dunyo aziz Salom",pass:null}]},
+    {n:8,name:"Takrorlanuvchi harfni topish",status:'todo',score:null,diff:'medium',
+     desc:"Stringdagi birinchi takrorlanuvchi harfni toping (kichik harfga o'tkazing).",
+     hint:`var seen = new HashSet<char>();\nforeach (char c in s.ToLower()) { if (!seen.Add(c)) { Console.WriteLine(c); break; } }`,
+     examples:[{in:"abcabc",out:"a"},{in:"programming",out:"r"}],
+     methods:"HashSet<char> · foreach · char comparison",
+     template:`using System;\nusing System.Collections.Generic;\n\nclass Solution {\n    static void Main() {\n        string s = Console.ReadLine().ToLower();\n        // Birinchi takrorlanuvchi harfni toping\n        \n    }\n}`,
+     testCases:[{inp:"abcabc",exp:"a",pass:null},{inp:"programming",exp:"r",pass:null}]},
+    {n:9,name:"Regex bilan validatsiya",status:'todo',score:null,diff:'hard',
+     desc:"Regex yordamida telefon raqamini tekshiring: +998XXXXXXXXX formati.",
+     hint:`bool valid = Regex.IsMatch(phone, @"^\\+998\\d{9}$");`,
+     examples:[{in:"+998901234567",out:"valid"},{in:"998901234567",out:"invalid"}],
+     methods:"System.Text.RegularExpressions.Regex.IsMatch()",
+     template:`using System;\nusing System.Text.RegularExpressions;\n\nclass Solution {\n    static void Main() {\n        string phone = Console.ReadLine();\n        // Regex bilan tekshiring\n        \n    }\n}`,
+     testCases:[{inp:"+998901234567",exp:"valid",pass:null},{inp:"998901234567",exp:"invalid",pass:null}]},
+    {n:10,name:"StringBulder bilan ishlash",status:'todo',score:null,diff:'hard',
+     desc:"StringBuilder yordamida 1 dan N gacha sonlarni vergul bilan birlashtiring.",
+     hint:`var sb = new StringBuilder();\nfor (int i = 1; i <= n; i++) { sb.Append(i); if (i < n) sb.Append(","); }`,
+     examples:[{in:"5",out:"1,2,3,4,5"},{in:"3",out:"1,2,3"}],
+     methods:"StringBuilder.Append() · StringBuilder.ToString()",
+     template:`using System;\nusing System.Text;\n\nclass Solution {\n    static void Main() {\n        int n = int.Parse(Console.ReadLine());\n        // StringBuilder bilan birlashtiring\n        \n    }\n}`,
+     testCases:[{inp:"5",exp:"1,2,3,4,5",pass:null},{inp:"3",exp:"1,2,3",pass:null}]},
+  ],
+  intermediate_project: {
+    name:"Parol kuchi tekshirgich",score:null,done:false,
+    desc:"Parol kuchini tekshiruvchi dastur yarating. Parol kuchi:\n- Kamida 8 belgi\n- Katta va kichik harf\n- Raqam\n- Maxsus belgi (@, !, #, $, %)\n\nChiqarish: 'Kuchsiz', 'O'rtacha', 'Kuchli'",
+    hint:`bool hasUpper = password.Any(char.IsUpper);\nbool hasDigit = password.Any(char.IsDigit);\nbool hasSpecial = "@!#$%".Any(c => password.Contains(c));`,
+    examples:[{in:"abc",out:"Kuchsiz"},{in:"Pass123",out:"O'rtacha"},{in:"Pass123!@",out:"Kuchli"}],
+    template:`using System;\nusing System.Linq;\n\nclass PasswordChecker {\n    static void Main() {\n        string password = Console.ReadLine();\n        \n        // Kuch mezonlarini tekshiring\n        bool longEnough = password.Length >= 8;\n        \n        // Natijani chiqaring\n        \n    }\n}`,
+    testCases:[{inp:"abc",exp:"Kuchsiz",pass:null},{inp:"Pass123",exp:"O'rtacha",pass:null}],
+  },
+
+  advanced: [
+    {n:1,name:"LINQ GroupBy — yosh guruhlash",status:'todo',score:null,diff:'hard',
+     desc:"N ta kishini ism:yosh formatida kiritib, 18 dan katta va kichikka ajrating va chiqaring.",
+     hint:`var groups = people.GroupBy(p => p.age >= 18 ? "Adult" : "Minor");`,
+     examples:[{in:"3\nAli:20\nBob:15\nZina:22",out:"Adult: Ali, Zina\nMinor: Bob"}],
+     methods:"LINQ: GroupBy · Select · string.Split(':')",
+     template:`using System;\nusing System.Linq;\n\nclass Solution {\n    static void Main() {\n        int n = int.Parse(Console.ReadLine());\n        var people = Enumerable.Range(0,n).Select(_=>{\n            var p=Console.ReadLine().Split(':');\n            return (name:p[0], age:int.Parse(p[1]));\n        }).ToList();\n        // GroupBy bilan guruhlang\n        \n    }\n}`,
+     testCases:[{inp:"3\nAli:20\nBob:15\nZina:22",exp:"Adult: Ali, Zina",pass:null}]},
+    {n:2,name:"Delegate va event",status:'todo',score:null,diff:'hard',
+     desc:"Hisoblash delegatini yarating: ikkita int → int. +, -, *, / uchun delegate'lar ro'yxati.",
+     hint:`Func<int,int,int> add = (a,b) => a+b;\nvar ops = new List<Func<int,int,int>>{add,...};`,
+     examples:[{in:"10\n3",out:"+:13\n-:7\n*:30\n/:3"}],
+     methods:"Func<T,T,T> · Lambda expressions",
+     template:`using System;\nusing System.Collections.Generic;\n\nclass Solution {\n    static void Main() {\n        int a = int.Parse(Console.ReadLine());\n        int b = int.Parse(Console.ReadLine());\n        // Delegate'lardan foydalaning\n        \n    }\n}`,
+     testCases:[{inp:"10\n3",exp:"+:13\n-:7\n*:30\n/:3",pass:null}]},
+    {n:3,name:"Generic Stack implementatsiya",status:'todo',score:null,diff:'hard',
+     desc:"Generic Stack<T> sinfini yarating: Push, Pop, Peek, IsEmpty metodlari bilan.",
+     hint:`class MyStack<T> {\n    private List<T> _items = new();\n    public void Push(T item) => _items.Add(item);\n    public T Pop() { ... }\n}`,
+     examples:[{in:"push 1\npush 2\npop\npeek",out:"Popped: 2\nPeek: 1"}],
+     methods:"Generic class · List<T> · Exception handling",
+     template:`using System;\nusing System.Collections.Generic;\n\nclass MyStack<T> {\n    // Stack sinfini implement qiling\n}\n\nclass Program {\n    static void Main() {\n        var stack = new MyStack<int>();\n        string line;\n        while ((line = Console.ReadLine()) != null) {\n            // Buyruqlarni bajarng\n        }\n    }\n}`,
+     testCases:[{inp:"push 5\npush 3\npop\npeek",exp:"Popped: 3\nPeek: 5",pass:null}]},
+    {n:4,name:"async/await — parallel download",status:'todo',score:null,diff:'hard',
+     desc:"3 ta URL (string) uchun 'yuklash' simulatsiya qiling. Har biri uchun Task.Delay() ishlatib, parallel bajaring.",
+     hint:`var tasks = urls.Select(async url => {\n    await Task.Delay(1000);\n    return $"{url}: OK";\n});\nvar results = await Task.WhenAll(tasks);`,
+     examples:[{in:"3\nhttps://a.com\nhttps://b.com\nhttps://c.com",out:"3 ta URL yuklandi"}],
+     methods:"async/await · Task.WhenAll() · Task.Delay()",
+     template:`using System;\nusing System.Linq;\nusing System.Threading.Tasks;\n\nclass Solution {\n    static async Task Main() {\n        int n = int.Parse(Console.ReadLine());\n        var urls = Enumerable.Range(0,n).Select(_=>Console.ReadLine()).ToArray();\n        // Parallel yuklang\n        \n    }\n}`,
+     testCases:[{inp:"3\na\nb\nc",exp:"3 ta URL yuklandi",pass:null}]},
+    {n:5,name:"Expression tree",status:'todo',score:null,diff:'hard',
+     desc:"Lambda dan expression tree yarating va qo'lda Compile() qilib chaqiring.",
+     hint:`Expression<Func<int,bool>> expr = x => x > 5;\nvar compiled = expr.Compile();\nConsole.WriteLine(compiled(7));`,
+     examples:[{in:"7",out:"true"},{in:"3",out:"false"}],
+     methods:"Expression<Func<T,TResult>> · Compile() · Lambda",
+     template:`using System;\nusing System.Linq.Expressions;\n\nclass Solution {\n    static void Main() {\n        int x = int.Parse(Console.ReadLine());\n        // Expression tree yarating: x > 5\n        \n    }\n}`,
+     testCases:[{inp:"7",exp:"true",pass:null},{inp:"3",exp:"false",pass:null}]},
+    {n:6,name:"IDisposable va using",status:'todo',score:null,diff:'hard',
+     desc:"IDisposable implement qiluvchi Resource sinfini yarating. using statement bilan ishlatib ko'rsating.",
+     hint:`class Resource : IDisposable {\n    public void Dispose() { Console.WriteLine("Resurs ozod qilindi"); }\n}`,
+     examples:[{in:"start",out:"Resurs yaratildi\nResurs ishlamoqda\nResurs ozod qilindi"}],
+     methods:"IDisposable · using statement · GC.SuppressFinalize()",
+     template:`using System;\n\nclass Resource : IDisposable {\n    // IDisposable implement qiling\n}\n\nclass Program {\n    static void Main() {\n        string cmd = Console.ReadLine();\n        // using bilan ishlatish\n        \n    }\n}`,
+     testCases:[{inp:"start",exp:"Resurs ozod qilindi",pass:null}]},
+    {n:7,name:"Covariance bilan collection",status:'todo',score:null,diff:'hard',
+     desc:"IEnumerable<T> covariance ishlatib, Animal ro'yxatidan Dog ro'yxatini qabul qiluvchi metod yozing.",
+     hint:`void PrintAnimals(IEnumerable<Animal> animals) {...}\nIEnumerable<Dog> dogs = new List<Dog>{...};\nPrintAnimals(dogs); // covariance!`,
+     examples:[{in:"3\nRex\nBuddy\nMax",out:"Rex\nBuddy\nMax"}],
+     methods:"IEnumerable<out T> covariance · Polymorphism",
+     template:`using System;\nusing System.Collections.Generic;\n\nclass Animal { public string Name {get;set;} public Animal(string n){Name=n;} }\nclass Dog : Animal { public Dog(string n):base(n){} }\n\nclass Solution {\n    static void PrintAnimals(IEnumerable<Animal> animals) {\n        foreach(var a in animals) Console.WriteLine(a.Name);\n    }\n    static void Main() {\n        int n = int.Parse(Console.ReadLine());\n        // Dog ro'yxati yarating va PrintAnimals ga bering\n        \n    }\n}`,
+     testCases:[{inp:"3\nRex\nBuddy\nMax",exp:"Rex\nBuddy\nMax",pass:null}]},
+    {n:8,name:"Reflection bilan xususiyat o'qish",status:'todo',score:null,diff:'hard',
+     desc:"Reflection orqali berilgan ob'ektning barcha public xususiyatlarini nom:qiymat formatida chiqaring.",
+     hint:`var props = obj.GetType().GetProperties();\nforeach(var p in props) Console.WriteLine($"{p.Name}:{p.GetValue(obj)}");`,
+     examples:[{in:"Ali\n25",out:"Name:Ali\nAge:25"}],
+     methods:"Type.GetProperties() · PropertyInfo.GetValue() · typeof()",
+     template:`using System;\nusing System.Reflection;\n\nclass Person { public string Name{get;set;} public int Age{get;set;} }\n\nclass Solution {\n    static void Main() {\n        string name = Console.ReadLine();\n        int age = int.Parse(Console.ReadLine());\n        var person = new Person { Name=name, Age=age };\n        // Reflection bilan chiqaring\n        \n    }\n}`,
+     testCases:[{inp:"Ali\n25",exp:"Name:Ali\nAge:25",pass:null}]},
+    {n:9,name:"Source Generator pattern",status:'todo',score:null,diff:'hard',
+     desc:"T4 template uslubida: berilgan xususiyatlar ro'yxati uchun getter/setter kodi generatsiya qiluvchi dastur yozing.",
+     hint:`string GenProp(string name, string type) =>\n    $"public {type} {name} {{ get; set; }}";`,
+     examples:[{in:"2\nName:string\nAge:int",out:"public string Name { get; set; }\npublic int Age { get; set; }"}],
+     methods:"string interpolation · Split · template generation",
+     template:`using System;\n\nclass CodeGen {\n    static string GenProp(string name, string type) {\n        // Property kodi generatsiya qiling\n        return "";\n    }\n    static void Main() {\n        int n = int.Parse(Console.ReadLine());\n        for(int i=0;i<n;i++) {\n            var parts = Console.ReadLine().Split(':');\n            Console.WriteLine(GenProp(parts[0], parts[1]));\n        }\n    }\n}`,
+     testCases:[{inp:"2\nName:string\nAge:int",exp:"public string Name { get; set; }",pass:null}]},
+    {n:10,name:"Memory<T> vs Span<T>",status:'todo',score:null,diff:'hard',
+     desc:"int[] massivning o'rta qismini Span<int> orqali sum hisoblang (slice usuli bilan).",
+     hint:`var span = arr.AsSpan(start, length);\nint sum = 0;\nforeach(int x in span) sum += x;`,
+     examples:[{in:"5\n1 2 3 4 5\n1\n3",out:"9"}],
+     methods:"AsSpan(start, length) · Span<T> · foreach",
+     template:`using System;\n\nclass Solution {\n    static void Main() {\n        int n = int.Parse(Console.ReadLine());\n        var arr = Array.ConvertAll(Console.ReadLine().Split(), int.Parse);\n        int start  = int.Parse(Console.ReadLine());\n        int length = int.Parse(Console.ReadLine());\n        // Span<int> bilan hisoblang\n        \n    }\n}`,
+     testCases:[{inp:"5\n1 2 3 4 5\n1\n3",exp:"9",pass:null}]},
+  ],
+  advanced_project: {
+    name:"Mini ORM yaratish",score:null,done:false,
+    desc:"Minimal ORM (Object-Relational Mapper) yarating:\n- [Table], [Column] attributlari\n- Reflection orqali CREATE TABLE SQL generatsiya\n- INSERT INTO SQL generatsiya\n- ToString() override bilan",
+    hint:`var props = typeof(T).GetProperties()\n    .Where(p => p.GetCustomAttribute<ColumnAttr>() != null);`,
+    examples:[{in:"User\nId:int\nName:string",out:"CREATE TABLE User (Id INT, Name VARCHAR(255));"}],
+    template:`using System;\nusing System.Linq;\nusing System.Reflection;\n\n[AttributeUsage(AttributeTargets.Class)] class TableAttr : Attribute { public string Name; public TableAttr(string n){Name=n;} }\n[AttributeUsage(AttributeTargets.Property)] class ColumnAttr : Attribute {}\n\n// Model yarating va SQL generatsiya qiling\nclass MiniORM {\n    static void Main() {\n        // ...\n    }\n}`,
+    testCases:[{inp:"User\nId:int\nName:string",exp:"CREATE TABLE User",pass:null}],
+  },
+};
+
+// Qaysi level unlocked
+const LEVEL_LOCKS = { beginner: false, intermediate: true, advanced: true };
+let curLevel  = 'beginner';
+let curIdx    = 0;
+let isProject = false;
+
+// API dan yuklangan topshiriqlar (TOPIC_ID bo'lsa to'ldiriladi)
+let API_TASKS = {};
+
+function getCurTasks()   { const s = Object.keys(API_TASKS).length ? API_TASKS : LEVEL_TASKS_DEMO; return s[curLevel] || []; }
+function getCurProject() { const s = Object.keys(API_TASKS).length ? API_TASKS : LEVEL_TASKS_DEMO; return s[`${curLevel}_project`]; }
+
+/* ── Level switch ── */
+function switchLevel(level) {
+  if (LEVEL_LOCKS[level]) {
+    showToast('🔒 Bu daraja qulflanmagan! Avvalgi darajani tugatng.');
+    return;
+  }
+  curLevel = level;
+  curIdx   = 0;
+  isProject = false;
+
+  // Tab styling
+  const map = {beginner:'lb', intermediate:'lo', advanced:'ly'};
+  const actMap = {beginner:'active-lb', intermediate:'active-lo', advanced:'active-ly'};
+  const nameMap = {beginner:"Boshlang'ich", intermediate:"O'rta", advanced:'Yuqori'};
+  const badgeCls = {beginner:'b', intermediate:'o', advanced:'y'};
+
+  ['beginner','intermediate','advanced'].forEach(lv => {
+    const btn = document.getElementById(`lvTab${lv[0].toUpperCase()}`);
+    btn.className = `lv-tab ${map[lv]}`;
+    if (lv === level) btn.classList.add(actMap[lv]);
+  });
+
+  // Badge
+  const badge = document.getElementById('lvBadge');
+  badge.textContent = nameMap[level];
+  badge.className = `lv-badge ${badgeCls[level]}`;
+
+  // Project item
+  const proj = getCurProject();
+  if (proj) {
+    document.getElementById('projectName').textContent = proj.name;
+    document.getElementById('projectItem').className = 'mini-proj' + (proj.done ? ' done' : '');
+  }
+
+  renderTaskList();
+  loadTask(0);
+}
+
+/* ── Render task list ── */
+function renderTaskList(){
+  const tasks = getCurTasks();
+  const done  = tasks.filter(t=>t.status==='done').length;
+  const total = tasks.length;
+  const ball  = tasks.filter(t=>t.status==='done').reduce((a,t)=>a+(t.score||0),0);
+
+  document.getElementById('tpProgLabel').textContent = `${done} / ${total} topshiriq`;
+  document.getElementById('tpBall').textContent = `+${ball} ball`;
+  document.getElementById('taskBar').style.width = (done/total*100)+'%';
+
+  document.getElementById('taskListEl').innerHTML=tasks.map((t,i)=>`
+    <div class="task-item ${!isProject&&i===curIdx?'active':''} ${t.status==='done'?'done':''}" onclick="loadTask(${i})">
+      <div class="ti-row">
+        <div class="ti-num ${t.status==='done'?'tn-done':!isProject&&i===curIdx?'tn-active':'tn-todo'}">${t.status==='done'?'✓':t.n}</div>
+        <div class="ti-info">
+          <div class="ti-name">${t.name}</div>
+          <span class="ti-diff ${t.diff==='easy'?'d-easy':t.diff==='medium'?'d-med':'d-hard'}">${t.diff==='easy'?'Oson':t.diff==='medium'?"O'rta":'Qiyin'}</span>
+        </div>
+        ${t.score?`<div class="ti-score" style="color:#43e97b">+${t.score}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+/* ── Load task ── */
+function loadTask(i){
+  curIdx=i;
+  isProject=false;
+  const t=getCurTasks()[i];
+  if(!t) return;
+  document.getElementById('curTaskNum').textContent=t.n;
+  document.getElementById('curTaskName').textContent=t.name;
+  document.getElementById('tdText').textContent=t.desc;
+  document.getElementById('tdHint').textContent=t.hint;
+  document.getElementById('tdMethods').innerHTML=t.methods;
+  document.getElementById('tdExamples').innerHTML=t.examples.map(e=>`
+    <div class="td-example">
+      <div class="ex-label">Misol</div>
+      <div class="ex-io">📥 Kiritish: <strong>${e.in.replace(/\n/g,' | ')}</strong></div>
+      <div class="ex-io">📤 Chiqarish: <strong>${e.out}</strong></div>
+    </div>`).join('');
+  document.getElementById('codeArea').value=t.template||'';
+  updateLines();
+  clearOutput();
+  hideBanner();
+  renderTestCases();
+  renderTaskList();
+  switchView('desc');
+}
+
+/* ── Load project ── */
+function loadProject(){
+  isProject=true;
+  const p=getCurProject();
+  if(!p) return;
+  document.getElementById('curTaskNum').textContent='Loyiha';
+  document.getElementById('curTaskName').textContent=p.name;
+  document.getElementById('tdText').textContent=p.desc;
+  document.getElementById('tdHint').textContent=p.hint||'';
+  document.getElementById('tdMethods').innerHTML=p.methods||'';
+  document.getElementById('tdExamples').innerHTML=(p.examples||[]).map(e=>`
+    <div class="td-example">
+      <div class="ex-label">Misol</div>
+      <div class="ex-io">📥 Kiritish: <strong>${e.in.replace(/\n/g,' | ')}</strong></div>
+      <div class="ex-io">📤 Chiqarish: <strong>${e.out.replace(/\n/g,' | ')}</strong></div>
+    </div>`).join('');
+  document.getElementById('codeArea').value=p.template||'';
+  updateLines(); clearOutput(); hideBanner();
+  document.getElementById('testContent').innerHTML=(p.testCases||[]).map((tc,i)=>`
+    <div class="tc-row tc-pending"><div class="tc-icon">⏳</div>
+    <div class="tc-info"><div class="tc-label">Test ${i+1}</div>
+    <div class="tc-detail">${tc.inp.replace(/\n/g,' | ')} → ${tc.exp}</div></div></div>`).join('');
+  renderTaskList();
+  switchView('desc');
+}
+
+/* ── View switch ── */
+function switchView(v){
+  const desc=document.getElementById('descPane');
+  const editor=document.getElementById('editorPane');
+  const btnD=document.getElementById('btnDesc');
+  const btnC=document.getElementById('btnCode');
+  if(v==='desc'){
+    desc.classList.add('show'); editor.classList.add('hide');
+    btnD.style.borderColor='var(--accent)'; btnD.style.color='#a78bfa';
+    btnC.style.borderColor='var(--border)'; btnC.style.color='var(--text)';
+  } else {
+    desc.classList.remove('show'); editor.classList.remove('hide');
+    btnC.style.borderColor='var(--accent)'; btnC.style.color='#a78bfa';
+    btnD.style.borderColor='var(--border)'; btnD.style.color='var(--text)';
+  }
+}
+
+/* ── Tab switch ── */
+function switchTab(t){
+  ['out','tests','ai'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.remove('active');
+  });
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('outPanel').style.display=t==='out'?'flex':'none';
+  document.getElementById('testsPanel').style.display=t==='tests'?'flex':'none';
+  document.getElementById('aiFeedback').classList.toggle('show',t==='ai');
+}
+
+/* ── Line numbers ── */
+function updateLines(){
+  const ta=document.getElementById('codeArea');
+  const lines=ta.value.split('\n');
+  document.getElementById('lineNums').innerHTML=lines.map((_,i)=>`<div class="ln">${i+1}</div>`).join('');
+  document.getElementById('lineCount').textContent=lines.length;
+}
+
+function handleTab(e){
+  if(e.key==='Tab'){e.preventDefault();const ta=e.target;const s=ta.selectionStart;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+4;updateLines();}
+}
+
+/* ── Run code ── */
+function runCode(){
+  setStatus('run','Ishga tushirilmoqda...');
+  switchView('code'); switchTab('out');
+  const out=document.getElementById('outputContent');
+  out.innerHTML='<div class="out-line out-info">▶ Kodni bajarilmoqda (C# · .NET 8)...</div>';
+  setTimeout(()=>{
+    const t=isProject ? getCurProject() : getCurTasks()[curIdx];
+    if(!t){setStatus('ready','Tayyor');return;}
+    const ex=t.examples[0];
+    out.innerHTML=`
+      <div class="out-line out-info">✅ Kompilyatsiya muvaffaqiyatli</div>
+      <div class="out-line out-info">📥 Test kiritish: "${ex.in.replace(/\n/g,' | ')}"</div>
+      <div class="out-line" style="height:1px;background:rgba(255,255,255,0.06);margin:.3rem 0"></div>
+      <div class="out-line out-success">${ex.out}</div>
+      <div class="out-line" style="height:1px;background:rgba(255,255,255,0.06);margin:.3rem 0"></div>
+      <div class="out-line out-info">⏱️ Vaqt: ${Math.floor(Math.random()*50+20)}ms · Xotira: ${Math.floor(Math.random()*8+12)}MB</div>`;
+    setStatus('ready','Tayyor');
+  },1200);
+}
+
+/* ── Submit code (real Judge0 API) ── */
+let _pollTimer = null;
+
+async function submitCode() {
+  const code = document.getElementById('codeArea').value.trim();
+  if (!code) { showToast('❗ Avval kod yozing!'); return; }
+  const t = isProject ? getCurProject() : getCurTasks()[curIdx];
+  if (!t) return;
+
+  setStatus('run', 'Tekshirilmoqda...');
+  switchView('code');
+  switchTab('tests');
+
+  // Pending placeholder rows
+  const tcs = t.testCases || [];
+  document.getElementById('testContent').innerHTML = tcs.length
+    ? tcs.map((tc, i) => `
+        <div class="tc-row tc-pending" id="tc${i}">
+          <div class="tc-icon">⏳</div>
+          <div class="tc-info"><div class="tc-label">Test case ${i+1}</div>
+            <div class="tc-detail">Kiritish: "${String(tc.inp||'').replace(/\n/g,' | ')}" · Kutilgan: "${tc.exp}"</div></div>
+          <div class="tc-time">—</div>
+        </div>`).join('')
+    : '<div class="tc-row tc-pending"><div class="tc-icon">⏳</div><div class="tc-info"><div class="tc-label">Baholanmoqda...</div></div></div>';
+
+  try {
+    if (!t.id) { _simulateSubmit(t); return; }   // demo task — fallback
+    const res = await api.submitCode({ task: t.id, code, language: 'csharp' });
+    _pollSubmission(res.id, t);
+  } catch (err) {
+    setStatus('ready', 'Tayyor');
+    showBanner(false, '❌ Yuborishda xato: ' + (err.message || 'Server xatosi'), '');
+  }
+}
+
+function _pollSubmission(subId, t) {
+  if (_pollTimer) clearInterval(_pollTimer);
+  let attempts = 0;
+  _pollTimer = setInterval(async () => {
+    attempts++;
+    if (attempts > 30) {              // 60 soniya maksimum
+      clearInterval(_pollTimer);
+      setStatus('ready', 'Tayyor');
+      showBanner(false, '❌ Vaqt tugadi — server javob bermadi', '');
+      return;
+    }
+    try {
+      const sub = await api.submission(subId);
+      if (sub.status === 'pending' || sub.status === 'running') return;
+      clearInterval(_pollTimer);
+      setStatus('ready', 'Tayyor');
+
+      const results = sub.test_results || [];
+      results.forEach((r, i) => {
+        const row = document.getElementById('tc' + i);
+        if (!row) return;
+        row.className = 'tc-row ' + (r.passed ? 'tc-pass' : 'tc-fail');
+        row.querySelector('.tc-icon').textContent = r.passed ? '✅' : '❌';
+        row.querySelector('.tc-label').textContent = r.passed
+          ? `Test case ${i+1} — O'tdi`
+          : `Test case ${i+1} — Xato`;
+        row.querySelector('.tc-time').textContent = (r.time_ms || '--') + 'ms';
+      });
+
+      if (sub.status === 'passed') {
+        showSuccess(t, sub);
+        // Equipment drop tekshiruvi — bildiruv API orqali keladi
+        // Lekin frontend ham inventarni tekshirib drop ko'rsatadi
+        _checkEquipmentDrop();
+      } else {
+        const passed = results.filter(r => r.passed).length;
+        showError(passed, results.length || 1);
+      }
+    } catch(e) { /* polling davom etadi */ }
+  }, 2000);
+}
+
+let _lastInvCount = 0;
+async function _checkEquipmentDrop() {
+  // Inventar sonini oldingi bilan solishtirish — yangi item tushgani bildiriladigan
+  try {
+    await new Promise(r => setTimeout(r, 3000)); // Celery task tugashini kutish
+    const inv = await api.inventory().catch(() => null);
+    if (!inv) return;
+    const items = Array.isArray(inv) ? inv : [];
+    if (_lastInvCount > 0 && items.length > _lastInvCount) {
+      // Yangi item(lar) tushgan!
+      const newItems = items.slice(0, items.length - _lastInvCount);
+      newItems.forEach(ue => showEquipmentDrop(ue.equipment));
+    }
+    _lastInvCount = items.length;
+  } catch(e) {}
+}
+
+function _simulateSubmit(t) {
+  // Demo fallback — TOPIC_ID yo'q yoki task.id yo'q
+  const tcs = t.testCases || [];
+  if (!tcs.length) { setStatus('ready','Tayyor'); showSuccess(t, null); return; }
+  let passed = 0;
+  tcs.forEach((_, i) => {
+    setTimeout(() => {
+      const ms = Math.floor(Math.random() * 60 + 20);
+      const ok = Math.random() > 0.15 || t.status === 'done';
+      if (ok) passed++;
+      const row = document.getElementById('tc' + i);
+      if (row) {
+        row.className = 'tc-row ' + (ok ? 'tc-pass' : 'tc-fail');
+        row.querySelector('.tc-icon').textContent = ok ? '✅' : '❌';
+        row.querySelector('.tc-label').textContent = ok
+          ? `Test case ${i+1} — O'tdi`
+          : `Test case ${i+1} — Xato`;
+        row.querySelector('.tc-time').textContent = ms + 'ms';
+      }
+      if (i === tcs.length - 1) {
+        setStatus('ready', 'Tayyor');
+        if (passed === tcs.length) showSuccess(t, null);
+        else showError(passed, tcs.length);
+      }
+    }, 400 * (i + 1));
+  });
+}
+
+function showSuccess(t, sub) {
+  const pts = (sub && sub.score_awarded) || t.score || (isProject ? 15 : 10);
+  const total = (sub && sub.test_results ? sub.test_results.length : null) || (t.testCases||[]).length || 1;
+  showBanner(true, `✅ Barcha test caselar o'tdi — ${total}/${total}`, `+${pts} ball`);
+  showAiFeedback(true, t);
+  if (isProject) {
+    const p = getCurProject(); if (p) { p.done = true; p.score = pts; }
+    document.getElementById('projectItem').className = 'mini-proj done';
+  } else {
+    const tasks = getCurTasks();
+    if (tasks[curIdx]) { tasks[curIdx].status = 'done'; tasks[curIdx].score = pts; }
+  }
+  renderTaskList();
+  setTimeout(() => {
+    document.getElementById('smIcon').textContent = '🎉';
+    document.getElementById('smTitle').textContent = 'Topshiriq qabul qilindi!';
+    document.getElementById('smSub').textContent = `${t.name} · Barcha test caselar o'tdi`;
+    document.getElementById('smScore').textContent = '+' + pts;
+    document.getElementById('scoreModal').classList.add('open');
+  }, 800);
+}
+
+function showError(passed, total) {
+  showBanner(false, `❌ ${passed}/${total} test case o'tdi`, '');
+  showAiFeedback(false, isProject ? getCurProject() : getCurTasks()[curIdx]);
+}
+
+function showBanner(ok,msg,score){
+  const b=document.getElementById('resultBanner');
+  b.className='result-banner '+(ok?'success':'error');
+  document.getElementById('resultMsg').textContent=msg;
+  document.getElementById('resultScore').textContent=score;
+  document.getElementById('resultScore').style.display=score?'inline':'none';
+}
+function hideBanner(){document.getElementById('resultBanner').className='result-banner';}
+
+function showAiFeedback(ok,t){
+  const ai=document.getElementById('aiFeedback');
+  ai.innerHTML=ok?`
+    <div class="ai-bubble">
+      <div class="ai-head">🤖 AI Tahlil · Ajoyib!</div>
+      <p>Kodingiz barcha test caselardan muvaffaqiyatli o'tdi. <strong>Kuchli tomonlar:</strong> mantiqiy tuzilish to'g'ri, o'zgaruvchilar nomlanishi yaxshi.</p>
+    </div>
+    <div class="ai-bubble">
+      <div class="ai-head">💡 Optimizatsiya</div>
+      <p>Kodingizni yanada qisqartirish mumkin. <code>string.Length</code> o'rniga LINQ <code>.Count()</code> ham ishlatsa bo'ladi, ammo <code>Length</code> O(1) — tezroq.</p>
+    </div>
+    <div class="ai-bubble">
+      <div class="ai-head">🚀 Keyingi qadam</div>
+      <p>Ushbu mavzu bo'yicha <strong>Advanced darajasi</strong>ni ham sinab ko'ring — u yerda regex bilan string validatsiya mavzusi mavjud.</p>
+    </div>`:`
+    <div class="ai-bubble">
+      <div class="ai-head">🤖 AI Xato tahlili</div>
+      <p>Ba'zi test caselar xato chiqdi. Ko'pincha sabab: <strong>bo'sh string</strong> yoki <strong>maxsus belgilar</strong> holati hisoblanmagan.</p>
+    </div>
+    <div class="ai-bubble">
+      <div class="ai-head">💡 Maslahat</div>
+      <p>Kiritilgan qiymat bo'sh bo'lishi mumkin. Tekshiring: <code>if (string.IsNullOrEmpty(s))</code> — bu holatni alohida qayta ishlang.</p>
+    </div>`;
+}
+
+function renderTestCases(){
+  const t=isProject ? getCurProject() : getCurTasks()[curIdx];
+  if(!t) return;
+  document.getElementById('testContent').innerHTML=t.testCases.map((tc,i)=>`
+    <div class="tc-row ${tc.pass===true?'tc-pass':tc.pass===false?'tc-fail':'tc-pending'}">
+      <div class="tc-icon">${tc.pass===true?'✅':tc.pass===false?'❌':'⏳'}</div>
+      <div class="tc-info">
+        <div class="tc-label">Test case ${i+1} ${tc.pass===true?"— O'tdi":tc.pass===false?'— Xato':'— Kutilmoqda'}</div>
+        <div class="tc-detail">📥 "${tc.inp.replace(/\n/g,' | ')}" → 📤 "${tc.exp}"</div>
+      </div>
+      <div class="tc-time">${tc.pass!==null?Math.floor(Math.random()*50+20)+'ms':'—'}</div>
+    </div>`).join('');
+}
+
+function clearOutput(){
+  document.getElementById('outputContent').innerHTML='<div class="out-line out-info">// Kodni yozib, ▶ Run bosing yoki ✅ Submit qiling</div><div class="out-line out-info">// Platforma: C# · Judge0 API</div>';
+  document.getElementById('aiFeedback').innerHTML='';
+  document.getElementById('aiFeedback').classList.remove('show');
+  document.getElementById('tab-ai').classList.remove('active');
+  document.getElementById('tab-out').classList.add('active');
+}
+
+function setStatus(s,t){
+  const dot=document.getElementById('statusDot');
+  dot.className='sb-dot '+(s==='run'?'sb-run':'sb-ready');
+  document.getElementById('statusTxt').textContent=t;
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1f3a;border:1px solid rgba(108,99,255,0.4);border-radius:12px;padding:.65rem 1rem;font-size:.83rem;font-weight:600;z-index:999;animation:ft .3s ease;box-shadow:0 8px 20px rgba(0,0,0,.3)';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+const RARITY_COLORS_DROP = {common:'#94a3b8',rare:'#4299e1',epic:'#a855f7',legendary:'#ffd700'};
+const RARITY_UZ_DROP     = {common:'Oddiy',rare:'Noyob',epic:'Epic',legendary:'⭐ Afsonaviy'};
+
+function showEquipmentDrop(eq) {
+  /* eq = { icon, name, rarity, attack_bonus, defense_bonus } */
+  const col = RARITY_COLORS_DROP[eq.rarity] || '#94a3b8';
+  const rar = RARITY_UZ_DROP[eq.rarity] || eq.rarity;
+  const bonus = [
+    eq.attack_bonus  ? `⚔️ +${eq.attack_bonus}% hujum`  : '',
+    eq.defense_bonus ? `🛡️ +${eq.defense_bonus}% himoya` : '',
+  ].filter(Boolean).join('  ');
+
+  const el = document.createElement('div');
+  el.style.cssText = `position:fixed;top:1.5rem;right:1.5rem;z-index:1000;
+    background:linear-gradient(135deg,#0f1628,#1a1f3a);
+    border:2px solid ${col};border-radius:18px;padding:1.2rem 1.4rem;
+    box-shadow:0 0 30px ${col}44,0 8px 32px rgba(0,0,0,.5);
+    animation:dropIn .4s cubic-bezier(.175,.885,.32,1.275);min-width:240px;max-width:300px`;
+  el.innerHTML = `
+    <div style="font-size:.68rem;font-weight:800;color:${col};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.5rem">
+      🎁 Qurol-Aslaha Topildi!
+    </div>
+    <div style="display:flex;align-items:center;gap:.9rem;margin-bottom:.6rem">
+      <span style="font-size:2.5rem;filter:drop-shadow(0 0 8px ${col})">${eq.icon}</span>
+      <div>
+        <div style="font-size:1rem;font-weight:800">${eq.name}</div>
+        <div style="font-size:.72rem;color:${col};font-weight:700">${rar}</div>
+      </div>
+    </div>
+    <div style="font-size:.78rem;color:#8892b0">${bonus}</div>
+    <div style="font-size:.7rem;color:#4a5568;margin-top:.4rem">Profil → Inventar da ko'ring</div>`;
+  document.body.appendChild(el);
+
+  // Yulduzcha effekti
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('div');
+    const ang = (i / 6) * 360;
+    s.style.cssText = `position:fixed;top:2rem;right:calc(1.5rem + 150px);z-index:1001;
+      width:6px;height:6px;border-radius:50%;background:${col};
+      animation:star${i} .8s ease-out forwards`;
+    document.body.appendChild(s);
+    const keyframes = `@keyframes star${i}{
+      0%{transform:translate(0,0) scale(1);opacity:1}
+      100%{transform:translate(${Math.cos(ang*Math.PI/180)*60}px,${Math.sin(ang*Math.PI/180)*60}px) scale(0);opacity:0}
+    }`;
+    const st = document.createElement('style');
+    st.textContent = keyframes;
+    document.head.appendChild(st);
+    setTimeout(() => { s.remove(); st.remove(); }, 900);
+  }
+
+  setTimeout(() => el.remove(), 5000);
+}
+
+const _st=document.createElement('style');
+_st.textContent='@keyframes ft{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}} @keyframes dropIn{from{opacity:0;transform:translateX(20px) scale(.9)}to{opacity:1;transform:none}}';
+document.head.appendChild(_st);
+
+function nextTask() {
+  closeModal();
+  const tasks = getCurTasks();
+  if (!isProject && curIdx < tasks.length - 1) loadTask(curIdx + 1);
+  else if (!isProject) loadProject();
+  else window.location.href = TOPIC_ID ? `mainquest.html?topic=${TOPIC_ID}` : 'mainquest.html';
+}
+function closeModal() { document.getElementById('scoreModal').classList.remove('open'); }
+
+/* ── API task mapping ── */
+function _mapTask(t, idx) {
+  return {
+    id: t.id,
+    n: t.order_number || (idx + 1),
+    name: t.title || t.name || `Topshiriq ${idx+1}`,
+    status: t.is_completed ? 'done' : 'todo',
+    score: t.earned_points || null,
+    diff: t.difficulty || 'medium',
+    desc: t.description || '',
+    hint: t.hint || t.solution_hint || '',
+    examples: Array.isArray(t.examples) ? t.examples : [],
+    methods: t.useful_methods || t.methods || '',
+    template: t.template_code || t.starter_code || 'using System;\n\nclass Solution {\n    static void Main() {\n        \n    }\n}',
+    testCases: Array.isArray(t.test_cases)
+      ? t.test_cases.map(tc => ({ inp: tc.stdin || tc.input || '', exp: tc.expected_output || tc.stdout || '', pass: null }))
+      : [],
+  };
+}
+function _mapProject(t) {
+  const base = _mapTask(t, 0);
+  base.done = t.is_completed || false;
+  return base;
+}
+
+/* ── Load tasks from API ── */
+async function loadTasksFromAPI() {
+  if (!TOPIC_ID) return;
+  try {
+    const [exRes, prRes] = await Promise.all([
+      api.tasks({ topic: TOPIC_ID, task_category: 'exercise' }),
+      api.tasks({ topic: TOPIC_ID, task_category: 'project' }),
+    ]);
+    const exercises = Array.isArray(exRes) ? exRes : (exRes.results || []);
+    const projects  = Array.isArray(prRes) ? prRes : (prRes.results || []);
+    ['beginner', 'intermediate', 'advanced'].forEach(lv => {
+      const lvEx = exercises.filter(t => t.level === lv).sort((a,b) => (a.order_number||a.id) - (b.order_number||b.id));
+      API_TASKS[lv] = lvEx.map(_mapTask);
+      const proj = projects.find(t => t.level === lv);
+      if (proj) API_TASKS[lv + '_project'] = _mapProject(proj);
+    });
+  } catch(e) {
+    console.warn('Tasks API xato, demo data ishlatiladi:', e.message);
+  }
+}
+
+/* ── Main init ── */
+async function initSidequest() {
+  Auth.fillUserUI();
+
+  // Real user stats
+  try {
+    const me = await api.me();
+    const sp = me.student_profile;
+    if (sp) {
+      document.getElementById('sbRating').textContent = sp.rating_score || 0;
+      document.getElementById('sbStreak').textContent = sp.current_streak || 0;
+    }
+  } catch(e) {}
+
+  // Topic meta
+  if (TOPIC_ID) {
+    try {
+      const topic = await api.topic(TOPIC_ID);
+      const label = `${topic.module_number ? topic.module_number + '-semestr · ' : ''}${topic.title || topic.name || ''}`;
+      if (label) document.getElementById('tpMeta').textContent = label;
+    } catch(e) {}
+
+    await loadTasksFromAPI();
+
+    // Inventar sonini eslaymiz (drop detection uchun)
+    api.inventory().then(inv => {
+      _lastInvCount = Array.isArray(inv) ? inv.length : 0;
+    }).catch(() => {});
+
+    // Level locks from score
+    try {
+      const scRes = await api.topicScore(TOPIC_ID);
+      const sc = Array.isArray(scRes) ? scRes[0] : scRes;
+      if (sc) {
+        LEVEL_LOCKS.intermediate = !sc.beginner_test_passed;
+        LEVEL_LOCKS.advanced     = !sc.intermediate_test_passed;
+        ['intermediate','advanced'].forEach(lv => {
+          const id = lv === 'intermediate' ? 'lvTabO' : 'lvTabY';
+          document.getElementById(id).classList.toggle('locked-lv', LEVEL_LOCKS[lv]);
+        });
+      }
+    } catch(e) {}
+  }
+
+  switchLevel(INIT_LVL);
+}
+
+initSidequest();
+</script>
+<script src="static/js/medieval-icons.js"></script>
+</body>
+</html>
