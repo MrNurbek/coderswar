@@ -39,7 +39,7 @@
     #lobbyScreen{padding:2rem;flex:1}
     /* arena banner */
     .arena-banner{background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(255,101,132,0.12) 0%,rgba(108,99,255,0.08) 60%,transparent 100%);border:1px solid rgba(255,101,132,0.2);border-radius:28px;padding:2.5rem 2rem;text-align:center;margin-bottom:2rem;position:relative;overflow:hidden}
-    .arena-banner::before,.arena-banner::after{content:'⚔️';position:absolute;font-size:8rem;opacity:.04;top:50%;transform:translateY(-50%)}
+    .arena-banner::before,.arena-banner::after{content:'';position:absolute;font-size:8rem;opacity:.04;top:50%;transform:translateY(-50%)}
     .arena-banner::before{left:-1rem}
     .arena-banner::after{right:-1rem}
     .arena-banner .tag{display:inline-block;background:rgba(255,101,132,0.15);border:1px solid rgba(255,101,132,0.3);color:#ff8fab;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .9rem;border-radius:20px;margin-bottom:1rem}
@@ -191,33 +191,35 @@
 <body>
 <div id="page-bg" style="position:fixed;inset:0;background:url('static/img/duel.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
 <aside class="sidebar">
-  <div class="sb-logo"><a href="index.html">⚔️ Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
+  <div class="sb-logo"><a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
   <nav class="sb-nav">
     <div class="nav-section">O'quv</div>
-    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
-    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
-    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
-    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
     <div class="nav-section">Jamoa</div>
-    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
-    <a class="nav-item active" href="duel.html"><span class="icon">⚡</span> Duel</a>
-    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item active" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
     <div class="nav-section">Shaxsiy</div>
-    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
       <div class="av" data-user-init>?</div>
       <div class="info"><div class="name" data-user-name>...</div><div class="role" data-user-role>Student</div></div>
-      <button class="logout-btn" onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
 
 <div class="main">
   <div class="topbar">
-    <div><h2>⚔️ Duel Arena</h2><div class="bc">Dashboard › Duel · 12 o'yinchi online</div></div>
+    <div><h2><i class="ra ra-crossed-swords"></i> Duel Arena</h2><div class="bc">Dashboard › Duel</div></div>
     <div style="display:flex;gap:.6rem;align-items:center">
       <div style="width:8px;height:8px;border-radius:50%;background:#43e97b;box-shadow:0 0 6px #43e97b"></div>
       <span style="font-size:.82rem;color:#43e97b;font-weight:600">LIVE</span>
@@ -227,33 +229,33 @@
   <!-- LOBBY -->
   <div id="lobbyScreen">
     <div class="arena-banner">
-      <div class="tag">⚔️ Real-time Duel Tizimi</div>
+      <div class="tag"><i class="ra ra-crossed-swords"></i> Real-time Duel Tizimi</div>
       <h1>Jangga <span>tayyor</span> bo'ling!</h1>
       <p>Boshqa talabalar bilan real vaqtda algoritmik musobaqa. Tezroq va to'g'riroq yechim topgan g'olib!</p>
       <div class="arena-stats">
-        <div class="as-item"><div class="as-num" style="color:#43e97b">12</div><div class="as-label">Online o'yinchi</div></div>
-        <div class="as-item"><div class="as-num" style="color:#ff6584">4</div><div class="as-label">Faol duel</div></div>
-        <div class="as-item"><div class="as-num" style="color:var(--gold)">4W 2L</div><div class="as-label">Sizning natija</div></div>
-        <div class="as-item"><div class="as-num" style="color:#a78bfa">+48</div><div class="as-label">Duel ballari</div></div>
+        <div class="as-item"><div class="as-num" style="color:#43e97b" id="asOnline">—</div><div class="as-label">Online o'yinchi</div></div>
+        <div class="as-item"><div class="as-num" style="color:#ff6584" id="asActiveDuels">—</div><div class="as-label">Faol duel</div></div>
+        <div class="as-item"><div class="as-num" style="color:var(--gold)" id="asMyRecord">—</div><div class="as-label">Sizning natija</div></div>
+        <div class="as-item"><div class="as-num" style="color:#a78bfa" id="asRating">—</div><div class="as-label">Rating score</div></div>
       </div>
-      <button class="btn-find" onclick="findMatch()">⚔️ Raqib topish</button>
+      <button class="btn-find" onclick="findMatch()"><i class="ra ra-crossed-swords"></i> Raqib topish</button>
     </div>
 
     <div class="duel-types">
       <div class="dtype-card chosen" id="dt0" onclick="selectType(0,this)">
-        <div class="dtype-icon">⚡</div>
+        <div class="dtype-icon"><i class="ra ra-crossed-swords"></i></div>
         <h3>Blitz Duel</h3>
         <p>5 daqiqa. Bir savol. Eng tez yechim g'olib.</p>
         <span class="dtype-tag" style="background:rgba(67,233,123,0.12);color:#43e97b">Tavsiya etiladi</span>
       </div>
       <div class="dtype-card" id="dt1" onclick="selectType(1,this)">
-        <div class="dtype-icon">🧠</div>
+        <div class="dtype-icon"><i class="ra ra-crystal-ball"></i></div>
         <h3>Classic Duel</h3>
         <p>15 daqiqa. 3 ta savol. To'g'rilik va tezlik baholanadi.</p>
         <span class="dtype-tag" style="background:rgba(108,99,255,0.15);color:#a78bfa">Mashhur</span>
       </div>
       <div class="dtype-card" id="dt2" onclick="selectType(2,this)">
-        <div class="dtype-icon">🔥</div>
+        <div class="dtype-icon"><i class="ra ra-fire"></i></div>
         <h3>Survival Duel</h3>
         <p>30 daqiqa. Savollar tobora qiyinlashadi. Oxirgi tirik qolgan g'olib!</p>
         <span class="dtype-tag" style="background:rgba(255,101,132,0.12);color:#ff8fab">Qiyin</span>
@@ -262,11 +264,11 @@
 
     <div class="grid-2">
       <div>
-        <div class="section-title">📜 So'nggi duellar</div>
+        <div class="section-title"><i class="ra ra-scroll"></i> So'nggi duellar</div>
         <div class="recent-list" id="recentDuels"></div>
       </div>
       <div>
-        <div class="section-title">🏆 Duel reytingi</div>
+        <div class="section-title"><i class="ra ra-trophy"></i> Duel reytingi</div>
         <div class="dlb-list" id="duelLb"></div>
       </div>
     </div>
@@ -279,8 +281,8 @@
       <div class="match-vs">
         <div class="match-player mp-me">
           <div class="mp-avatar" style="background:rgba(108,99,255,.15);border-color:var(--accent)">⚔️</div>
-          <div class="mp-name">Sardor T.</div>
-          <div class="mp-lvl">Knight · 842 ball</div>
+          <div class="mp-name" id="myMatchName">—</div>
+          <div class="mp-lvl" id="myMatchLvl">…</div>
         </div>
         <div class="vs-badge">VS</div>
         <div class="match-player mp-opp">
@@ -301,20 +303,20 @@
       <div class="bh-player bh-me">
         <div class="bh-av">⚔️</div>
         <div>
-          <div class="bh-name">Sardor T. <span style="font-size:.7rem;color:#a78bfa">(Sen)</span></div>
+          <div class="bh-name" id="myBattleName">— <span style="font-size:.7rem;color:#a78bfa">(Sen)</span></div>
           <div class="bh-hp">HP</div>
           <div class="hp-bar"><div class="hp-fill bh-me" id="myHp" style="width:100%"></div></div>
         </div>
       </div>
       <div style="text-align:center;flex-shrink:0">
         <div class="timer-num" id="battleTimer">05:00</div>
-        <div class="timer-label">⚡ Blitz Duel</div>
+        <div class="timer-label"><i class="ra ra-crossed-swords"></i> Blitz Duel</div>
         <div class="bh-score" id="battleScore">0 : 0</div>
       </div>
       <div class="bh-player bh-opp" style="justify-content:flex-end;flex-direction:row-reverse">
         <div class="bh-av">🔮</div>
         <div style="text-align:right">
-          <div class="bh-name">Jasur M.</div>
+          <div class="bh-name" id="oppBattleName">Raqib</div>
           <div class="bh-hp">HP</div>
           <div class="hp-bar" style="margin-left:auto"><div class="hp-fill bh-opp" id="oppHp" style="width:100%"></div></div>
         </div>
@@ -323,7 +325,7 @@
 
     <div class="battle-body">
       <div class="battle-pane">
-        <div class="bp-label">📋 Topshiriq <span class="live">LIVE</span></div>
+        <div class="bp-label"><i class="ra ra-scroll"></i> Topshiriq <span class="live">LIVE</span></div>
         <div class="task-pane">
           <div class="duel-task-title">Saralangan massivdan elementni topish</div>
           <div class="duel-task-desc">Berilgan tartiblangan massivdan target elementning indeksini toping. Topilmasa -1 qaytaring. <strong>O(log n)</strong> murakkablikda yechim talab etiladi.</div>
@@ -339,13 +341,13 @@ Chiqarish: 3</div>
             💡 Maslahat: Binary search — O(log n). while(left ≤ right) ...
           </div>
           <div style="margin-top:.8rem" id="oppStatusEl">
-            <div class="opp-status"><span class="opp-typing">⌨️</span> <span id="oppStatusTxt">Jasur M. yozmoqda...</span></div>
+            <div class="opp-status"><span class="opp-typing">⌨️</span> <span id="oppStatusTxt">Raqib yozmoqda...</span></div>
           </div>
         </div>
       </div>
 
       <div class="battle-pane editor-pane">
-        <div class="bp-label">💻 Sizning yechimingiz</div>
+        <div class="bp-label"><i class="ra ra-anvil"></i> Sizning yechimingiz</div>
         <div class="battle-editor">
           <div class="be-ln" id="beLn"></div>
           <textarea class="be-code" id="battleCode" spellcheck="false" autocomplete="off"
@@ -369,7 +371,7 @@ class BinarySearch {
         <div class="battle-footer">
           <button class="bf-btn bf-run" onclick="battleRun()">▶ Run</button>
           <span class="bf-status" id="bfStatus">Tayyor</span>
-          <button class="bf-btn bf-submit" onclick="battleSubmit()">⚡ Submit!</button>
+          <button class="bf-btn bf-submit" onclick="battleSubmit()"><i class="ra ra-crossed-swords"></i> Submit!</button>
         </div>
       </div>
     </div>
@@ -385,13 +387,13 @@ class BinarySearch {
         <div class="rc-vs">
           <div class="rc-player rc-win">
             <div class="rc-av">⚔️</div>
-            <div class="rc-name">Sardor T.</div>
+            <div class="rc-name" id="myResultName">Men</div>
             <div class="rc-score" id="myFinalScore">1</div>
           </div>
           <div class="rc-vs-badge">VS</div>
           <div class="rc-player rc-lose">
             <div class="rc-av">🔮</div>
-            <div class="rc-name">Jasur M.</div>
+            <div class="rc-name" id="oppResultName">Raqib</div>
             <div class="rc-score" id="oppFinalScore">0</div>
           </div>
         </div>
@@ -402,7 +404,7 @@ class BinarySearch {
           <div class="rc-reward"><div class="rv">🔥</div><div class="rl">Streak +1</div></div>
         </div>
         <div class="rc-btns">
-          <button class="rc-btn rc-btn-main" onclick="playAgain()">⚔️ Yana o'ynash</button>
+          <button class="rc-btn rc-btn-main" onclick="playAgain()"><i class="ra ra-crossed-swords"></i> Yana o'ynash</button>
           <button class="rc-btn rc-btn-sec" onclick="window.location.href='dashboard.html'" style="border:1px solid var(--border)">🏠 Dashboard</button>
         </div>
       </div>
@@ -453,7 +455,7 @@ async function loadRecentDuels() {
       return `<div class="duel-item">
         <div class="di-result ${RES[res].cls}">${RES[res].lbl}</div>
         <div class="di-info">
-          <div class="di-name">⚔️ ${opp}</div>
+          <div class="di-name"><i class="ra ra-crossed-swords"></i> ${opp}</div>
           <div class="di-meta">${topic}</div>
         </div>
         <div class="di-score" style="color:${res==='win'?'#43e97b':res==='loss'?'#ff6584':'#ffa500'}">${d.status || ''}</div>
@@ -563,6 +565,18 @@ function handleWSMessage(msg) {
     case 'opponent_ready':
       document.getElementById('matchStatus').textContent='Raqib tayyor! Jang boshlanmoqda...';
       document.getElementById('oppAvatar').textContent='⚔️';
+      // Fetch duel to get opponent's real name
+      if (currentDuel?.id) {
+        api.get(`/game/duels/${currentDuel.id}/`).then(d => {
+          const me = Auth.getUser();
+          const opp = d.challenger?.username === me?.username ? d.opponent : d.challenger;
+          const oppName = opp?.full_name || opp?.username || 'Raqib';
+          document.getElementById('oppName').textContent = oppName;
+          const obn = document.getElementById('oppBattleName'); if(obn) obn.textContent = oppName;
+          const orn = document.getElementById('oppResultName'); if(orn) orn.textContent = oppName;
+          const ost = document.getElementById('oppStatusTxt');  if(ost) ost.textContent = oppName + ' yozmoqda...';
+        }).catch(() => {});
+      }
       setTimeout(startBattle, 800);
       break;
 
@@ -669,7 +683,10 @@ function showResult(win, msg = {}) {
 
   const winPts  = msg.win_pts  || (win ? 12 : 0);
   const losePts = msg.lose_pts || (win ? 0  : 5);
-  const me      = Auth.getUser()?.username || '';
+  const meUser  = Auth.getUser();
+  const me      = meUser?.username || '';
+  const myName  = meUser?.full_name || meUser?.username || 'Men';
+  const mrn = document.getElementById('myResultName'); if(mrn) mrn.textContent = myName;
 
   if (win) {
     document.getElementById('rConfetti').textContent='🎉';
@@ -731,8 +748,43 @@ function handleBattleTab(e){
 (async function init() {
   await Promise.all([loadRecentDuels(), loadDuelLb()]);
   updateBattleLines();
+  try {
+    const [me, myDuels] = await Promise.all([
+      api.me(),
+      api.duels().catch(() => []),
+    ]);
+    const sp = me.student_profile || {};
+    const name   = me.full_name || me.username || '—';
+    const level  = sp.level ? sp.level.charAt(0).toUpperCase()+sp.level.slice(1) : '—';
+    const rating = sp.rating_score || 0;
+    const el1 = document.getElementById('myMatchName');
+    const el2 = document.getElementById('myMatchLvl');
+    const el3 = document.getElementById('myBattleName');
+    if (el1) el1.textContent = name;
+    if (el2) el2.textContent = `${level} · ${rating} ball`;
+    if (el3) el3.innerHTML = `${name} <span style="font-size:.7rem;color:#a78bfa">(Sen)</span>`;
+
+    // Arena stats
+    const duelsArr = Array.isArray(myDuels) ? myDuels : (myDuels?.results || []);
+    const myUser   = me.username || '';
+    const wins     = duelsArr.filter(d => d.winner_username === myUser).length;
+    const losses   = duelsArr.filter(d => d.winner_username && d.winner_username !== myUser).length;
+    const activeDuels = duelsArr.filter(d => d.status === 'in_progress' || d.status === 'waiting').length;
+    const asR  = document.getElementById('asMyRecord');
+    const asRt = document.getElementById('asRating');
+    const asAD = document.getElementById('asActiveDuels');
+    if(asR)  asR.textContent  = duelsArr.length > 0 ? `${wins}W ${losses}L` : '—';
+    if(asRt) asRt.textContent = rating;
+    if(asAD) asAD.textContent = activeDuels;
+  } catch {}
 })();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
+<script>
+(async function(){
+  if(typeof api==='undefined'||typeof Auth==='undefined'||!Auth.isLoggedIn())return;
+  try{const d=await api.msgUnread();const b=document.getElementById('msgBadge');if(b&&d?.unread>0){b.textContent=d.unread>9?'9+':d.unread;b.style.display='';}}catch(e){}
+})();
+</script>
 </body>
 </html>

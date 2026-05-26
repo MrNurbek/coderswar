@@ -58,7 +58,7 @@
     @media(max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr)}}
     .stat-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
     .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
-    .stat-box::after{content:attr(data-icon);position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.08}
+    .stat-box .stat-bg{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.08;pointer-events:none}
     .stat-box .label{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.4rem}
     .stat-box .value{font-size:1.6rem;font-weight:900;line-height:1;margin-bottom:.2rem}
     .stat-box .sub{font-size:.75rem;color:var(--muted)}
@@ -178,22 +178,24 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-logo">
-    <a href="index.html">⚔️ Coders War</a>
+    <a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
     <div class="sub">Algoritmik tillar va dasturlash</div>
   </div>
   <nav class="sb-nav">
     <div class="nav-section">O'quv</div>
-    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
-    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
-    <a class="nav-item active" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
-    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item active" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
     <div class="nav-section">Jamoa</div>
-    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
-    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
-    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
     <div class="nav-section">Shaxsiy</div>
-    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
@@ -202,7 +204,7 @@
         <div class="name" data-user-name>...</div>
         <div class="role" data-user-role>Student</div>
       </div>
-      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
@@ -211,7 +213,7 @@
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
-      <h2>📈 O'quv Trayektoriyasi</h2>
+      <h2><i class="ra ra-level-three-advanced"></i> O'quv Trayektoriyasi</h2>
       <div class="breadcrumb">O'quv • To'liq tahlil va prognoz</div>
     </div>
     <div class="topbar-right">
@@ -219,8 +221,8 @@
         <option>Semestr 1 (2024–25)</option>
         <option>Semestr 2 (2025)</option>
       </select>
-      <button class="btn btn-outline">📤 Export PDF</button>
-      <button class="btn btn-primary">🤖 AI Tahlil</button>
+      <button class="btn btn-outline"><i class="ra ra-scroll"></i> Export PDF</button>
+      <button class="btn btn-primary"><i class="ra ra-crystal-ball"></i> AI Tahlil</button>
     </div>
   </div>
 
@@ -228,45 +230,45 @@
 
     <!-- STATS -->
     <div class="stats-row">
-      <div class="stat-box" data-icon="⭐">
+      <div class="stat-box" ><i class="ra ra-gem stat-bg" aria-hidden="true"></i>
         <div class="label">Rating Score</div>
         <div class="value" id="stRating" style="color:#a78bfa">—</div>
         <div class="sub">/ 4500 maksimal</div>
         <div class="trend-up" id="stRatingNext">— ball keyingisiga</div>
       </div>
-      <div class="stat-box" data-icon="📊">
+      <div class="stat-box" ><i class="ra ra-compass stat-bg" aria-hidden="true"></i>
         <div class="label">Academic Score</div>
         <div class="value" id="stAcademic" style="color:#43e97b">—</div>
         <div class="sub">O'rtacha ball</div>
         <div class="trend-up">Mavzular o'rtachasi</div>
       </div>
-      <div class="stat-box" data-icon="📚">
+      <div class="stat-box" ><i class="ra ra-book stat-bg" aria-hidden="true"></i>
         <div class="label">Tugatilgan mavzular</div>
         <div class="value" id="stTopics" style="color:#ffd700">— / 45</div>
         <div class="sub" id="stTopicsPct">0% bajarildi</div>
-        <div class="trend-up" id="stStreak">🔥 — kun streak</div>
+        <div class="trend-up" id="stStreak"><i class="ra ra-fire"></i> — kun streak</div>
       </div>
-      <div class="stat-box" data-icon="🔥">
+      <div class="stat-box" ><i class="ra ra-fire stat-bg" aria-hidden="true"></i>
         <div class="label">Joriy daraja</div>
         <div class="value" id="stLevel" style="color:#ff6584">—</div>
         <div class="sub" id="stLevelRange">—</div>
         <div class="trend-up" id="stLevelNext">—</div>
       </div>
-      <div class="stat-box" data-icon="🎯">
+      <div class="stat-box" ><i class="ra ra-archery-target stat-bg" aria-hidden="true"></i>
         <div class="label">Prognoz: Yakuniy</div>
-        <div class="value" style="color:#60a5fa">Hero</div>
+        <div class="value" id="predLevelStat" style="color:#60a5fa">—</div>
         <div class="sub">Semestr oxirida</div>
-        <div class="trend-up">1480–1650 prognoz</div>
+        <div class="trend-up" id="predRatingStat">hisoblanyapti…</div>
       </div>
     </div>
 
     <!-- TABS -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('overview')">📊 Umumiy ko'rinish</button>
-      <button class="tab-btn" onclick="switchTab('topics')">📚 Mavzular bo'yicha</button>
-      <button class="tab-btn" onclick="switchTab('criteria')">🎯 Mezonlar tahlili</button>
-      <button class="tab-btn" onclick="switchTab('activity')">🗓️ Faollik</button>
-      <button class="tab-btn" onclick="switchTab('forecast')">🔮 Prognoz</button>
+      <button class="tab-btn active" onclick="switchTab('overview')"><i class="ra ra-compass"></i> Umumiy ko'rinish</button>
+      <button class="tab-btn" onclick="switchTab('topics')"><i class="ra ra-book"></i> Mavzular bo'yicha</button>
+      <button class="tab-btn" onclick="switchTab('criteria')"><i class="ra ra-archery-target"></i> Mezonlar tahlili</button>
+      <button class="tab-btn" onclick="switchTab('activity')"><i class="ra ra-hourglass"></i> Faollik</button>
+      <button class="tab-btn" onclick="switchTab('forecast')"><i class="ra ra-crystal-ball"></i> Prognoz</button>
     </div>
 
     <!-- ── TAB: OVERVIEW ── -->
@@ -274,7 +276,7 @@
       <!-- MAIN TRAJECTORY CHART -->
       <div class="card" style="margin-bottom:1.5rem">
         <div class="card-header">
-          <span class="card-title">📈 Rating Score o'zgarishi (hafta bo'yicha)</span>
+          <span class="card-title"><i class="ra ra-level-three-advanced"></i> Rating Score o'zgarishi (hafta bo'yicha)</span>
           <div style="display:flex;gap:.5rem">
             <span style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.3rem"><span style="width:12px;height:3px;background:#6c63ff;display:inline-block;border-radius:2px"></span>Haqiqiy</span>
             <span style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.3rem"><span style="width:12px;height:3px;background:rgba(108,99,255,0.35);display:inline-block;border-radius:2px;border-top:2px dashed #a78bfa"></span>Prognoz</span>
@@ -288,7 +290,7 @@
       <div class="grid-2-1">
         <!-- CRITERIA RADAR -->
         <div class="card">
-          <div class="card-header"><span class="card-title">🕸️ 4 Mezon radari (mavzular o'rtachasi)</span></div>
+          <div class="card-header"><span class="card-title"><i class="ra ra-radial-balance"></i> 4 Mezon radari (mavzular o'rtachasi)</span></div>
           <div style="display:flex;align-items:center;gap:1.5rem">
             <div style="flex:1;display:flex;align-items:center;justify-content:center">
               <canvas id="radarChart" width="200" height="200"></canvas>
@@ -316,11 +318,11 @@
         <!-- MODULE PROGRESS + LEVEL TIMELINE -->
         <div>
           <div class="card" style="margin-bottom:1.5rem">
-            <div class="card-header"><span class="card-title">📦 Modul taraqqiyoti</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-castle-emblem"></i> Modul taraqqiyoti</span></div>
             <div class="module-progress" id="moduleProgress"></div>
           </div>
           <div class="card">
-            <div class="card-header"><span class="card-title">🎖️ Daraja yo'li</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-trophy"></i> Daraja yo'li</span></div>
             <div class="level-timeline" id="levelTimeline"></div>
           </div>
         </div>
@@ -331,7 +333,7 @@
     <div id="tab-topics" class="tab-content">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">📚 Barcha mavzular bo'yicha 4 mezon ballari</span>
+          <span class="card-title"><i class="ra ra-book"></i> Barcha mavzular bo'yicha 4 mezon ballari</span>
           <div style="display:flex;gap:.5rem">
             <select id="moduleFilter" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.3rem .6rem;font-size:.8rem;outline:none;cursor:pointer" onchange="renderTopicTable()">
               <option value="all">Barcha modullar</option>
@@ -371,14 +373,14 @@
       <div class="grid-1-1">
         <!-- CRITERION BREAKDOWN -->
         <div class="card">
-          <div class="card-header"><span class="card-title">🎯 Mezon bo'yicha o'sish dinamikasi</span></div>
+          <div class="card-header"><span class="card-title"><i class="ra ra-archery-target"></i> Mezon bo'yicha o'sish dinamikasi</span></div>
           <div class="chart-wrap" style="height:200px">
             <canvas id="criteriaChart" class="chart"></canvas>
           </div>
         </div>
         <!-- CRITERION STATS TABLE -->
         <div class="card">
-          <div class="card-header"><span class="card-title">📊 Mezonlar statistikasi</span></div>
+          <div class="card-header"><span class="card-title"><i class="ra ra-compass"></i> Mezonlar statistikasi</span></div>
           <table class="crit-trend-table">
             <thead><tr><th>Mezon</th><th>O'rtacha</th><th>Progress</th><th>Trend</th></tr></thead>
             <tbody id="critStatsBody"></tbody>
@@ -388,13 +390,13 @@
 
       <!-- WEAK AREAS -->
       <div class="card" style="margin-bottom:1.5rem">
-        <div class="card-header"><span class="card-title">⚠️ Kuchsiz tomonlar va tavsiyalar</span></div>
+        <div class="card-header"><span class="card-title"><i class="ra ra-broken-shield"></i> Kuchsiz tomonlar va tavsiyalar</span></div>
         <div id="weakAreas"></div>
       </div>
 
       <!-- STRONG AREAS -->
       <div class="card">
-        <div class="card-header"><span class="card-title">💪 Kuchli tomonlar</span></div>
+        <div class="card-header"><span class="card-title"><i class="ra ra-sword"></i> Kuchli tomonlar</span></div>
         <div id="strongAreas"></div>
       </div>
     </div>
@@ -404,7 +406,7 @@
       <div class="grid-2-1">
         <div>
           <div class="card" style="margin-bottom:1.5rem">
-            <div class="card-header"><span class="card-title">🗓️ 12 oylik faollik xaritasi</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-hourglass"></i> 12 oylik faollik xaritasi</span></div>
             <div class="hm-labels" id="hmLabels"></div>
             <div class="heatmap-grid" id="heatmapGrid"></div>
             <div style="display:flex;align-items:center;gap:.4rem;margin-top:.8rem;font-size:.72rem;color:var(--muted)">
@@ -421,7 +423,7 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><span class="card-title">📅 Haftalik faollik (soat bo'yicha)</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-hourglass"></i> Haftalik faollik (soat bo'yicha)</span></div>
             <div class="chart-wrap" style="height:150px">
               <canvas id="weeklyChart" class="chart"></canvas>
             </div>
@@ -430,46 +432,35 @@
 
         <div>
           <div class="card" style="margin-bottom:1.5rem">
-            <div class="card-header"><span class="card-title">⚡ Faollik statistikasi</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-crossed-swords"></i> Faollik statistikasi</span></div>
             <div style="display:flex;flex-direction:column;gap:.7rem;font-size:.83rem">
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
-                <span>🔥 Joriy streak</span><strong style="color:#ff6584">12 kun</strong>
+                <span><i class="ra ra-fire"></i> Joriy streak</span><strong id="actStreak" style="color:#ff6584">—</strong>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
-                <span>🏆 Rekord streak</span><strong style="color:var(--gold)">28 kun</strong>
+                <span><i class="ra ra-trophy"></i> Rekord streak</span><strong id="actBestStreak" style="color:var(--gold)">—</strong>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
-                <span>📅 Jami faol kunlar</span><strong style="color:#a78bfa">68 kun</strong>
+                <span><i class="ra ra-hourglass"></i> Jami faol kunlar</span><strong style="color:#a78bfa">—</strong>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
-                <span>⏱️ O'rtacha kunlik vaqt</span><strong style="color:#43e97b">2.4 soat</strong>
+                <span><i class="ra ra-hourglass"></i> O'rtacha kunlik vaqt</span><strong style="color:#43e97b">—</strong>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
-                <span>💻 Yozilgan kodlar</span><strong style="color:#60a5fa">312 ta</strong>
+                <span><i class="ra ra-anvil"></i> Yozilgan kodlar</span><strong id="actSubmissions" style="color:#60a5fa">—</strong>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
-                <span>⚡ O'tkazilgan duell</span><strong style="color:#ff6584">34 ta</strong>
+                <span><i class="ra ra-crossed-swords"></i> O'tkazilgan duell</span><strong id="actDuels" style="color:#ff6584">—</strong>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:rgba(255,255,255,0.03);border-radius:10px">
-                <span>🔍 Peer reviewlar</span><strong style="color:#fb923c">24 ta</strong>
+                <span><i class="ra ra-scroll-unfurled"></i> Peer reviewlar</span><strong style="color:#fb923c">—</strong>
               </div>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header"><span class="card-title">🕐 Eng faol vaqt</span></div>
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem">
-              {[['Ertalab','06-09','☀️',30],['Kun o\'rtasi','12-15','🌤️',55],['Kechqurun','18-21','🌙',85],['Tun','21-00','⭐',45]].map(([l,t,e,p])=>`
-              <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:.6rem;text-align:center">
-                <div style="font-size:1.2rem;margin-bottom:.2rem">${e}</div>
-                <div style="font-size:.7rem;font-weight:600">${l}</div>
-                <div style="font-size:.68rem;color:var(--muted)">${t}</div>
-                <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;margin:.4rem 0">
-                  <div style="width:20px;background:linear-gradient(0deg,#6c63ff,#a78bfa);border-radius:3px 3px 0 0;height:${p}%"></div>
-                </div>
-                <div style="font-size:.72rem;color:#a78bfa;font-weight:700">${p}%</div>
-              </div>`).join('')}
-            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem" id="activeTimeGrid"></div>
           </div>
         </div>
       </div>
@@ -480,14 +471,14 @@
       <div class="grid-2-1">
         <div>
           <div class="card" style="margin-bottom:1.5rem">
-            <div class="card-header"><span class="card-title">🔮 Semestr oxiri prognoozi</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-crystal-ball"></i> Semestr oxiri prognoozi</span></div>
             <div class="chart-wrap" style="height:200px">
               <canvas id="forecastChart" class="chart"></canvas>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-header"><span class="card-title">🤖 AI tahlil va tavsiyalar</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-crystal-ball"></i> AI tahlil va tavsiyalar</span></div>
             <div id="aiInsights"></div>
           </div>
         </div>
@@ -504,41 +495,41 @@
             <div class="pred-items">
               <div class="pred-item">
                 <span class="pred-label">Yakuniy Rating Score</span>
-                <span class="pred-val" style="color:#a78bfa">1480–1650</span>
+                <span class="pred-val" id="predRating" style="color:#a78bfa">—</span>
               </div>
               <div class="pred-item">
                 <span class="pred-label">Yakuniy daraja</span>
-                <span class="pred-val" style="color:var(--gold)">Hero 🦸</span>
+                <span class="pred-val" id="predLevel" style="color:var(--gold)">—</span>
               </div>
               <div class="pred-item">
                 <span class="pred-label">Tugatilgan mavzular</span>
-                <span class="pred-val" style="color:#43e97b">32–36 / 45</span>
+                <span class="pred-val" id="predTopics" style="color:#43e97b">—</span>
               </div>
               <div class="pred-item">
                 <span class="pred-label">Yakuniy Academic Score</span>
-                <span class="pred-val" style="color:#60a5fa">82–87</span>
+                <span class="pred-val" id="predAcademic" style="color:#60a5fa">—</span>
               </div>
               <div class="pred-item">
                 <span class="pred-label">Reyting o'rni (prognoz)</span>
-                <span class="pred-val" style="color:#ff6584">#8–#12</span>
+                <span class="pred-val" id="predRank" style="color:#ff6584">—</span>
               </div>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-header"><span class="card-title">🎯 Maqsad scenariylar</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-archery-target"></i> Maqsad scenariylar</span></div>
             <div style="display:flex;flex-direction:column;gap:.8rem;font-size:.83rem">
               <div style="padding:.9rem;background:rgba(67,233,123,0.06);border:1px solid rgba(67,233,123,0.15);border-radius:12px">
                 <div style="font-weight:700;color:#43e97b;margin-bottom:.3rem">🚀 Optimistik (hafta +100 ball)</div>
-                <div style="color:var(--muted)">Yakuniy: 2100+ ball → <strong>Legend</strong> darajasiga yetish</div>
+                <div id="predOptText" style="color:var(--muted)">hisoblanyapti…</div>
               </div>
               <div style="padding:.9rem;background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.2);border-radius:12px">
-                <div style="font-weight:700;color:#a78bfa;margin-bottom:.3rem">📊 Realistik (hozirgi sur'at)</div>
-                <div style="color:var(--muted)">Yakuniy: 1480–1650 → <strong>Hero</strong> darajasi</div>
+                <div style="font-weight:700;color:#a78bfa;margin-bottom:.3rem"><i class="ra ra-compass"></i> Realistik (hozirgi sur'at)</div>
+                <div id="predRealistText" style="color:var(--muted)">hisoblanyapti…</div>
               </div>
               <div style="padding:.9rem;background:rgba(255,101,132,0.06);border:1px solid rgba(255,101,132,0.15);border-radius:12px">
-                <div style="font-weight:700;color:#ff6584;margin-bottom:.3rem">⚠️ Pessimistik (kamaysa)</div>
-                <div style="color:var(--muted)">Yakuniy: 1100–1300 → <strong>Knight</strong> da qolish</div>
+                <div style="font-weight:700;color:#ff6584;margin-bottom:.3rem"><i class="ra ra-broken-shield"></i> Pessimistik (kamaysa)</div>
+                <div id="predPessText" style="color:var(--muted)">hisoblanyapti…</div>
               </div>
             </div>
           </div>
@@ -555,22 +546,38 @@
 <script>
 if (!Auth.requireAuth()) throw 0;
 
+// ── Eng faol vaqt grid (static visual, no API) ────────────────
+(function(){
+  const g=document.getElementById('activeTimeGrid');
+  if(!g)return;
+  g.innerHTML=[['Ertalab','06-09','☀️',30],["Kun o'rtasi",'12-15','🌤️',55],['Kechqurun','18-21','🌙',85],['Tun','21-00','⭐',45]]
+    .map(([l,t,e,p])=>`<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:.6rem;text-align:center">
+      <div style="font-size:1.2rem;margin-bottom:.2rem">${e}</div>
+      <div style="font-size:.7rem;font-weight:600">${l}</div>
+      <div style="font-size:.68rem;color:var(--muted)">${t}</div>
+      <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;margin:.4rem 0">
+        <div style="width:20px;background:linear-gradient(0deg,#6c63ff,#a78bfa);border-radius:3px 3px 0 0;height:${p}%"></div>
+      </div>
+      <div style="font-size:.72rem;color:#a78bfa;font-weight:700">${p}%</div>
+    </div>`).join('');
+})();
+
 // ── Level metadata ─────────────────────────────────────────────
 const LV_META = {
-  recruit:  {icon:'🛡️', name:'Recruit',  range:'0–300',    next:300},
-  warden:   {icon:'🗡️', name:'Warden',   range:'301–750',   next:750},
-  knight:   {icon:'⚔️', name:'Knight',   range:'751–1300',  next:1300},
-  hero:     {icon:'🦅', name:'Hero',     range:'1301–1900', next:1900},
-  legend:   {icon:'🔥', name:'Legend',   range:'1901–2600', next:2600},
-  lord:     {icon:'👑', name:'Lord',     range:'2601–3350', next:3350},
-  deity:    {icon:'🔮', name:'Imperator', range:'3351–4050', next:4050},
-  titan:    {icon:'⚡', name:'Titan',    range:'4051–4500', next:4500},
+  recruit: {icon:'<img src="static/img/rank-recruit.png" style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Recruit',   range:'0–300',    next:300},
+  warden:  {icon:'<img src="static/img/rank-warden.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Warden',    range:'301–750',   next:750},
+  knight:  {icon:'<img src="static/img/rank-knight.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Knight',    range:'751–1300',  next:1300},
+  hero:    {icon:'<img src="static/img/rank-hero.png"    style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Hero',      range:'1301–1900', next:1900},
+  legend:  {icon:'<img src="static/img/rank-legend.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Legend',    range:'1901–2600', next:2600},
+  lord:    {icon:'<img src="static/img/rank-lord.png"    style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Lord',      range:'2601–3350', next:3350},
+  deity:   {icon:'<img src="static/img/rank-deity.png"   style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Imperator', range:'3351–4050', next:4050},
+  titan:   {icon:'<img src="static/img/rank-titan.png"   style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Titan',     range:'4051–4500', next:4500},
 };
 
 async function initTraj() {
   Auth.fillUserUI();
   try {
-    const [me, scores] = await Promise.all([api.me(), api.scores()]);
+    const [me, scores, streakData] = await Promise.all([api.me(), api.scores(), api.streak().catch(() => ({}))]);
     const sp = me.student_profile || {};
     const rating   = sp.rating_score || 0;
     const academic = sp.academic_score ? Math.round(sp.academic_score * 10) / 10 : '—';
@@ -586,9 +593,53 @@ async function initTraj() {
     document.getElementById('stTopics').textContent      = `${completed} / 45`;
     document.getElementById('stTopicsPct').textContent   = Math.round(completed / 45 * 100) + '% bajarildi';
     document.getElementById('stStreak').textContent      = `🔥 ${streak} kun streak`;
-    document.getElementById('stLevel').textContent       = `${lv.icon} ${lv.name}`;
+    document.getElementById('stLevel').innerHTML         = `${lv.icon} ${lv.name}`;
     document.getElementById('stLevelRange').textContent  = lv.range + ' oralig\'i';
     document.getElementById('stLevelNext').textContent   = toNext > 0 ? `${toNext} ball keyingisiga` : '🎉 Maksimal!';
+
+    // ── Activity tab stats (from API) ──────────────────────────
+    const elId = id => document.getElementById(id);
+    if(elId('actStreak'))      elId('actStreak').textContent      = streak > 0 ? `${streak} kun` : '— kun';
+    if(elId('actBestStreak'))  elId('actBestStreak').textContent  = sp.best_streak ? `${sp.best_streak} kun` : '—';
+    if(elId('actDuels'))       elId('actDuels').textContent       = sp.duels_played != null ? `${sp.duels_played} ta` : '—';
+    if(elId('actSubmissions')) {
+      try {
+        const subs = await api.get('/courses/submissions/?page_size=1');
+        const total = subs?.count ?? subs?.length ?? '—';
+        elId('actSubmissions').textContent = total !== '—' ? `${total} ta` : '—';
+      } catch { /* no count available */ }
+    }
+
+    // ── Prediction card + trajectory/forecast charts ──────────
+    const LEVEL_ORDER_P=['recruit','warden','knight','hero','legend','lord','deity','titan'];
+    const LV_THRESH_P={recruit:0,warden:301,knight:751,hero:1301,legend:1901,lord:2601,deity:3351,titan:4051};
+    const getLvKey = v => { let k='recruit'; for(const[key,min] of Object.entries(LV_THRESH_P)){if(v>=min)k=key;} return k; };
+    const weeklyRate = completed > 0 ? Math.round(rating / completed * 3) : 60;
+    const weeksLeft  = Math.max(2, 45 - completed);
+    const predLow    = Math.min(4500, rating + Math.round(weeklyRate * weeksLeft * 0.55));
+    const predHigh   = Math.min(4500, rating + Math.round(weeklyRate * weeksLeft * 0.80));
+    const predMid    = Math.round((predLow + predHigh) / 2);
+    const predLvKey  = getLvKey(predMid);
+    const predLvMeta = LV_META[predLvKey] || LV_META.recruit;
+    const predTopicsLow  = Math.min(45, completed + Math.round((45-completed)*0.55));
+    const predTopicsHigh = Math.min(45, completed + Math.round((45-completed)*0.80));
+    const curAcad = typeof sp.academic_score === 'number' ? Math.round(sp.academic_score*10)/10 : 0;
+    const pe = id => document.getElementById(id);
+    if(pe('predRating'))     pe('predRating').textContent     = `${predLow}–${predHigh}`;
+    if(pe('predLevel'))      pe('predLevel').innerHTML        = `${predLvMeta.icon} ${predLvMeta.name}`;
+    if(pe('predTopics'))     pe('predTopics').textContent     = `${predTopicsLow}–${predTopicsHigh} / 45`;
+    if(pe('predAcademic'))   pe('predAcademic').textContent   = curAcad > 0 ? `${Math.min(100,Math.round(curAcad*1.04))}–${Math.min(100,Math.round(curAcad*1.10))}` : '—';
+    if(pe('predLevelStat'))  pe('predLevelStat').innerHTML    = `${predLvMeta.icon} ${predLvMeta.name}`;
+    if(pe('predRatingStat')) pe('predRatingStat').textContent = `${predLow}–${predHigh} prognoz`;
+    const optVal  = Math.min(4500, rating + Math.round(weeklyRate * weeksLeft * 1.2));
+    const pessVal = rating + Math.round(weeklyRate * weeksLeft * 0.3);
+    if(pe('predOptText'))    pe('predOptText').innerHTML    = `Yakuniy: ${optVal}+ ball → <strong>${LV_META[getLvKey(optVal)]?.name||''}</strong> darajasiga yetish`;
+    if(pe('predRealistText'))pe('predRealistText').innerHTML = `Yakuniy: ${predLow}–${predHigh} → <strong>${predLvMeta.name}</strong> darajasi`;
+    if(pe('predPessText'))   pe('predPessText').innerHTML   = `Yakuniy: ${pessVal}–${Math.round(pessVal*1.1)} → <strong>${LV_META[getLvKey(pessVal)]?.name||''}</strong> da qolish`;
+    drawTrajectoryChart(rating);
+    drawForecastChart(rating);
+    drawHeatmap(streakData?.activity_heatmap || {});
+    drawWeeklyChart(streakData?.activity_heatmap || {});
 
     // Update topic table data if available
     if (Array.isArray(scores) && scores.length) {
@@ -605,70 +656,146 @@ async function initTraj() {
         });
       });
       renderTopicTable();
+
+      // ── Module progress (real data) ───────────────────────────
+      const modDone = [1,2,3].map(m => scores.filter(s => {
+        const n = s.topic_number||0;
+        return m===1?(n>=1&&n<=15): m===2?(n>=16&&n<=30):(n>=31&&n<=45);
+      }).filter(s=>s.is_completed).length);
+      const mpEl2 = document.getElementById('moduleProgress');
+      if (mpEl2) {
+        const modColors = ['#43e97b','#6c63ff','#ff6584'];
+        const modNames  = ['📗 Modul 1 — C# Asoslari','📘 Modul 2 — O\'rta daraja','📕 Modul 3 — Ilg\'or'];
+        mpEl2.innerHTML = modDone.map((done,i) => {
+          const pct = Math.round(done/15*100);
+          return `<div class="module-block">
+            <div class="module-header"><span class="module-name">${modNames[i]}</span><span class="module-pct">${pct}%</span></div>
+            <div class="module-bar"><div class="module-bar-fill" style="width:${pct}%;background:${modColors[i]}"></div></div>
+            <div class="module-meta"><span>${done}/15 mavzu</span><span>${done*100} ball to'plangan</span></div>
+          </div>`;
+        }).join('');
+      }
+
+      // ── Level timeline (real current level) ───────────────────
+      const LEVEL_ORDER2 = ['recruit','warden','knight','hero','legend','lord','deity','titan'];
+      const LEVEL_NAMES2 = {recruit:'Recruit',warden:'Warden',knight:'Knight',hero:'Hero',legend:'Legend',lord:'Lord',deity:'Imperator',titan:'Titan'};
+      const LEVEL_RANGES2 = {recruit:'0–300',warden:'301–750',knight:'751–1300',hero:'1301–1900',legend:'1901–2600',lord:'2601–3350',deity:'3351–4050',titan:'4051–4500'};
+      const curIdx = LEVEL_ORDER2.indexOf(lvKey);
+      const ltEl2 = document.getElementById('levelTimeline');
+      if (ltEl2) {
+        ltEl2.innerHTML = LEVEL_ORDER2.map((key,i) => {
+          const st = i<curIdx?'done':i===curIdx?'current':'future';
+          return `<div class="lt-item">
+            <div class="lt-left">
+              <div class="lt-dot ${st}"></div>
+              ${i<LEVEL_ORDER2.length-1?'<div class="lt-line"></div>':''}
+            </div>
+            <div class="lt-content">
+              <div class="lt-level"><img src="static/img/rank-${key}.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px">${LEVEL_NAMES2[key]}</div>
+              <div class="lt-range">${LEVEL_RANGES2[key]} ball</div>
+              <span class="lt-status ${st==='done'?'st-done':st==='current'?'st-curr':'st-fut'}">${st==='done'?'✓ Tugallandi':st==='current'?'● Hozir siz bunda':'◯ Kelajak'}</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // ── Criteria stats (real averages) ────────────────────────
+      const activeScores = scores.filter(s=>s.total_score>0);
+      if (activeScores.length) {
+        const cAvg = k => activeScores.reduce((a,s)=>a+(s[k]||0),0)/activeScores.length;
+        // Draw charts with real averaged data
+        const moA=Math.round(cAvg('mo_score')*10)/10;
+        const koA=Math.round(cAvg('ko_score')*10)/10;
+        const faA=Math.round((cAvg('fa_score')+cAvg('fa_project_score'))*10)/10;
+        const reA=Math.round((cAvg('re_score')+cAvg('re_peer_score'))*10)/10;
+        drawRadarChart(
+          Math.round(Math.min(1,moA/15)*100),
+          Math.round(Math.min(1,koA/35)*100),
+          Math.round(Math.min(1,faA/30)*100),
+          Math.round(Math.min(1,reA/20)*100)
+        );
+        // Update radar legend labels
+        const lg=id=>document.getElementById(id);
+        if(lg('lgMo')) lg('lgMo').textContent=`${moA}/15`;
+        if(lg('lgKo')) lg('lgKo').textContent=`${koA}/35`;
+        if(lg('lgFa')) lg('lgFa').textContent=`${faA}/30`;
+        if(lg('lgRe')) lg('lgRe').textContent=`${reA}/20`;
+        if(lg('lgTotal')) lg('lgTotal').textContent=`${Math.round((moA+koA+faA+reA)*10)/10}/100`;
+        drawCriteriaChart([moA, koA, faA, reA]);
+        const realCrit = [
+          {name:'Motivatsion (Mo)',max:15,avg:moA,color:'#60a5fa'},
+          {name:'Kognitiv (Ko)',   max:35,avg:koA,color:'#a78bfa'},
+          {name:'Faoliyatli (Fa)',max:30,avg:faA,color:'#43e97b'},
+          {name:'Refleksiv (Re)',  max:20,avg:reA,color:'#fb923c'},
+        ];
+        const csBody2 = document.getElementById('critStatsBody');
+        if (csBody2) {
+          csBody2.innerHTML = realCrit.map(c => {
+            const avg = Math.round(c.avg*10)/10;
+            const pct = Math.round(Math.min(avg/c.max,1)*100);
+            return `<tr>
+              <td style="font-weight:600;color:${c.color}">${c.name}</td>
+              <td style="font-weight:700">${avg}/${c.max}</td>
+              <td><div class="bar-inline"><div class="bi-bar"><div class="bi-fill" style="width:${pct}%;background:${c.color}"></div></div><span class="bi-val" style="color:${c.color}">${pct}%</span></div></td>
+              <td style="font-size:.78rem;font-weight:600;color:var(--muted)">—</td>
+            </tr>`;
+          }).join('');
+        }
+
+        // ── Weak / Strong areas (real) ───────────────────────────
+        const ADVICE2 = {
+          'Motivatsion (Mo)': {weak:"O'qituvchi tomonidan beriladigan motivatsion ballarni oshirish uchun faoliyatni oshiring.", strong:"Motivatsion ballarda kuchli ko'rsatkich. O'qituvchi e'tiborini jalb etdingiz!"},
+          'Kognitiv (Ko)':    {weak:"Barcha 3 darajadagi testlarni to'liq topshiring — nazariy bilimni mustahkamlang.",          strong:"Kognitiv o'zlashtirishda yaxshi natija. Nazariy bilim kuchli."},
+          'Faoliyatli (Fa)':  {weak:"Kod topshiriqlarini to'liq bajaring va loyiha ishlarini o'qituvchiga topshiring.",          strong:"Amaliyot topshiriqlarida kuchli ko'rsatkich. Kod yozishda ustunlik bor."},
+          'Refleksiv (Re)':   {weak:"Har bir mavzudan so'ng reflection journal yozing va peer-review'ni bajaring.",              strong:"Refleksiv baholovchi mezonda yuqori natija. Tahlil qilish kuchli."},
+        };
+        const critPcts = realCrit.map(c=>({...c, pct:Math.min(c.avg/c.max,1)*100}));
+        const waEl2=document.getElementById('weakAreas');
+        const saEl2=document.getElementById('strongAreas');
+        if (waEl2) {
+          waEl2.innerHTML=[...critPcts].sort((a,b)=>a.pct-b.pct).slice(0,2).map(c=>{
+            const avg=Math.round(c.avg*10)/10;
+            return `<div class="ai-insight"><span class="ai-icon">⚠️</span>
+              <div class="ai-text"><strong>${c.name} past (${avg}/${c.max} — ${Math.round(c.pct)}%)</strong><br>${ADVICE2[c.name]?.weak||''}</div></div>`;
+          }).join('');
+        }
+        if (saEl2) {
+          saEl2.innerHTML=[...critPcts].sort((a,b)=>b.pct-a.pct).slice(0,2).map(c=>{
+            const avg=Math.round(c.avg*10)/10;
+            return `<div class="ai-insight" style="background:rgba(67,233,123,0.05);border-color:rgba(67,233,123,0.15)"><span class="ai-icon">💪</span>
+              <div class="ai-text"><strong>${c.name} yuqori (${avg}/${c.max} — ${Math.round(c.pct)}%)</strong><br>${ADVICE2[c.name]?.strong||''}</div></div>`;
+          }).join('');
+        }
+
+        // ── AI Insights (real) ───────────────────────────────────
+        const aiEl2 = document.getElementById('aiInsights');
+        const completedC = scores.filter(s=>s.is_completed).length;
+        const weakestC = [...critPcts].sort((a,b)=>a.pct-b.pct)[0];
+        const nextLvlName = LEVEL_ORDER2[Math.min(curIdx+1,7)];
+        if (aiEl2) {
+          aiEl2.innerHTML = [
+            {icon:'🎯', text:`<strong>Asosiy tavsiya:</strong> ${weakestC.name} (${Math.round(weakestC.pct)}%) — shu mezonga e'tibor qaratish reyting o'sishini tezlashtiradi.`},
+            {icon:'📚', text:`<strong>Mavzular:</strong> ${completedC}/45 yakunlandi, ${45-completedC} ta qoldi. Haftasiga 3+ mavzu sur'atini saqlang.`},
+            {icon:'💡', text:`<strong>Refleksiv mezon:</strong> Har bir mavzudan so'ng chuqur reflection journal yozing va peer-review'ni bajaring.`},
+            {icon:'📈', text:`<strong>Navbatdagi daraja:</strong> ${LV_META[nextLvlName]?.name||'Titan'} uchun ${Math.max(0,(LV_META[nextLvlName]?.next||4500)-rating)} ball kerak.`},
+          ].map(a=>`<div class="ai-insight"><span class="ai-icon">${a.icon}</span><div class="ai-text">${a.text}</div></div>`).join('');
+        }
+      }
     }
   } catch(e) { console.warn('Trajectory init error:', e); }
 }
 
-// ── DATA ──────────────────────────────────────────────────────
-const topics=[
-  {num:1,name:'C# kirish va o\'rnatish',module:1,status:'done',Mo:13,Ko:26,Fa:31,Re:16},
-  {num:2,name:'O\'zgaruvchilar va turlar',module:1,status:'done',Mo:12,Ko:24,Fa:29,Re:14},
-  {num:3,name:'Shart operatorlari',module:1,status:'done',Mo:11,Ko:23,Fa:28,Re:13},
-  {num:4,name:'Sikllar (for, while)',module:1,status:'done',Mo:12,Ko:22,Fa:26,Re:14},
-  {num:5,name:'Massivlar',module:1,status:'done',Mo:11,Ko:23,Fa:27,Re:13},
-  {num:6,name:'Metodlar (funksiyalar)',module:1,status:'done',Mo:12,Ko:25,Fa:28,Re:15},
-  {num:7,name:'Rekursiya asoslari',module:1,status:'done',Mo:10,Ko:21,Fa:24,Re:12},
-  {num:8,name:'Satrlar (string)',module:1,status:'done',Mo:11,Ko:22,Fa:26,Re:13},
-  {num:9,name:'OOP: Klasslar',module:1,status:'done',Mo:12,Ko:24,Fa:29,Re:15},
-  {num:10,name:'OOP: Vorislik',module:2,status:'progress',Mo:7,Ko:17,Fa:18,Re:8},
-  {num:11,name:'OOP: Polimorfizm',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
-  {num:12,name:'Interfeyslar',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
-  {num:13,name:'Collections: List',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
-  {num:14,name:'Collections: Dictionary',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
-  {num:15,name:'LINQ asoslari',module:2,status:'locked',Mo:0,Ko:0,Fa:0,Re:0},
-];
+// ── DATA ─────────────────────────────────────────────────────
+// Empty initially — filled by initTraj() from API (api.scores())
+const topics = [];
 
-// ── MODULE PROGRESS ───────────────────────────────────────────
-const modules=[
-  {name:'📗 Modul 1 — C# Asoslari',done:9,total:15,pct:60,color:'#43e97b'},
-  {name:'📘 Modul 2 — O\'rta daraja',done:1,total:15,pct:7,color:'#6c63ff'},
-  {name:'📕 Modul 3 — Ilg\'or',done:0,total:15,pct:0,color:'#ff6584'},
-];
+// ── MODULE PROGRESS — filled by initTraj() from API ───────────
 const mpEl=document.getElementById('moduleProgress');
-modules.forEach(m=>{
-  mpEl.innerHTML+=`<div class="module-block">
-    <div class="module-header">
-      <span class="module-name">${m.name}</span>
-      <span class="module-pct">${m.pct}%</span>
-    </div>
-    <div class="module-bar"><div class="module-bar-fill" style="width:${m.pct}%;background:${m.color}"></div></div>
-    <div class="module-meta"><span>${m.done}/${m.total} mavzu</span><span>${m.done*100} ball to'plangan</span></div>
-  </div>`;
-});
+if(mpEl) mpEl.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.83rem"><i class="ra ra-hourglass"></i> Yuklanmoqda…</div>';
 
-// ── LEVEL TIMELINE ────────────────────────────────────────────
-const levels=[
-  {name:'Recruit ⚔️',range:'0–300',status:'done'},
-  {name:'Warden 🛡️',range:'301–750',status:'done'},
-  {name:'Knight 🗡️',range:'751–1300',status:'current'},
-  {name:'Hero 🦸',range:'1301–1900',status:'future'},
-  {name:'Legend 🌟',range:'1901–2600',status:'future'},
-  {name:'Lord 👑',range:'2601–3350',status:'future'},
-];
+// ── LEVEL TIMELINE — filled by initTraj() from API ────────────
 const ltEl=document.getElementById('levelTimeline');
-levels.forEach((lv,i)=>{
-  ltEl.innerHTML+=`<div class="lt-item">
-    <div class="lt-left">
-      <div class="lt-dot ${lv.status}"></div>
-      ${i<levels.length-1?'<div class="lt-line"></div>':''}
-    </div>
-    <div class="lt-content">
-      <div class="lt-level">${lv.name}</div>
-      <div class="lt-range">${lv.range} ball</div>
-      <span class="lt-status ${lv.status==='done'?'st-done':lv.status==='current'?'st-curr':'st-fut'}">${lv.status==='done'?'✓ Tugallandi':lv.status==='current'?'● Hozir siz bunda':'◯ Kelajak'}</span>
-    </div>
-  </div>`;
-});
+if(ltEl) ltEl.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.83rem"><i class="ra ra-hourglass"></i> Yuklanmoqda…</div>';
 
 // ── TOPIC TABLE ───────────────────────────────────────────────
 function renderTopicTable(){
@@ -683,7 +810,7 @@ function renderTopicTable(){
   }).forEach(t=>{
     const total=t.Mo+t.Ko+t.Fa+t.Re;
     const isDone=t.status==='done',isProg=t.status==='progress';
-    const stBadge=isDone?'<span class="status-badge s-done">Tugatildi</span>':isProg?'<span class="status-badge s-prog">Jarayonda</span>':'<span class="status-badge s-lock">🔒 Qulflangan</span>';
+    const stBadge=isDone?'<span class="status-badge s-done">Tugatildi</span>':isProg?'<span class="status-badge s-prog">Jarayonda</span>':'<span class="status-badge s-lock"><i class="ra ra-key"></i> Qulflangan</span>';
     const col=isDone||isProg?'':'style="opacity:.35"';
     body.innerHTML+=`<tr ${col}>
       <td class="topic-name-cell"><span class="topic-num">${t.num}</span>${t.name}</td>
@@ -698,88 +825,72 @@ function renderTopicTable(){
 }
 renderTopicTable();
 
-// ── CRITERIA STATS ────────────────────────────────────────────
-const critData=[
-  {name:'Motivatsion (Mo)',max:15,avg:10.5,color:'#60a5fa',trend:'↑+0.8'},
-  {name:'Kognitiv (Ko)',max:35,avg:26.2,color:'#a78bfa',trend:'↑+1.2'},
-  {name:'Faoliyatli (Fa)',max:30,avg:23.4,color:'#43e97b',trend:'↑+2.1'},
-  {name:'Refleksiv (Re)',max:20,avg:12.8,color:'#fb923c',trend:'↑+0.4'},
-];
+// ── CRITERIA STATS — filled by initTraj() from API ────────────
 const csBody=document.getElementById('critStatsBody');
-critData.forEach(c=>{
-  const pct=Math.round(c.avg/c.max*100);
-  csBody.innerHTML+=`<tr>
-    <td style="font-weight:600;color:${c.color}">${c.name}</td>
-    <td style="font-weight:700">${c.avg}/${c.max}</td>
-    <td><div class="bar-inline"><div class="bi-bar"><div class="bi-fill" style="width:${pct}%;background:${c.color}"></div></div><span class="bi-val" style="color:${c.color}">${pct}%</span></div></td>
-    <td style="font-size:.78rem;font-weight:600;color:${c.trend.startsWith('↑')?'#43e97b':'#ff6584'}">${c.trend}</td>
-  </tr>`;
-});
+if(csBody) csBody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.83rem"><i class="ra ra-hourglass"></i> Yuklanmoqda…</td></tr>';
 
-// WEAK AREAS
+// WEAK / STRONG / AI — filled by initTraj() from API
 const waEl=document.getElementById('weakAreas');
-[
-  {icon:'📝',title:'Refleksiv ball rivojlanish yo\'lida (12.8/20)',text:'Mavzu bo\'yicha journal yozish va o\'z-o\'zini tahlil qilish sifatini oshirish kerak. Har bir mavzudan so\'ng chuqur fikr yozing.',color:'rgba(251,146,60,0.06)'},
-  {icon:'⭐',title:'Motivatsion ball o\'rtacha (10.5/15)',text:'O\'qituvchi tomonidan beriladigan motivatsion ballarni oshirish uchun faoliyatini oshiring va qo\'shimcha topshiriqlar bajaring.',color:'rgba(96,165,250,0.06)'},
-].forEach(w=>{
-  waEl.innerHTML+=`<div class="ai-insight" style="background:${w.color}">
-    <span class="ai-icon">${w.icon}</span>
-    <div class="ai-text"><strong>${w.title}</strong><br>${w.text}</div>
-  </div>`;
-});
-
-// STRONG AREAS
 const saEl=document.getElementById('strongAreas');
-[
-  {icon:'💪',title:'Faoliyatli mezoni yuqori (23.4/30 = 78%)',text:'Kod yozish va amaliyot topshiriqlarni bajarishda kuchli ko\'rsatkichlar. Bu siz uchun asosiy ustunlik.'},
-  {icon:'🧠',title:'Kognitiv o\'sish yaxshi (26.2/35 = 75%)',text:'Nazariy bilimlarni o\'zlashtirish sur\'ati jadal. Murakkab mavzularni ham tez tushunasiz.'},
-].forEach(s=>{
-  saEl.innerHTML+=`<div class="ai-insight" style="background:rgba(67,233,123,0.05);border-color:rgba(67,233,123,0.15)">
-    <span class="ai-icon">${s.icon}</span>
-    <div class="ai-text"><strong>${s.title}</strong><br>${s.text}</div>
-  </div>`;
-});
-
-// AI INSIGHTS FOR FORECAST
 const aiEl=document.getElementById('aiInsights');
-[
-  {icon:'🎯',text:'<strong>Asosiy tavsiya:</strong> Haftasiga 3 mavzudan ko\'proq o\'tish sur\'atini saqlang. Hozirgi sur\'atda semestr oxirida Hero darajasiga erishish mumkin.'},
-  {icon:'⚡',text:'<strong>Duel strategiyasi:</strong> Ko\'proq duel o\'tkazish (haftasiga 5+) Rating Scoreni tezroq oshiradi. Algoritm masalalariga e\'tibor bering.'},
-  {icon:'💡',text:'<strong>Refleksiv mezon uchun:</strong> Har bir mavzuda chuqur reflection journal yozing va o\'z-o\'zingizni tahlil qiling.'},
-  {icon:'📈',text:'<strong>Prognoz to\'g\'risida:</strong> Joriy sur\'atingizni 15% oshirsangiz, Legend darajasiga (1901+) erishish realistik.'},
-].forEach(a=>{
-  aiEl.innerHTML+=`<div class="ai-insight"><span class="ai-icon">${a.icon}</span><div class="ai-text">${a.text}</div></div>`;
-});
+const _loading='<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.83rem"><i class="ra ra-hourglass"></i> Yuklanmoqda…</div>';
+if(waEl) waEl.innerHTML=_loading;
+if(saEl) saEl.innerHTML=_loading;
+if(aiEl) aiEl.innerHTML=_loading;
 
-// ── HEATMAP ───────────────────────────────────────────────────
-const months=['Sen','Okt','Noy','Dek','Yan','Fev','Mar','Apr','May','Iyu','Iyu','Avg'];
-const hmL=document.getElementById('hmLabels');
-months.forEach(m=>hmL.innerHTML+=`<div class="hm-label">${m}</div>`);
-const hmG=document.getElementById('heatmapGrid');
-const vals=[0,1,2,3,4,3,2,1,2,3,4,3,2,3,4,3,2,1,0,1,2,3,2,1,0,0,1,2,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,0];
-vals.slice(0,144).forEach((v,i)=>{
-  hmG.innerHTML+=`<div class="hm-cell hm-${v}" title="Kun ${i+1}: ${v} ta mavzu"></div>`;
-});
+// ── HEATMAP (real data from api.streak — called inside initTraj) ─
+function drawHeatmap(heatmapData) {
+  const UZ_MONTHS=['Yan','Fev','Mar','Apr','May','Iyu','Iyu','Avg','Sen','Okt','Noy','Dek'];
+  const hmL=document.getElementById('hmLabels');
+  const hmG=document.getElementById('heatmapGrid');
+  if(!hmL||!hmG) return;
+  // Last 144 days
+  const today=new Date();
+  const days=Array.from({length:144},(_,i)=>{
+    const d=new Date(today); d.setDate(today.getDate()-(143-i)); return d;
+  });
+  // Month labels (one per column — 12 cols × 12 rows = 144 cells)
+  hmL.innerHTML='';
+  for(let col=0;col<12;col++){
+    hmL.innerHTML+=`<div class="hm-label">${UZ_MONTHS[days[col*12].getMonth()]}</div>`;
+  }
+  // Counts
+  const counts=days.map(d=>heatmapData?.[d.toISOString().slice(0,10)]||0);
+  const maxC=Math.max(1,...counts);
+  hmG.innerHTML='';
+  days.forEach((d,i)=>{
+    const key=d.toISOString().slice(0,10);
+    const c=counts[i];
+    const lv=c===0?0:Math.max(1,Math.ceil(c/maxC*4));
+    hmG.innerHTML+=`<div class="hm-cell hm-${lv}" title="${key}: ${c} ta faollik"></div>`;
+  });
+}
 
 // ── CANVAS CHARTS ─────────────────────────────────────────────
 // 1. Trajectory chart
-(function(){
+function drawTrajectoryChart(currentRating) {
   const c=document.getElementById('trajectoryChart');
   if(!c)return;
   const ctx=c.getContext('2d');
   c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
   ctx.scale(devicePixelRatio,devicePixelRatio);
   const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
-  const actualData=[100,180,260,320,400,480,540,620,710,842];
-  const forecastData=[null,null,null,null,null,null,null,null,null,842,960,1080,1200,1350,1480,1620];
-  const allData=[...actualData,...forecastData.slice(actualData.length)];
+  const base=currentRating||0;
+  const actW=[0.04,0.09,0.16,0.25,0.37,0.50,0.62,0.74,0.87,1.0];
+  const actualData=actW.map(w=>Math.round(base*w));
+  const wRate=base>0?Math.round((actualData[9]-actualData[6])/3):60;
+  const forecastData=[null,null,null,null,null,null,null,null,null,
+    base,Math.round(base+wRate),Math.round(base+wRate*2),Math.round(base+wRate*3),
+    Math.round(base+wRate*4),Math.round(base+wRate*5),Math.round(base+wRate*6)];
   const labels=['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16'];
   const pad={l:50,r:20,t:20,b:30};
   const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
-  const max=1800,min=0;
+  const rawMax=Math.max(...forecastData.filter(Boolean));
+  const max=Math.max(1800,Math.ceil(rawMax/500)*500),min=0;
   // level lines
   const lvls=[{y:300,lbl:'Warden',c:'rgba(100,200,100,0.25)'},{y:750,lbl:'Knight',c:'rgba(100,150,255,0.25)'},{y:1300,lbl:'Hero',c:'rgba(255,200,100,0.25)'}];
   lvls.forEach(lv=>{
+    if(lv.y>max)return;
     const yp=pad.t+iH*(1-(lv.y-min)/(max-min));
     ctx.strokeStyle=lv.c;ctx.lineWidth=1;ctx.setLineDash([5,5]);
     ctx.beginPath();ctx.moveTo(pad.l,yp);ctx.lineTo(pad.l+iW,yp);ctx.stroke();
@@ -790,7 +901,7 @@ vals.slice(0,144).forEach((v,i)=>{
   // grid
   ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
   for(let i=0;i<=5;i++){
-    const y=pad.t+iH*i/5;const v=Math.round(max*(1-i/5));
+    const y=pad.t+iH*i/5,v=Math.round(max*(1-i/5));
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();
     ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='right';
     ctx.fillText(v,pad.l-6,y+4);
@@ -814,17 +925,17 @@ vals.slice(0,144).forEach((v,i)=>{
   // x labels
   ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='center';
   labels.forEach((l,i)=>{if(i%2===0)ctx.fillText(l,pad.l+iW*i/(labels.length-1),H-6);});
-})();
+}
 
-// 2. Radar chart
-(function(){
+// 2. Radar chart (values = percentages 0-100 for Mo, Ko, Fa, Re)
+function drawRadarChart(moP,koP,faP,reP) {
   const c=document.getElementById('radarChart');
   if(!c)return;
   const ctx=c.getContext('2d');
   c.width=200;c.height=200;
   const cx=100,cy=100,r=75;
   const labels=['Mo','Ko','Fa','Re'];
-  const values=[70,75,78,64];
+  const values=[moP||0,koP||0,faP||0,reP||0];
   const colors=['#60a5fa','#a78bfa','#43e97b','#fb923c'];
   const n=labels.length;
   const ang=Array.from({length:n},(_,i)=>-Math.PI/2+2*Math.PI*i/n);
@@ -847,10 +958,12 @@ vals.slice(0,144).forEach((v,i)=>{
     ctx.fillStyle=colors[i];ctx.font='bold 9.5px Segoe UI';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(labels[i],lx,ly);
   });
-})();
+}
+// draw placeholder radar immediately (updated with real data after API)
+drawRadarChart(0,0,0,0);
 
 // 3. Criteria grouped bar
-(function(){
+function drawCriteriaChart(avgVals) {
   const c=document.getElementById('criteriaChart');
   if(!c)return;
   const ctx=c.getContext('2d');
@@ -859,89 +972,96 @@ vals.slice(0,144).forEach((v,i)=>{
   const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
   const labels=['Mo','Ko','Fa','Re'];
   const maxVals=[15,35,30,20];
-  const avgVals=[10.5,26.2,23.4,12.8];
   const colors=['#60a5fa','#a78bfa','#43e97b','#fb923c'];
   const pad={l:20,r:10,t:15,b:25};
   const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
   const bW=iW/labels.length*0.55,gap=iW/labels.length;
+  ctx.clearRect(0,0,c.width,c.height);
   labels.forEach((lbl,i)=>{
     const x=pad.l+gap*i+(gap-bW)/2;
-    const maxH=iH;const avgH=iH*(avgVals[i]/maxVals[i]);
-    // max bar (faded)
+    const maxH=iH,avgH=iH*(Math.min(avgVals[i],maxVals[i])/maxVals[i]);
     ctx.fillStyle=colors[i]+'33';
     ctx.beginPath();ctx.roundRect(x,pad.t,bW,maxH,3);ctx.fill();
-    // actual bar
     ctx.fillStyle=colors[i];
     ctx.beginPath();ctx.roundRect(x,pad.t+maxH-avgH,bW,avgH,3);ctx.fill();
-    // label
     ctx.fillStyle='rgba(136,146,176,0.8)';ctx.font='bold 11px Segoe UI';ctx.textAlign='center';
     ctx.fillText(lbl,x+bW/2,H-5);
-    // value
     ctx.fillStyle=colors[i];ctx.font='bold 10px Segoe UI';
-    ctx.fillText(avgVals[i],x+bW/2,pad.t+maxH-avgH-5);
+    ctx.fillText(avgVals[i].toFixed(1),x+bW/2,pad.t+maxH-avgH-5);
   });
-})();
+}
 
-// 4. Weekly activity chart
-(function(){
+// 4. Weekly activity chart (real data from api.streak — called inside initTraj)
+function drawWeeklyChart(heatmapData) {
   const c=document.getElementById('weeklyChart');
   if(!c)return;
   const ctx=c.getContext('2d');
   c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
   ctx.scale(devicePixelRatio,devicePixelRatio);
   const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
-  const data=[1.5,2.0,3.5,2.8,1.2,4.2,3.0];
-  const days=['Du','Se','Ch','Pa','Ju','Sh','Ya'];
+  const UZ_DAYS=['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+  const today=new Date();
+  const last7=Array.from({length:7},(_,i)=>{
+    const d=new Date(today); d.setDate(today.getDate()-(6-i));
+    return {day:UZ_DAYS[d.getDay()], count:heatmapData?.[d.toISOString().slice(0,10)]||0};
+  });
+  const data=last7.map(d=>d.count);
+  const days=last7.map(d=>d.day);
   const pad={l:25,r:10,t:10,b:25};
   const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
-  const max=5,bW=iW/data.length*0.5;
+  const maxVal=Math.max(1,...data);
+  const bW=iW/data.length*0.5;
   data.forEach((v,i)=>{
-    const x=pad.l+(iW/(data.length))*(i+0.25);
-    const bH=iH*(v/max);
-    const grad=ctx.createLinearGradient(0,pad.t+iH-bH,0,pad.t+iH);
-    grad.addColorStop(0,'#6c63ff');grad.addColorStop(1,'rgba(108,99,255,0.2)');
-    ctx.fillStyle=grad;
-    ctx.beginPath();ctx.roundRect(x,pad.t+iH-bH,bW,bH,3);ctx.fill();
+    const x=pad.l+(iW/data.length)*(i+0.25);
+    const bH=v>0?iH*(v/maxVal):0;
+    if(bH>0){
+      const grad=ctx.createLinearGradient(0,pad.t+iH-bH,0,pad.t+iH);
+      grad.addColorStop(0,'#6c63ff');grad.addColorStop(1,'rgba(108,99,255,0.2)');
+      ctx.fillStyle=grad;
+      ctx.beginPath();ctx.roundRect(x,pad.t+iH-bH,bW,bH,3);ctx.fill();
+    }
     ctx.fillStyle='rgba(136,146,176,0.8)';ctx.font='10px Segoe UI';ctx.textAlign='center';
     ctx.fillText(days[i],x+bW/2,H-5);
   });
-})();
+}
 
 // 5. Forecast chart
-(function(){
+function drawForecastChart(currentRating) {
   const c=document.getElementById('forecastChart');
   if(!c)return;
   const ctx=c.getContext('2d');
   c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
   ctx.scale(devicePixelRatio,devicePixelRatio);
   const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
-  const optimistic=[842,920,1020,1120,1250,1380,1520,1680,1850,2050];
-  const realistic=[842,900,960,1020,1100,1180,1260,1350,1420,1500];
-  const pessimistic=[842,870,900,930,960,1000,1050,1100,1150,1200];
+  const base=currentRating||0;
+  const optimistic =Array.from({length:10},(_,i)=>Math.min(4500,Math.round(base+120*i*1.1)));
+  const realistic  =Array.from({length:10},(_,i)=>Math.min(4500,Math.round(base+80*i)));
+  const pessimistic=Array.from({length:10},(_,i)=>Math.min(4500,Math.round(base+40*i)));
   const labels=['W10','W11','W12','W13','W14','W15','W16','W17','W18','W19'];
   const pad={l:50,r:20,t:20,b:30};
   const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
-  const max=2200,min=600;
+  const allVals=[...optimistic,...realistic,...pessimistic];
+  const max=Math.max(2200,Math.ceil(Math.max(...allVals)/500)*500);
+  const min=Math.max(0,Math.floor(base/500)*500-100);
   const drawLine=(data,color,dash=[])=>{
     const pts=data.map((v,i)=>({x:pad.l+iW*i/(data.length-1),y:pad.t+iH*(1-(v-min)/(max-min))}));
     ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash(dash);
     pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
     ctx.setLineDash([]);
   };
-  // grid
   ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
   for(let i=0;i<=5;i++){
     const y=pad.t+iH*i/5;
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();
     ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='right';
-    ctx.fillText(Math.round(max*(1-i/5)+min*i/5),pad.l-5,y+4);
+    ctx.fillText(Math.round(max*(1-i/5)+min*(i/5)),pad.l-5,y+4);
   }
   drawLine(pessimistic,'rgba(255,101,132,0.7)',[6,4]);
   drawLine(realistic,'rgba(167,139,250,0.9)',[]);
   drawLine(optimistic,'rgba(67,233,123,0.8)',[4,3]);
   ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='center';
   labels.forEach((l,i)=>{if(i%2===0)ctx.fillText(l,pad.l+iW*i/(labels.length-1),H-5);});
-})();
+}
 
 // ── TABS ──────────────────────────────────────────────────────
 function switchTab(id){
@@ -953,6 +1073,12 @@ function switchTab(id){
 // ── INIT ──────────────────────────────────────────────────────
 initTraj();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
+<script>
+(async function(){
+  if(typeof api==='undefined'||typeof Auth==='undefined'||!Auth.isLoggedIn())return;
+  try{const d=await api.msgUnread();const b=document.getElementById('msgBadge');if(b&&d?.unread>0){b.textContent=d.unread>9?'9+':d.unread;b.style.display='';}}catch(e){}
+})();
+</script>
 </body>
 </html>

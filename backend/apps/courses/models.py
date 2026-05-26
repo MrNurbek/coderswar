@@ -62,12 +62,45 @@ class Topic(models.Model):
     def __str__(self):
         return f'T{self.number}: {self.title}'
 
-    # Ball mezonlari (4 mezon) — hujjat asosida
-    MAX_MO = 15   # Motivatsion          — avtomatik (faollik, kontent, muddat, bonus)
-    MAX_KO = 35   # Kognitiv             — avtomatik (testlar: B:10 + O:10 + Y:15)
-    MAX_FA = 30   # Faoliyatli           — avtomatik:20 + o'qituvchi:10 (loyiha)
-    MAX_RE = 20   # Refleksiv-baholovchi — avtomatik:10 (jurnal) + o'qituvchi:10 (peer)
+    # ── Ball mezonlari (4 mezon, jami 100) ──────────────────────────────────
+    #
+    # MO=15 (Motivatsion, hammasi avtomatik):
+    #   +5  Login streak / mavzu bo'yicha faollik
+    #   +3  Kontent o'qish: video+matn (har daraja uchun +1)
+    #   +3  Topshiriqlarni muddatda bajarish
+    #   +4  Bonus: duel, qo'shimcha mashqlar
+    #
+    # KO=35 (Kognitiv, hammasi avtomatik):
+    #   +10 Boshlang'ich daraja testi (10 savol, ≥7 o'tish)
+    #   +10 O'rta daraja testi
+    #   +10 Yuqori daraja testi
+    #   +5  O'sish bonusi (barcha 3 daraja testini tugatganda)
+    #
+    # FA=30 (Faoliyatli):
+    #   +20 Avtomatik: mashqlar (30 ta, har biri +1, max 20)
+    #       Boshlang'ich 10 topshiriq → max 6 ball
+    #       O'rta        10 topshiriq → max 7 ball
+    #       Yuqori       10 topshiriq → max 7 ball
+    #   +10 O'qituvchi: loyiha baholash (3 loyiha uchun umumiy 0–10)
+    #
+    # RE=20 (Refleksiv-baholovchi):
+    #   +10 Avtomatik: refleksiya jurnali yozilganda
+    #   +10 O'qituvchi: peer-review sifati baholash
+    #
+    MAX_MO = 15
+    MAX_KO = 35
+    MAX_FA = 30   # 20 auto + 10 teacher
+    MAX_RE = 20   # 10 auto + 10 teacher
     MAX_TOTAL = MAX_MO + MAX_KO + MAX_FA + MAX_RE  # 100
+
+    # MO sub-limitlar
+    MO_LOGIN_MAX   = 5
+    MO_CONTENT_MAX = 3   # 3 daraja × +1
+    MO_DEADLINE_MAX = 3
+    MO_BONUS_MAX   = 4
+
+    # FA mashq sub-limitlar (level bo'yicha, jami 20)
+    FA_EXERCISE_LEVEL_MAX = {'beginner': 6, 'intermediate': 7, 'advanced': 7}
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -111,10 +144,14 @@ class LevelTest(models.Model):
     Daraja yakunidagi 10 savollik test.
     Har bir mavzuda 3 ta test (boshlang'ich / o'rta / yuqori).
 
-    KO ball:   Boshlang'ich→5, O'rta→7, Yuqori→8  (jami max 20)
-    AD ball:   Har darajadan o'tganda +5            (jami max 15)
+    KO ball taqsimoti (jami 35):
+      Boshlang'ich testi → +10 KO
+      O'rta testi        → +10 KO
+      Yuqori testi       → +10 KO
+      O'sish bonusi      → +5 KO (barcha 3 daraja tugatilganda)
     """
-    KO_SCORE_MAP = {'beginner': 10, 'intermediate': 10, 'advanced': 15}  # jami 35
+    KO_SCORE_MAP  = {'beginner': 10, 'intermediate': 10, 'advanced': 10}  # 30
+    KO_GROWTH_BONUS = 5   # barcha 3 daraja testini o'tganda qo'shimcha
 
     topic      = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='level_tests')
     level      = models.CharField(max_length=15, choices=StudyLevel.choices)
@@ -207,10 +244,14 @@ class TopicScore(models.Model):
     """
     Talabaning mavzu bo'yicha 4 ta mezon balli (jami 100).
 
-      MO (15) — Avtomatik (faollik:5 + kontent:3 + muddat:3 + bonus:4)
-      KO (35) — Avtomatik (testlar: B:10 + O:10 + Y:15)
-      FA (30) — Avtomatik:20 (topshiriq+kontent) + O'qituvchi:10 (loyiha)
-      RE (20) — Avtomatik:10 (jurnal) + O'qituvchi:10 (peer-review sifati)
+      MO (15) — Hammasi avtomatik:
+                  login/faollik:5 + kontent_o'qish:3 + muddat:3 + bonus:4
+      KO (35) — Hammasi avtomatik:
+                  boshlang'ich_test:10 + o'rta_test:10 + yuqori_test:10 + o'sish:5
+      FA (30) — Avtomatik:20 (mashqlar: B≤6 + I≤7 + A≤7)
+                + O'qituvchi:10 (loyiha baholash)
+      RE (20) — Avtomatik:10 (refleksiya jurnali)
+                + O'qituvchi:10 (peer-review sifati)
     """
 
     student  = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='topic_scores')
@@ -296,42 +337,92 @@ class TopicScore(models.Model):
         return round((self.total_score / Topic.MAX_TOTAL) * 100)
 
     def award_level_test(self, level: str):
-        """Daraja testidan o'tganda KO ballini berish."""
-        ko_add = LevelTest.KO_SCORE_MAP.get(level, 0)
+        """
+        Daraja testidan o'tganda KO ballini berish.
+
+        Ball taqsimoti:
+          Boshlang'ich → +10 KO
+          O'rta        → +10 KO
+          Yuqori       → +10 KO
+          O'sish bonusi → +5 KO (barcha 3 daraja tugatilganda)
+        """
+        ko_add  = LevelTest.KO_SCORE_MAP.get(level, 0)
         updated = False
+
         if level == 'beginner' and not self.beginner_test_passed:
             self.ko_score = min(35, self.ko_score + ko_add)
             self.beginner_test_passed = True
             updated = True
+
         elif level == 'intermediate' and not self.intermediate_test_passed:
             self.ko_score = min(35, self.ko_score + ko_add)
             self.intermediate_test_passed = True
             updated = True
+
         elif level == 'advanced' and not self.advanced_test_passed:
             self.ko_score = min(35, self.ko_score + ko_add)
             self.advanced_test_passed = True
             updated = True
+
+            # Barcha 3 daraja testi o'tildi → o'sish bonusi (+5) + mavzu tugatildi
             if self.beginner_test_passed and self.intermediate_test_passed:
+                self.ko_score = min(35, self.ko_score + LevelTest.KO_GROWTH_BONUS)
                 from django.utils import timezone
                 self.is_completed = True
                 self.completed_at = timezone.now()
+
         if updated:
             self.save()
 
     def award_content_read(self, level: str):
-        """Video + matn o'qilganda FA ball berish (bir marta, har daraja uchun +3)."""
-        self.fa_score = min(20, self.fa_score + 3)   # 3 daraja × 3 = 9 (content portion)
-        self.save(update_fields=['fa_score'])
+        """
+        Video + matn o'qilganda MO ball berish (bir marta, har daraja uchun +1).
+        3 daraja × 1 = 3 ball (MO kontent o'qish qismi, max 3).
+        """
+        if self.mo_score < Topic.MO_CONTENT_MAX + Topic.MO_LOGIN_MAX:
+            # MO content ulushi: login(5) dan keyingi pozitsiya
+            self.mo_score = min(Topic.MAX_MO, self.mo_score + 1)
+            self.save(update_fields=['mo_score'])
 
-    def award_task_score(self, level: str, category: str, points: int):
+    def award_task_score(self, level: str, category: str, points: int = 1):
         """
         Topshiriq muvaffaqiyatli topshirilganda FA ball berish.
-        Faqat exercise — loyiha (project) o'qituvchi tomonidan baholanadi.
-        Avtomatik FA max = 20.
+
+        Faqat exercise topshiriqlari avtomatik baholanadi:
+          Boshlang'ich 10 mashq → max 6 FA ball (har biri +1)
+          O'rta        10 mashq → max 7 FA ball
+          Yuqori       10 mashq → max 7 FA ball
+          Jami: max 20 FA ball (global cap)
+
+        Loyiha (project) — o'qituvchi tomonidan baholanadi (fa_project_score).
         """
-        if category == 'exercise':
-            self.fa_score = min(20, self.fa_score + points)
-            self.save(update_fields=['fa_score'])
+        if category != 'exercise':
+            return
+
+        # Global cap
+        if self.fa_score >= 20:
+            return
+
+        # Bu daraja uchun maksimal ball (6 / 7 / 7)
+        level_cap = Topic.FA_EXERCISE_LEVEL_MAX.get(level, 7)
+
+        # Shu mavzu × daraja uchun o'tilgan exercise submission soni
+        # (joriy submission allaqachon 'passed' holida saqlanganidan KEYIN chaqiriladi,
+        #  shuning uchun count bu submissionni ham o'z ichiga oladi)
+        passed_at_level = Submission.objects.filter(
+            student_id=self.student_id,
+            task__topic_id=self.topic_id,
+            task__level=level,
+            task__task_category='exercise',
+            status='passed',
+        ).count()
+
+        # Daraja uchun ball chegarasini tekshirish
+        if passed_at_level > level_cap:
+            return
+
+        self.fa_score = min(20, self.fa_score + 1)
+        self.save(update_fields=['fa_score'])
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -360,9 +451,11 @@ class Task(models.Model):
         REFACTOR     = 'refactor',     'Qayta ishlash'
         MINI_PROJECT = 'mini_project', 'Mini-loyiha'
 
-    # Daraja bo'yicha FA/KR maksimallari
-    FA_LEVEL_MAX = {'beginner': 8, 'intermediate': 10, 'advanced': 12}
-    KR_LEVEL_MAX = {'beginner': 4, 'intermediate': 5,  'advanced': 6}
+    # Daraja bo'yicha FA ball maksimallari (exercise, jami 20)
+    # Boshlang'ich:6 + O'rta:7 + Yuqori:7 = 20
+    FA_LEVEL_MAX = {'beginner': 6, 'intermediate': 7, 'advanced': 7}
+
+    # Loyiha (project) uchun o'qituvchi 0–10 ball beradi (TopicScore.fa_project_score)
 
     topic         = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='tasks')
     level         = models.CharField(

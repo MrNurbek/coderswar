@@ -1,22 +1,20 @@
 FROM python:3.11-slim
 
-# System dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libpq-dev \
+# psycopg2-binary uchun minimal system dep
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install Python dependencies
+# Python dependencies (cache layer)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
+# Source code
 COPY . .
 
-# Create directories
 RUN mkdir -p staticfiles media
 
 EXPOSE 8000

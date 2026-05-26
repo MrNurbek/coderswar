@@ -1,19 +1,32 @@
 """
-Celery asinxron vazifalar — Judge0 polling.
+Judge0 code evaluation — Redis/Celery siz, threading orqali asinxron.
 """
 import time
-from celery import shared_task
-from django.utils import timezone
+import threading
 
 
-@shared_task(bind=True, max_retries=15, default_retry_delay=3)
-def submit_to_judge0(self, submission_id: int):
+# ─── Public API ───────────────────────────────────────────────────────────────
+
+def submit_to_judge0_async(submission_id: int):
     """
-    Submissionni Judge0 ga yuboradi va natijani kutadi (polling).
-    Har 3 soniyada bir marta tekshiradi, maksimum 15 marta.
+    Submissionni Judge0 ga background thread orqali yuboradi.
+    Celery .delay() ga to'liq mos keluvchi interfeys.
     """
+    t = threading.Thread(
+        target=_judge0_worker,
+        args=(submission_id,),
+        daemon=True,
+        name=f'judge0-{submission_id}',
+    )
+    t.start()
+
+
+# ─── Worker ───────────────────────────────────────────────────────────────────
+
+def _judge0_worker(submission_id: int):
+    """Judge0 API ga kod yuborish, polling va natijani DB ga yozish."""
     from .models import Submission
-    from .services import judge0_submit, judge0_get_result, run_all_test_cases
+    from .services import judge0_submit, judge0_get_result
 
     try:
         sub = Submission.objects.select_related('task').get(id=submission_id)
@@ -29,28 +42,29 @@ def submit_to_judge0(self, submission_id: int):
 
     try:
         for tc in task.test_cases:
-            j0 = judge0_submit(sub.code, tc.get('input', ''), tc.get('output', ''))
+            j0    = judge0_submit(sub.code, tc.get('input', ''), tc.get('output', ''))
             token = j0.get('token')
 
-            # Natijani polling orqali kutish
-            for _ in range(10):
+            # Natijani polling orqali kutish (maks 20 son × 2 sek = 40 sek)
+            result = {}
+            for _ in range(20):
                 time.sleep(2)
                 result = judge0_get_result(token)
                 if result.get('status', {}).get('id', 1) > 2:
                     break
 
-            status_id = result.get('status', {}).get('id', 6)  # 6=Error default
-            accepted  = (status_id == 3)  # 3 = Accepted
+            status_id = result.get('status', {}).get('id', 6)  # 6 = Error (default)
+            accepted  = (status_id == 3)                        # 3 = Accepted
 
             results.append({
-                'input':        tc.get('input', ''),
-                'expected':     tc.get('output', ''),
-                'actual':       result.get('stdout', '').strip(),
-                'status_id':    status_id,
-                'status_desc':  result.get('status', {}).get('description', ''),
-                'passed':       accepted,
-                'runtime_ms':   result.get('time') and int(float(result['time']) * 1000),
-                'memory_kb':    result.get('memory'),
+                'input':       tc.get('input', ''),
+                'expected':    tc.get('output', ''),
+                'actual':      result.get('stdout', '').strip(),
+                'status_id':   status_id,
+                'status_desc': result.get('status', {}).get('description', ''),
+                'passed':      accepted,
+                'runtime_ms':  result.get('time') and int(float(result['time']) * 1000),
+                'memory_kb':   result.get('memory'),
             })
             if accepted:
                 passed += 1
@@ -59,32 +73,34 @@ def submit_to_judge0(self, submission_id: int):
         sub.status        = Submission.Status.ERROR
         sub.error_message = str(exc)
         sub.save(update_fields=['status', 'error_message'])
-        raise self.retry(exc=exc)
+        return
 
-    # Natijalarni yozish
+    # ── Natijalarni saqlash ──────────────────────────────────────
     all_passed = (passed == len(task.test_cases))
+
     sub.test_results  = results
     sub.status        = Submission.Status.PASSED if all_passed else Submission.Status.FAILED
     sub.score_awarded = task.max_score if all_passed else 0
+
     if results:
         runtimes = [r['runtime_ms'] for r in results if r.get('runtime_ms')]
-        memories = [r['memory_kb'] for r in results if r.get('memory_kb')]
+        memories = [r['memory_kb']  for r in results if r.get('memory_kb')]
         sub.runtime_ms = max(runtimes) if runtimes else None
         sub.memory_kb  = max(memories) if memories else None
 
     sub.save(update_fields=['status', 'test_results', 'score_awarded', 'runtime_ms', 'memory_kb'])
 
-    # Fa (faoliyat) ballini yangilash — topshirilgan har bir task uchun
+    # ── Post-processing ──────────────────────────────────────────
     if all_passed:
         _update_fa_score(sub)
         _drop_equipment(sub)
-        # Badge tekshiruvi — submissions, runtime_ms, topics_completed va h.k.
+
         try:
             from apps.gamification.services import check_and_award_badges
             check_and_award_badges(sub.student)
         except Exception:
             pass
-        # Duel natijasini WebSocket orqali yuborish (agar duel topshirig'i bo'lsa)
+
         try:
             from apps.gamification.consumers import notify_duel_result
             notify_duel_result(submission_id)
@@ -92,19 +108,58 @@ def submit_to_judge0(self, submission_id: int):
             pass
 
 
+# ─── Helpers ──────────────────────────────────────────────────────────────────
+
 def _update_fa_score(submission):
-    """Muvaffaqiyatli submission uchun Fa ballini oshirish."""
+    """
+    Muvaffaqiyatli submission uchun TopicScore ni yangilash.
+    Per-level FA cap va global cap model metodida boshqariladi.
+    """
     from .models import TopicScore
     try:
-        ts = TopicScore.objects.get(
+        ts, _ = TopicScore.objects.get_or_create(
             student=submission.student,
             topic=submission.task.topic,
         )
-        new_fa = min(30, ts.fa_score + submission.score_awarded)
-        ts.fa_score = new_fa
         ts.attempt_count += 1
-        ts.save(update_fields=['fa_score', 'attempt_count'])
-    except TopicScore.DoesNotExist:
+        ts.save(update_fields=['attempt_count'])
+
+        # exercise → FA ball (per-level cap + global cap ichida)
+        # project  → o'qituvchi baholaydi, avtomatik ball berilmaydi
+        ts.award_task_score(
+            level=submission.task.level,
+            category=submission.task.task_category,
+        )
+
+        # Bildiruv — faqat exercise uchun
+        if submission.task.task_category == 'exercise' and ts.fa_score > 0:
+            _notify_exercise_passed(submission, ts)
+
+    except Exception:
+        pass
+
+
+def _notify_exercise_passed(submission, ts):
+    """Exercise o'tganda talabaga bildiruv yuborish."""
+    try:
+        from apps.social.models import Notification
+        level_names = {
+            'beginner':     "Boshlang'ich",
+            'intermediate': "O'rta",
+            'advanced':     "Yuqori",
+        }
+        lvl = level_names.get(submission.task.level, submission.task.level)
+        fa_total = ts.fa_score + ts.fa_project_score
+        Notification.objects.create(
+            user=submission.student,
+            title=f'Topshiriq bajarildi! ✅',
+            message=(
+                f'"{submission.task.title}" ({lvl} daraja) topshirig\'i muvaffaqiyatli bajarildi. '
+                f'FA: {fa_total}/30'
+            ),
+            notif_type='topic',
+        )
+    except Exception:
         pass
 
 
@@ -115,7 +170,7 @@ def _drop_equipment(submission):
         from apps.social.models import Notification
 
         task = submission.task
-        ue = roll_equipment_drop(
+        ue   = roll_equipment_drop(
             user=submission.student,
             task_level=task.level,
             task_category=task.task_category,
@@ -126,11 +181,12 @@ def _drop_equipment(submission):
         eq = ue.equipment
         rarity_labels = {
             'common': 'Oddiy', 'rare': 'Noyob',
-            'epic': 'Epic',   'legendary': '⭐ Afsonaviy',
+            'epic': 'Epic',    'legendary': '⭐ Afsonaviy',
         }
         bonus_str = ''
         if eq.attack_bonus:  bonus_str += f'+{eq.attack_bonus}% hujum '
         if eq.defense_bonus: bonus_str += f'+{eq.defense_bonus}% himoya'
+
         Notification.objects.create(
             user=submission.student,
             title=f'{eq.icon} Yangi qurol-aslaha topildi!',
@@ -144,4 +200,4 @@ def _drop_equipment(submission):
             link='/profile.html',
         )
     except Exception:
-        pass  # drop xatoligi asosiy jarayonga ta'sir qilmasin
+        pass

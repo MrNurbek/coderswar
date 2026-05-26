@@ -185,7 +185,7 @@ class StudentLevelProgressView(generics.GenericAPIView):
 
     @staticmethod
     def _award_content_score(user, topic, level):
-        """Daraja kontentini o'qib bo'lganda FA ball beradi (+5 har bir daraja uchun)."""
+        """Daraja kontentini o'qib bo'lganda MO ball beradi (+1 har bir daraja uchun, jami 3)."""
         ts, _ = TopicScore.objects.get_or_create(student=user, topic=topic)
         ts.award_content_read(level)
 
@@ -199,7 +199,7 @@ class StudentLevelProgressView(generics.GenericAPIView):
                 message=(
                     f'"{topic.title}" mavzusining {level_names.get(level, level)} '
                     f'darajasidagi video va matnni tugatdingiz. '
-                    f'+3 FA ball qo\'shildi!'
+                    f'+1 MO ball qo\'shildi!'
                 ),
                 notif_type='topic',
             )
@@ -282,6 +282,8 @@ class LevelTestViewSet(viewsets.ModelViewSet):
         )
 
         # O'tgan bo'lsa TopicScore yangilanadi
+        ko_earned    = 0
+        growth_bonus = 0
         if passed:
             try:
                 ts, _ = TopicScore.objects.get_or_create(
@@ -289,6 +291,17 @@ class LevelTestViewSet(viewsets.ModelViewSet):
                     topic=level_test.topic,
                 )
                 ts.award_level_test(level_test.level)
+
+                ko_earned = LevelTest.KO_SCORE_MAP.get(level_test.level, 0)
+                bonus_msg = ''
+                # Yuqori daraja testi o'tib, barcha 3 daraja tugatilsa — o'sish bonusi
+                if level_test.level == 'advanced' and ts.is_completed:
+                    growth_bonus = LevelTest.KO_GROWTH_BONUS
+                    ko_earned   += growth_bonus
+                    bonus_msg    = (
+                        f" 🎉 Barcha 3 daraja tugatildi! "
+                        f"+{LevelTest.KO_GROWTH_BONUS} o'sish bonusi!"
+                    )
 
                 # Bildiruv
                 from apps.social.models import Notification
@@ -298,7 +311,7 @@ class LevelTestViewSet(viewsets.ModelViewSet):
                     title=f'{level_names.get(level_test.level, "")} daraja testi o\'tdi! ✓',
                     message=(
                         f'{level_test.topic.title} — {score}/10 to\'g\'ri javob. '
-                        f'+{LevelTest.KO_SCORE_MAP.get(level_test.level, 0)} KO ball qo\'shildi.'
+                        f'+{ko_earned} KO ball qo\'shildi.{bonus_msg}'
                     ),
                     notif_type='topic',
                 )
@@ -306,12 +319,13 @@ class LevelTestViewSet(viewsets.ModelViewSet):
                 pass
 
         return Response({
-            'score':      score,
-            'total':      questions.count(),
-            'passed':     passed,
-            'pass_score': level_test.pass_score,
-            'attempt_no': result.attempt_no,
-            'ko_reward':  LevelTest.KO_SCORE_MAP.get(level_test.level, 0) if passed else 0,
+            'score':        score,
+            'total':        questions.count(),
+            'passed':       passed,
+            'pass_score':   level_test.pass_score,
+            'attempt_no':   result.attempt_no,
+            'ko_reward':    ko_earned,
+            'growth_bonus': growth_bonus,
         })
 
     @action(detail=True, methods=['get'], url_path='my-results')
@@ -485,8 +499,8 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             code     = s.validated_data['code'],
             language = s.validated_data.get('language', 'csharp'),
         )
-        from .tasks import submit_to_judge0
-        submit_to_judge0.delay(submission.id)
+        from .tasks import submit_to_judge0_async
+        submit_to_judge0_async(submission.id)
         return Response(SubmissionSerializer(submission).data, status=status.HTTP_201_CREATED)
 
 
@@ -638,6 +652,116 @@ class AITeacherReportView(generics.GenericAPIView):
         })
 
 
+# ─── Pending Grades (O'qituvchi uchun baholash navbati) ──────────────────────
+
+class PendingGradesView(generics.GenericAPIView):
+    """
+    O'qituvchi uchun baholash kutayotgan talabalar ro'yxati.
+    GET /api/courses/pending-grades/
+
+    projects:     PASSED project submission bor, lekin fa_project_score == 0
+    peer_reviews: Peer review yozgan, lekin re_peer_score == 0
+    """
+    permission_classes = [permissions.IsAuthenticated, IsTeacherOrAdmin]
+
+    def get(self, request):
+        from apps.social.models import PeerReview
+
+        # ── Loyihalar ────────────────────────────────────────────
+        project_subs = (
+            Submission.objects
+            .filter(task__task_category='project', status='passed')
+            .select_related('student', 'task', 'task__topic')
+            .order_by('-submitted_at')
+        )
+
+        # Har (student, topic) juftligi uchun eng so'nggi submission
+        seen_proj = {}
+        for sub in project_subs:
+            key = (sub.student_id, sub.task.topic_id)
+            if key not in seen_proj:
+                seen_proj[key] = sub
+
+        pending_projects = []
+        if seen_proj:
+            ts_map = {
+                (ts.student_id, ts.topic_id): ts
+                for ts in TopicScore.objects.filter(
+                    student_id__in={k[0] for k in seen_proj},
+                    topic_id__in={k[1] for k in seen_proj},
+                ).select_related('topic')
+            }
+            for (student_id, topic_id), sub in seen_proj.items():
+                ts = ts_map.get((student_id, topic_id))
+                if ts and ts.fa_project_score == 0:
+                    pending_projects.append({
+                        'type':            'project',
+                        'submission_id':   sub.id,
+                        'student_id':      sub.student_id,
+                        'student_name':    sub.student.get_full_name() or sub.student.username,
+                        'student_username': sub.student.username,
+                        'topic_id':        topic_id,
+                        'topic_title':     sub.task.topic.title,
+                        'topic_number':    sub.task.topic.number,
+                        'topic_score_id':  ts.id,
+                        'task_title':      sub.task.title,
+                        'task_level':      sub.task.level,
+                        'code':            sub.code,
+                        'submitted_at':    sub.submitted_at.isoformat(),
+                        'fa_auto':         ts.fa_score,
+                        'fa_project':      ts.fa_project_score,
+                    })
+
+        # ── Peer Reviews ─────────────────────────────────────────
+        peer_reviews = (
+            PeerReview.objects
+            .select_related('reviewer', 'reviewee', 'topic_score__topic')
+            .order_by('-created_at')
+        )
+
+        seen_pr = {}
+        for pr in peer_reviews:
+            key = (pr.reviewer_id, pr.topic_score.topic_id)
+            if key not in seen_pr:
+                seen_pr[key] = pr
+
+        pending_peers = []
+        if seen_pr:
+            pr_ts_map = {
+                (ts.student_id, ts.topic_id): ts
+                for ts in TopicScore.objects.filter(
+                    student_id__in={k[0] for k in seen_pr},
+                    topic_id__in={k[1] for k in seen_pr},
+                ).select_related('topic')
+            }
+            for (reviewer_id, topic_id), pr in seen_pr.items():
+                ts = pr_ts_map.get((reviewer_id, topic_id))
+                if ts and ts.re_peer_score == 0:
+                    pending_peers.append({
+                        'type':             'peer_review',
+                        'peer_review_id':   pr.id,
+                        'student_id':       pr.reviewer_id,
+                        'student_name':     pr.reviewer.get_full_name() or pr.reviewer.username,
+                        'student_username': pr.reviewer.username,
+                        'topic_id':         topic_id,
+                        'topic_title':      pr.topic_score.topic.title,
+                        'topic_number':     pr.topic_score.topic.number,
+                        'topic_score_id':   ts.id,
+                        'reviewee_name':    pr.reviewee.get_full_name() or pr.reviewee.username,
+                        'comment':          pr.comment,
+                        'star_rating':      pr.star_rating,
+                        'peer_total':       pr.total_score,
+                        'created_at':       pr.created_at.isoformat(),
+                        're_auto':          ts.re_score,
+                        're_peer':          ts.re_peer_score,
+                    })
+
+        return Response({
+            'projects':    sorted(pending_projects, key=lambda x: x['submitted_at'], reverse=True),
+            'peer_reviews': sorted(pending_peers,   key=lambda x: x['created_at'],   reverse=True),
+        })
+
+
 # ─── ReflectionJournal ───────────────────────────────────────────────────────
 
 class ReflectionJournalViewSet(viewsets.ModelViewSet):
@@ -662,5 +786,19 @@ class ReflectionJournalViewSet(viewsets.ModelViewSet):
             if ts.re_score < 10:
                 ts.re_score = 10   # O'z-o'zini baholash formasi — to'liq 10 ball
                 ts.save(update_fields=['re_score'])
+                # Bildiruv
+                try:
+                    from apps.social.models import Notification
+                    Notification.objects.create(
+                        user=journal.student,
+                        title='Refleksiya jurnali saqlandi! ✍️',
+                        message=(
+                            f'"{journal.topic.title}" mavzusi uchun refleksiya yozildi. '
+                            f'+10 RE ball qo\'shildi!'
+                        ),
+                        notif_type='topic',
+                    )
+                except Exception:
+                    pass
         except TopicScore.DoesNotExist:
             pass

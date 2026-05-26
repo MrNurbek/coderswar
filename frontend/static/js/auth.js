@@ -90,12 +90,22 @@ const Auth = (() => {
     return true;
   }
 
+  // ── Rolga qarab yo'naltirish ─────────────────
+  function roleRedirect(user) {
+    const role = user?.role;
+    if (role === 'admin' || role === 'superadmin') {
+      window.location.href = ROUTES.adminDashboard;
+    } else if (role === 'teacher') {
+      window.location.href = ROUTES.teacherDashboard;
+    } else {
+      window.location.href = user?.student_profile ? ROUTES.dashboard : ROUTES.diagnostic;
+    }
+  }
+
   // ── Allaqachon login bo'lgan bo'lsa ──────────
   function redirectIfAuthed() {
     if (getAccess()) {
-      const user = getUser();
-      if (user?.role === 'teacher') window.location.href = '/teacher-dashboard.html';
-      else window.location.href = ROUTES.dashboard;
+      roleRedirect(getUser());
       return true;
     }
     return false;
@@ -106,7 +116,8 @@ const Auth = (() => {
     const u = getUser();
     if (!u) return;
     const name  = u.first_name ? `${u.first_name} ${u.last_name}`.trim() : u.username;
-    const role  = u.role === 'teacher' ? 'O\'qituvchi' : 'Talaba';
+    const roleMap = { teacher: 'O\'qituvchi', admin: 'Admin', superadmin: 'Admin' };
+    const role  = roleMap[u.role] || 'Talaba';
     const init  = (name[0] || 'U').toUpperCase();
 
     document.querySelectorAll('[data-user-name]').forEach(el => el.textContent = name);
@@ -121,10 +132,50 @@ const Auth = (() => {
     });
   }
 
+  function isLoggedIn() { return !!getAccess(); }
+
   return {
     getAccess, getRefresh, setTokens, clearAll,
     getUser, setUser, refreshToken,
     login, fetchMe, logout,
-    requireAuth, redirectIfAuthed, fillUserUI,
+    requireAuth, redirectIfAuthed, roleRedirect, fillUserUI,
+    isLoggedIn,
   };
+})();
+
+/* ── Sahifalar orasida so'zsiz o'tish (fade) ─────────────── */
+(function () {
+  // Sahifa yuklanganda opacity 0 dan boshlanadi
+  document.documentElement.style.opacity = '0';
+
+  function fadeIn() {
+    requestAnimationFrame(() => {
+      document.documentElement.style.transition = 'opacity .25s ease';
+      document.documentElement.style.opacity    = '1';
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fadeIn);
+  } else {
+    fadeIn();
+  }
+
+  // <a href> bosilganda fade-out, keyin navigate
+  document.addEventListener('click', function (e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (
+      !href ||
+      href[0] === '#' ||                // anchor
+      href.startsWith('http') ||        // tashqi havola
+      href.startsWith('mailto:') ||     // email
+      a.getAttribute('target') === '_blank'
+    ) return;
+    e.preventDefault();
+    document.documentElement.style.transition = 'opacity .2s ease';
+    document.documentElement.style.opacity    = '0';
+    setTimeout(() => { location.href = href; }, 210);
+  });
 })();

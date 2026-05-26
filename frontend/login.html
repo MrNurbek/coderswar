@@ -64,29 +64,24 @@
       <div class="form-group">
         <label>Login yoki Email</label>
         <div class="input-icon">
-          <span class="icon">👤</span>
+          <span class="icon"><i class="ra ra-knight-helmet"></i></span>
           <input type="text" id="loginInput" placeholder="username yoki email" autocomplete="username" required/>
         </div>
       </div>
       <div class="form-group">
         <label>Parol</label>
         <div class="input-icon">
-          <span class="icon">🔒</span>
+          <span class="icon"><i class="ra ra-key"></i></span>
           <input type="password" id="passInput" placeholder="parolingizni kiriting" autocomplete="current-password" required/>
-          <button type="button" class="toggle-pass" onclick="togglePass()">👁️</button>
+          <button type="button" class="toggle-pass" onclick="togglePass()"><i class="ra ra-awareness"></i></button>
         </div>
       </div>
       <div class="row">
         <label class="remember"><input type="checkbox"/> Eslab qolish</label>
-        <a href="/forgot-password.html" class="forgot">Parolni unutdim?</a>
+        <a href="forgot-password.html" class="forgot">Parolni unutdim?</a>
       </div>
       <button type="submit" class="btn" id="loginBtn">Kirish →</button>
     </form>
-
-    <div class="divider">yoki</div>
-    <button class="oauth-btn" onclick="demoLogin()">
-      <span>🎮</span> Demo akkaunt bilan kirish
-    </button>
 
     <div class="switch">
       Akkauntingiz yo'qmi? <a href="register.html">Ro'yxatdan o'ting</a>
@@ -123,13 +118,7 @@ async function handleLogin(e) {
 
   try {
     const user = await Auth.login(username, password);
-    // Rolga qarab yo'naltirish
-    if (user.role === 'teacher' || user.role === 'admin' || user.role === 'superadmin') {
-      window.location.href = '/teacher-dashboard.html';
-    } else {
-      // Diagnostik test o'tganmi?
-      window.location.href = user.student_profile ? '/dashboard.html' : '/diagnostic.html';
-    }
+    Auth.roleRedirect(user);
   } catch (err) {
     showError(err.message || 'Login yoki parol noto\'g\'ri.');
     btn.textContent = 'Kirish →';
@@ -137,6 +126,6 @@ async function handleLogin(e) {
   }
 }
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

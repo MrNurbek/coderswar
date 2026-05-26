@@ -15,7 +15,10 @@ class PeerReview(models.Model):
         'courses.TopicScore', on_delete=models.CASCADE, related_name='peer_reviews'
     )
 
-    # 3 ta mezon (Mo — o'qituvchi, Re — peer review uchun alohida)
+    # 4 ta mezon: Mo(15) + Ko(30) + Fa(35) + Re(20) = 100
+    mo_score = models.PositiveSmallIntegerField(
+        default=0, validators=[MaxValueValidator(15)], help_text='Motivatsion (0–15)'
+    )
     ko_score = models.PositiveSmallIntegerField(
         default=0, validators=[MaxValueValidator(30)], help_text='Kognitiv (0–30)'
     )
@@ -41,7 +44,7 @@ class PeerReview(models.Model):
 
     @property
     def total_score(self):
-        return self.ko_score + self.fa_score + self.re_score
+        return self.mo_score + self.ko_score + self.fa_score + self.re_score
 
 
 class Notification(models.Model):
@@ -69,6 +72,45 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'{self.user} | {self.title}'
+
+
+class Message(models.Model):
+    """Foydalanuvchilar o'rtasidagi xabarlar tizimi (talaba↔o'qituvchi↔admin)."""
+
+    class MsgType(models.TextChoices):
+        COMPLAINT    = 'complaint',    'Shikoyat / Nosozlik'
+        QUESTION     = 'question',     'Savol (mavzu/topshiriq)'
+        ADVISORY     = 'advisory',     'Tavsiya / Maslahat'
+        ANNOUNCEMENT = 'announcement', "E'lon"
+        GENERAL      = 'general',      'Umumiy'
+
+    sender    = models.ForeignKey(
+        'users.User', on_delete=models.CASCADE, related_name='sent_messages'
+    )
+    recipient = models.ForeignKey(
+        'users.User', on_delete=models.CASCADE, related_name='received_messages'
+    )
+    subject   = models.CharField(max_length=200)
+    body      = models.TextField()
+    msg_type  = models.CharField(
+        max_length=20, choices=MsgType.choices, default=MsgType.GENERAL
+    )
+    related_topic = models.ForeignKey(
+        'courses.Topic', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='messages'
+    )
+    parent    = models.ForeignKey(
+        'self', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='replies'
+    )
+    is_read   = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.sender} → {self.recipient}: {self.subject[:50]}'
 
 
 class ActivityLog(models.Model):

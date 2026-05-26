@@ -258,24 +258,43 @@
     /* ─── LEVELS ─────────────────────────────────────────── */
     #levels { background: var(--bg); }
     .levels-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.2rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
     }
     .level-card {
-      border-radius: 16px; padding: 1.5rem;
-      border: 1px solid transparent;
+      border-radius: 16px; padding: 0;
+      border: 2px solid transparent;
       position: relative; overflow: hidden;
       transition: transform .3s, box-shadow .3s;
+      aspect-ratio: 3/4;
+      background: #0a0e1a;
+      cursor: default;
     }
-    .level-card:hover { transform: translateY(-4px); }
-    .level-card .lv-badge {
-      font-size: .7rem; font-weight: 700; letter-spacing: 1px;
-      text-transform: uppercase; padding: .2rem .6rem;
-      border-radius: 4px; margin-bottom: .8rem; display: inline-block;
+    .level-card:hover { transform: translateY(-6px); }
+    .level-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.55) 42%, rgba(0,0,0,.05) 100%);
+      pointer-events: none; z-index: 2;
     }
-    .level-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: .3rem; }
-    .level-card .range { font-size: .85rem; opacity: .7; margin-bottom: .6rem; }
-    .level-card p { font-size: .82rem; opacity: .75; line-height: 1.5; }
+    .lv-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: contain; object-position: center 12%;
+      z-index: 1; padding: 6%;
+    }
+    .lv-badge {
+      position: absolute; top: .65rem; left: .65rem; z-index: 4;
+      font-size: .62rem; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: .18rem .5rem;
+      border-radius: 5px; display: inline-block;
+    }
+    .lv-content {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: .75rem .85rem .95rem; z-index: 3;
+    }
+    .level-card h3 { font-size: .97rem; font-weight: 800; margin-bottom: .18rem; }
+    .level-card .range { font-size: .72rem; opacity: .75; margin-bottom: .35rem; }
+    .level-card p { font-size: .7rem; opacity: .82; line-height: 1.4; }
     /* color themes per level */
     .lv-recruit { background: rgba(148,163,184,0.08); border-color: rgba(148,163,184,0.2); }
     .lv-recruit .lv-badge { background: rgba(148,163,184,0.15); color: #94a3b8; }
@@ -624,22 +643,22 @@
     </p>
     <div class="features-grid reveal">
       <div class="feature-card">
-        <div class="feat-icon purple">📚</div>
+        <div class="feat-icon purple"><i class="ra ra-book"></i></div>
         <h3>Darslar</h3>
         <p>3 semestrga bo'lingan 45 ta mavzu. Har mavzuda 3 daraja (Boshlang'ich, O'rta, Yuqori), video dars va quiz. C# dasturlash bo'yicha to'liq kurs.</p>
       </div>
       <div class="feature-card">
-        <div class="feat-icon green">💻</div>
+        <div class="feat-icon green"><i class="ra ra-anvil"></i></div>
         <h3>Amaliyot & Kod tekshirish</h3>
         <p>Har mavzuda 10 ta amaliy topshiriq va 1 ta loyiha. Kodingiz avtomatik kompilyatsiya qilinib, test case bilan solishtiriladi.</p>
       </div>
       <div class="feature-card">
-        <div class="feat-icon pink">⚔️</div>
+        <div class="feat-icon pink"><i class="ra ra-crossed-swords"></i></div>
         <h3>Duel tizimi</h3>
         <p>Boshqa talabalar bilan real vaqtda algoritmik duellar. Tezkorlik va to'g'rilik baholanadi. Reyting uchun kurash!</p>
       </div>
 <div class="feature-card">
-        <div class="feat-icon blue">🤖</div>
+        <div class="feat-icon blue"><i class="ra ra-crystal-ball"></i></div>
         <h3>AI Yordamchi</h3>
         <p>Sun'iy intellekt xatolarni tushuntiradi, kodni yaxshilash bo'yicha maslahat beradi va o'quv trayektoriyasi tahlilini taqdim etadi.</p>
       </div>
@@ -680,25 +699,25 @@
       <div class="criteria-list">
         <div class="criterion">
           <div class="crit-bar-wrap">
-            <div class="crit-label"><span>🔥 Motivatsion mezon</span><span>15 ball</span></div>
+            <div class="crit-label"><span><i class="ra ra-fire"></i> Motivatsion mezon</span><span>15 ball</span></div>
             <div class="bar-track"><div class="bar-fill" data-w="15" style="width:0;background:linear-gradient(90deg,#6c63ff,#a78bfa)"></div></div>
           </div>
         </div>
         <div class="criterion">
           <div class="crit-bar-wrap">
-            <div class="crit-label"><span>🧠 Kognitiv mezon</span><span>35 ball</span></div>
+            <div class="crit-label"><span><i class="ra ra-crystal-ball"></i> Kognitiv mezon</span><span>35 ball</span></div>
             <div class="bar-track"><div class="bar-fill" data-w="35" style="width:0;background:linear-gradient(90deg,#4299e1,#63b3ed)"></div></div>
           </div>
         </div>
         <div class="criterion">
           <div class="crit-bar-wrap">
-            <div class="crit-label"><span>💻 Faoliyatli mezon</span><span>30 ball</span></div>
+            <div class="crit-label"><span><i class="ra ra-anvil"></i> Faoliyatli mezon</span><span>30 ball</span></div>
             <div class="bar-track"><div class="bar-fill" data-w="30" style="width:0;background:linear-gradient(90deg,#43e97b,#38f9d7)"></div></div>
           </div>
         </div>
         <div class="criterion">
           <div class="crit-bar-wrap">
-            <div class="crit-label"><span>🔄 Refleksiv-baholovchi mezon</span><span>20 ball</span></div>
+            <div class="crit-label"><span><i class="ra ra-scroll-unfurled"></i> Refleksiv-baholovchi mezon</span><span>20 ball</span></div>
             <div class="bar-track"><div class="bar-fill" data-w="20" style="width:0;background:linear-gradient(90deg,#ed8936,#f6ad55)"></div></div>
           </div>
         </div>
@@ -746,52 +765,76 @@ AcademicScore = RatingScore ÷ CompletedTopics
     <p class="section-sub">Level Rating score asosida belgilanadi. Maksimal 4500 ball yig'ing va Titan unvoniga erishing!</p>
     <div class="levels-grid reveal">
       <div class="level-card lv-recruit">
+        <img class="lv-img" src="static/img/rank-recruit.png" alt="Recruit">
         <span class="lv-badge">Recruit</span>
-        <h3>⚔️ Yangi Jangchi</h3>
-        <div class="range">0 – 300 ball</div>
-        <p>Platformaga moslashuv, dastlabki mavzular bilan tanishish bosqichi.</p>
+        <div class="lv-content">
+          <h3>Yangi Jangchi</h3>
+          <div class="range">0 – 300 ball</div>
+          <p>Platformaga moslashuv, dastlabki mavzular bilan tanishish bosqichi.</p>
+        </div>
       </div>
       <div class="level-card lv-warden">
+        <img class="lv-img" src="static/img/rank-warden.png" alt="Warden">
         <span class="lv-badge">Warden</span>
-        <h3>🌿 Qo'riqchi</h3>
-        <div class="range">301 – 750 ball</div>
-        <p>Tayanch bilimlar shakllanishi, asosiy C# sintaksisini o'zlashtirish.</p>
+        <div class="lv-content">
+          <h3>Qo'riqchi</h3>
+          <div class="range">301 – 750 ball</div>
+          <p>Tayanch bilimlar shakllanishi, asosiy C# sintaksisini o'zlashtirish.</p>
+        </div>
       </div>
       <div class="level-card lv-knight">
+        <img class="lv-img" src="static/img/rank-knight.png" alt="Knight">
         <span class="lv-badge">Knight</span>
-        <h3>🛡️ Ritsar</h3>
-        <div class="range">751 – 1300 ball</div>
-        <p>Barqaror nazariy-amaliy o'zlashtirish, OOP asoslarini bilish.</p>
+        <div class="lv-content">
+          <h3>Ritsar</h3>
+          <div class="range">751 – 1300 ball</div>
+          <p>Barqaror nazariy-amaliy o'zlashtirish, OOP asoslarini bilish.</p>
+        </div>
       </div>
       <div class="level-card lv-hero">
+        <img class="lv-img" src="static/img/rank-hero.png" alt="Hero">
         <span class="lv-badge">Hero</span>
-        <h3>🦸 Qahramon</h3>
-        <div class="range">1301 – 1900 ball</div>
-        <p>Mustaqil topshiriq bajarish ko'nikmasi, algoritmik fikrlash.</p>
+        <div class="lv-content">
+          <h3>Qahramon</h3>
+          <div class="range">1301 – 1900 ball</div>
+          <p>Mustaqil topshiriq bajarish ko'nikmasi, algoritmik fikrlash.</p>
+        </div>
       </div>
       <div class="level-card lv-legend">
+        <img class="lv-img" src="static/img/rank-legend.png" alt="Legend">
         <span class="lv-badge">Legend</span>
-        <h3>🔱 Afsona</h3>
-        <div class="range">1901 – 2600 ball</div>
-        <p>Murakkab masalalar va loyiha tayyorgarligi, LINQ va async.</p>
+        <div class="lv-content">
+          <h3>Afsona</h3>
+          <div class="range">1901 – 2600 ball</div>
+          <p>Murakkab masalalar va loyiha tayyorgarligi, LINQ va async.</p>
+        </div>
       </div>
       <div class="level-card lv-lord">
+        <img class="lv-img" src="static/img/rank-lord.png" alt="Lord">
         <span class="lv-badge">Lord</span>
-        <h3>👑 Lord</h3>
-        <div class="range">2601 – 3350 ball</div>
-        <p>Yuqori algoritmik-amaliy kompetensiya, Design Patterns.</p>
+        <div class="lv-content">
+          <h3>Lord</h3>
+          <div class="range">2601 – 3350 ball</div>
+          <p>Yuqori algoritmik-amaliy kompetensiya, Design Patterns.</p>
+        </div>
       </div>
       <div class="level-card lv-deity">
+        <img class="lv-img" src="static/img/rank-deity.png" alt="Deity">
         <span class="lv-badge">Deity</span>
-        <h3>🔮 Imperator</h3>
-        <div class="range">3351 – 4050 ball</div>
-        <p>Kreativ, adaptiv va refleksiv faoliyat, arxitektura dizayni.</p>
+        <div class="lv-content">
+          <h3>Imperator</h3>
+          <div class="range">3351 – 4050 ball</div>
+          <p>Kreativ, adaptiv va refleksiv faoliyat, arxitektura dizayni.</p>
+        </div>
       </div>
       <div class="level-card lv-titan">
+        <img class="lv-img" src="static/img/rank-titan.png" alt="Titan">
         <span class="lv-badge">Titan ✨</span>
-        <h3>⚡ Titan</h3>
-        <div class="range">4051 – 4500 ball</div>
-        <p>Fan bo'yicha maksimalga yaqin kompleks kompetensiya. Eng yuqori daraja!</p>
+        <div class="lv-content">
+          <h3>Titan</h3>
+          <div class="range">4051 – 4500 ball</div>
+          <p>Fan bo'yicha maksimalga yaqin kompleks kompetensiya. Eng yuqori daraja!</p>
+        </div>
       </div>
     </div>
   </div>
@@ -847,8 +890,8 @@ AcademicScore = RatingScore ÷ CompletedTopics
 
     <div class="equip-tabs">
       <button class="equip-tab active" onclick="filterEquip('all',this)">Barchasi (24)</button>
-      <button class="equip-tab" onclick="filterEquip('weapon',this)">⚔️ Qurollar</button>
-      <button class="equip-tab" onclick="filterEquip('armor',this)">🛡️ Zirhlar</button>
+      <button class="equip-tab" onclick="filterEquip('weapon',this)"><i class="ra ra-crossed-swords"></i> Qurollar</button>
+      <button class="equip-tab" onclick="filterEquip('armor',this)"><i class="ra ra-shield"></i> Zirhlar</button>
       <button class="equip-tab" onclick="filterEquip('helmet',this)">⛑️ Dubulg'alar</button>
       <button class="equip-tab" onclick="filterEquip('shield',this)">🪵 Qalqonlar</button>
       <button class="equip-tab" onclick="filterEquip('boots',this)">👟 Etiklar</button>
@@ -1184,7 +1227,7 @@ AcademicScore = RatingScore ÷ CompletedTopics
     <h2>C# ustasi bo'lishga tayyormisiz?</h2>
     <p>Coders War platformasiga qo'shiling — o'yin orqali dasturlashni o'rganing, reytingda yuqori chiqing.</p>
     <div class="cta-btns">
-      <a href="#" class="btn-primary">Bepul ro'yxatdan o'ting →</a>
+      <a href="register.html" class="btn-primary">Bepul ro'yxatdan o'ting →</a>
       <a href="#features" class="btn-outline">Platformani ko'rish</a>
     </div>
   </div>
@@ -1273,6 +1316,6 @@ window.addEventListener('scroll',()=>{
   document.querySelector('nav').style.padding = scrollY>50 ? '.6rem 2rem' : '1rem 2rem';
 });
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

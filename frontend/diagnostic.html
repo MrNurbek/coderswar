@@ -82,14 +82,14 @@
 <!-- INTRO -->
 <div class="intro" id="introScreen">
   <div class="intro-card">
-    <div class="intro-icon">🧪</div>
+    <div class="intro-icon"><i class="ra ra-crystal-ball"></i></div>
     <h1>Diagnostika Testi</h1>
     <p>Ushbu test sizning algoritmik va dasturlash bo'yicha boshlang'ich darajangizni aniqlaydi. Natija sizning o'quv yo'lingizni moslashtirishga yordam beradi.</p>
     <div class="info-chips">
-      <span class="chip">📝 20 ta savol</span>
-      <span class="chip">⏱️ 20 daqiqa</span>
-      <span class="chip">🎯 Daraja aniqlash</span>
-      <span class="chip">📊 Rating scorega ta'sir qilmaydi</span>
+      <span class="chip"><i class="ra ra-scroll-unfurled"></i> 20 ta savol</span>
+      <span class="chip"><i class="ra ra-hourglass"></i> 20 daqiqa</span>
+      <span class="chip"><i class="ra ra-archery-target"></i> Daraja aniqlash</span>
+      <span class="chip"><i class="ra ra-compass"></i> Rating scorega ta'sir qilmaydi</span>
     </div>
     <button class="btn-start" onclick="startQuiz()">Testni boshlash →</button>
   </div>
@@ -99,7 +99,7 @@
 <div class="quiz-screen" id="quizScreen">
   <div class="quiz-header">
     <div class="logo-small">CodersWar</div>
-    <div class="timer" id="timerEl">⏱️ <span id="timerTxt">20:00</span></div>
+    <div class="timer" id="timerEl"><i class="ra ra-hourglass"></i> <span id="timerTxt">20:00</span></div>
   </div>
   <div class="progress-wrap">
     <div class="prog-info">
@@ -124,7 +124,7 @@
 <!-- RESULT -->
 <div class="result-screen" id="resultScreen" style="display:none">
   <div class="result-card">
-    <div class="result-icon" id="rIcon">🎯</div>
+    <div class="result-icon" id="rIcon"><i class="ra ra-archery-target"></i></div>
     <div class="result-level" id="rLevel">Beginner</div>
     <div class="score-circle">
       <div class="big" id="rScore">0</div>
@@ -243,10 +243,10 @@ async function showResult(){
   document.getElementById('rWrong').textContent=QUESTIONS.length-score;
   document.getElementById('rPct').textContent=pct+'%';
   let level,icon,title,desc,cls;
-  if(pct<40){level='Beginner';icon='🌱';title='Yaxshi boshlash!';desc='Algoritmik fikrlash asoslarini o\'rganishga tayyormiz. Platforma sizga mos boshlang\'ich yo\'lni tavsiya qiladi.';cls='level-beginner';}
-  else if(pct<70){level='Intermediate';icon='⚡';title='Yaxshi daraja!';desc='Siz asoslarni bilasiz. Platforma sizga o\'rta darajadan boshlab, qiyin mavzularni chuqurlashtiradi.';cls='level-intermediate';}
-  else{level='Advanced';icon='🚀';title='Ajoyib!';desc='Siz yuqori darajada! Platforma sizga murakkab mavzular va algoritmik masalalarni tavsiya qiladi.';cls='level-advanced';}
-  document.getElementById('rIcon').textContent=icon;
+  if(pct<40){level='Beginner';icon='<i class="ra ra-sprout"></i>';title='Yaxshi boshlash!';desc='Algoritmik fikrlash asoslarini o\'rganishga tayyormiz. Platforma sizga mos boshlang\'ich yo\'lni tavsiya qiladi.';cls='level-beginner';}
+  else if(pct<70){level='Intermediate';icon='<i class="ra ra-crossed-swords"></i>';title='Yaxshi daraja!';desc='Siz asoslarni bilasiz. Platforma sizga o\'rta darajadan boshlab, qiyin mavzularni chuqurlashtiradi.';cls='level-intermediate';}
+  else{level='Advanced';icon='<i class="ra ra-lightning-storm"></i>';title='Ajoyib!';desc='Siz yuqori darajada! Platforma sizga murakkab mavzular va algoritmik masalalarni tavsiya qiladi.';cls='level-advanced';}
+  document.getElementById('rIcon').innerHTML=icon;
   document.getElementById('rLevel').textContent=level;
   document.getElementById('rLevel').className='result-level '+cls;
   document.getElementById('rTitle').textContent=title;
@@ -255,6 +255,6 @@ async function showResult(){
   try { await api.post('/courses/diagnostic/', { answers: userAnswers }); } catch(e) {}
 }
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

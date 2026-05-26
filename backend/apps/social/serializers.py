@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from apps.users.serializers import UserMiniSerializer
-from .models import PeerReview, Notification, ActivityLog
+from apps.users.models import User
+from .models import PeerReview, Notification, ActivityLog, Message
 
 
 # ─── PeerReview ───────────────────────────────────────────────────────────────
@@ -17,13 +18,13 @@ class PeerReviewSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'reviewer', 'reviewee', 'topic_score',
             'topic_title', 'topic_number',
-            'ko_score', 'fa_score', 're_score',
+            'mo_score', 'ko_score', 'fa_score', 're_score',
             'total_score', 'comment', 'star_rating', 'created_at',
         )
         read_only_fields = ('id', 'created_at')
 
     def validate(self, attrs):
-        limits = {'ko_score': 30, 'fa_score': 35, 're_score': 20}
+        limits = {'mo_score': 15, 'ko_score': 30, 'fa_score': 35, 're_score': 20}
         for field, limit in limits.items():
             val = attrs.get(field)
             if val is not None and val > limit:
@@ -36,7 +37,7 @@ class PeerReviewCreateSerializer(serializers.ModelSerializer):
         model  = PeerReview
         fields = (
             'topic_score',
-            'ko_score', 'fa_score', 're_score',
+            'mo_score', 'ko_score', 'fa_score', 're_score',
             'comment', 'star_rating',
         )
 
@@ -87,3 +88,76 @@ class StreakSerializer(serializers.Serializer):
     max_streak     = serializers.IntegerField()
     last_active    = serializers.DateField(allow_null=True)
     activity_heatmap = serializers.DictField()  # {date_str: count}
+
+
+# ─── Message ─────────────────────────────────────────────────────────────────
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender    = UserMiniSerializer(read_only=True)
+    recipient = UserMiniSerializer(read_only=True)
+    topic_title = serializers.CharField(source='related_topic.title', read_only=True, allow_null=True)
+    reply_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model  = Message
+        fields = (
+            'id', 'sender', 'recipient', 'subject', 'body',
+            'msg_type', 'related_topic', 'topic_title',
+            'parent', 'reply_count', 'is_read', 'created_at',
+        )
+        read_only_fields = ('id', 'created_at', 'is_read')
+
+    def get_reply_count(self, obj):
+        return obj.replies.count()
+
+
+class MessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = Message
+        fields = ('recipient', 'subject', 'body', 'msg_type', 'related_topic', 'parent')
+
+    def validate(self, attrs):
+        request  = self.context['request']
+        sender   = request.user
+        recipient = attrs['recipient']
+
+        if sender == recipient:
+            raise serializers.ValidationError('O\'zingizga xabar yubora olmaysiz.')
+
+        allowed = self._check_permission(sender.role, recipient.role)
+        if not allowed:
+            raise serializers.ValidationError(
+                f'{sender.get_role_display()} {recipient.get_role_display()}ga xabar yubora olmaydi.'
+            )
+        return attrs
+
+    @staticmethod
+    def _check_permission(sender_role, recipient_role):
+        R = User.Role
+        rules = {
+            R.STUDENT:    {R.TEACHER, R.ADMIN, R.SUPERADMIN},
+            R.TEACHER:    {R.STUDENT, R.ADMIN, R.SUPERADMIN},
+            R.ADMIN:      {R.STUDENT, R.TEACHER, R.ADMIN, R.SUPERADMIN},
+            R.SUPERADMIN: {R.STUDENT, R.TEACHER, R.ADMIN, R.SUPERADMIN},
+        }
+        return recipient_role in rules.get(sender_role, set())
+
+
+class MessageReplySerializer(serializers.ModelSerializer):
+    """Javob yozish uchun — faqat body talab qilinadi."""
+    class Meta:
+        model  = Message
+        fields = ('body',)
+
+
+class RecipientSerializer(serializers.ModelSerializer):
+    """Xabar yuborish uchun qabul qiluvchilar ro'yxati."""
+    full_name  = serializers.SerializerMethodField()
+    role_label = serializers.CharField(source='get_role_display', read_only=True)
+
+    class Meta:
+        model  = User
+        fields = ('id', 'full_name', 'role', 'role_label', 'email')
+
+    def get_full_name(self, obj):
+        return obj.get_full_name() or obj.username

@@ -132,6 +132,9 @@ const api = (() => {
     taskDelete:       (id)                    => api.delete(`/courses/tasks/${id}/`),
     topicTasksList:   (topicId, level)        => api.get(`/courses/tasks/?topic=${topicId}&level=${level}&ordering=order`),
 
+    // Baholash navbati (o'qituvchi uchun)
+    pendingGrades: () => api.get('/courses/pending-grades/'),
+
     // AI hisobot (o'qituvchi uchun)
     aiReport: (studentId, topicId) => {
       const p = new URLSearchParams({ student_id: studentId });
@@ -144,6 +147,7 @@ const api = (() => {
     myBadges:     ()       => api.get('/game/badges/mine/'),
     allBadges:    ()       => api.get('/game/badges/'),
     clans:        ()       => api.get('/game/clans/'),
+    clanLeaderboard: ()  => api.get('/game/leaderboard/clans/'),
     clan:         (id)     => api.get(`/game/clans/${id}/`),
     createClan:   (data)   => api.post('/game/clans/', data),
     joinClan:     (id)     => api.post(`/game/clans/${id}/join/`, {}),
@@ -177,5 +181,19 @@ const api = (() => {
     submitPeerReview:      (data) => api.post('/social/peer-review/create/', data),
     myReviews:             (dir)  => api.get(`/social/peer-review/?direction=${dir || 'given'}`),
     peerReviewLeaderboard: ()     => api.get('/social/peer-review/leaderboard/'),
+
+    // ── Admin monitoring ──────────────────────────────────────
+    adminServerStatus: () => api.get('/auth/admin/server-status/'),
+    adminSystemLogs:   (params) => api.get('/auth/admin/system-logs/' + (params ? '?' + new URLSearchParams(params) : '')),
+
+    // ── Messages ──────────────────────────────────────────────
+    msgInbox:      (params)  => api.get('/social/messages/inbox/' + (params ? '?' + new URLSearchParams(params) : '')),
+    msgSent:       ()        => api.get('/social/messages/sent/'),
+    msgDetail:     (id)      => api.get(`/social/messages/${id}/`),
+    msgSend:       (data)    => api.post('/social/messages/', data),
+    msgReply:      (id, data)=> api.post(`/social/messages/${id}/reply/`, data),
+    msgRead:       (id)      => api.patch(`/social/messages/${id}/read/`, {}),
+    msgUnread:     ()        => api.get('/social/messages/unread/'),
+    msgRecipients: ()        => api.get('/social/messages/recipients/'),
   };
 })();

@@ -4,6 +4,9 @@ from .views import (
     PeerReviewLeaderboardView,
     NotificationListView, NotificationMarkReadView,
     ActivityLogView, StreakView, LogActivityView,
+    MessageInboxView, MessageSentView, MessageDetailView,
+    MessageCreateView, MessageReplyView, MessageReadView,
+    MessageUnreadCountView, MessageRecipientsView,
 )
 
 urlpatterns = [
@@ -24,4 +27,14 @@ urlpatterns = [
     path('streak/',                   StreakView.as_view(),                name='streak_mine'),
     path('streak/<int:user_id>/',     StreakView.as_view(),                name='streak_user'),
     path('activity/log/',             LogActivityView.as_view(),           name='activity_log'),
+
+    # Messages
+    path('messages/',                 MessageCreateView.as_view(),         name='msg_create'),
+    path('messages/inbox/',           MessageInboxView.as_view(),          name='msg_inbox'),
+    path('messages/sent/',            MessageSentView.as_view(),           name='msg_sent'),
+    path('messages/unread/',          MessageUnreadCountView.as_view(),    name='msg_unread'),
+    path('messages/recipients/',      MessageRecipientsView.as_view(),     name='msg_recipients'),
+    path('messages/<int:pk>/',        MessageDetailView.as_view(),         name='msg_detail'),
+    path('messages/<int:pk>/reply/',  MessageReplyView.as_view(),          name='msg_reply'),
+    path('messages/<int:pk>/read/',   MessageReadView.as_view(),           name='msg_read'),
 ]

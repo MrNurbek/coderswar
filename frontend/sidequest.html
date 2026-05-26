@@ -152,23 +152,57 @@
     .sb-run{background:#ffa500;animation:blink 1s infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
     /* result banner */
-    .result-banner{padding:.7rem 1.2rem;display:none;flex-align:center;gap:.8rem;font-size:.88rem;font-weight:600;border-bottom:1px solid;flex-shrink:0}
+    .result-banner{padding:.6rem 1.2rem;display:none;align-items:center;gap:.8rem;font-size:.85rem;font-weight:600;border-bottom:1px solid;flex-shrink:0;flex-wrap:wrap}
     .result-banner.success{background:rgba(67,233,123,0.1);border-color:rgba(67,233,123,0.3);color:#43e97b;display:flex}
     .result-banner.error{background:rgba(255,101,132,0.08);border-color:rgba(255,101,132,0.25);color:#ff8fab;display:flex}
     .rb-score{margin-left:auto;background:rgba(67,233,123,0.15);border-radius:8px;padding:.15rem .6rem;font-size:.8rem}
+    .rb-chip{font-size:.75rem;padding:.1rem .55rem;border-radius:8px;font-weight:600;opacity:.85}
+    .rb-attempts{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .rb-tests{background:rgba(255,255,255,0.07);color:var(--muted)}
+    /* task list info block */
+    .ti-info{flex:1;min-width:0}
+    /* task attempt badge */
+    .ti-attempts{font-size:.65rem;color:var(--muted);margin-top:0;display:inline-block}
+    /* locked level info */
+    .lock-info-bar{background:rgba(255,101,132,0.07);border:1px solid rgba(255,101,132,0.2);border-radius:10px;padding:.55rem .8rem;font-size:.78rem;color:#ff8fab;margin:.3rem .6rem;display:none;align-items:center;gap:.5rem}
+    .lock-info-bar.show{display:flex}
     /* score modal */
-    .score-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+    .score-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
     .score-modal-overlay.open{display:flex}
-    .score-modal{background:#0f1628;border:1px solid var(--border);border-radius:24px;padding:2.5rem;max-width:420px;width:90%;text-align:center}
-    .sm-icon{font-size:3.5rem;margin-bottom:.8rem}
-    .sm-title{font-size:1.4rem;font-weight:900;margin-bottom:.4rem}
-    .sm-sub{color:var(--muted);font-size:.9rem;margin-bottom:1.5rem}
-    .sm-score{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#43e97b,#38f9d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem}
-    .sm-of{color:var(--muted);font-size:.85rem;margin-bottom:1.5rem}
-    .sm-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
-    .sm-btn{padding:.8rem 1.5rem;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;transition:transform .2s}
+    .score-modal{background:linear-gradient(145deg,#0f1628,#141c35);border:1px solid rgba(108,99,255,0.3);border-radius:24px;padding:2rem 2rem 1.5rem;max-width:440px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 40px rgba(108,99,255,.1)}
+    .sm-icon{font-size:3.2rem;margin-bottom:.6rem;animation:smPop .4s cubic-bezier(.175,.885,.32,1.275)}
+    @keyframes smPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+    .sm-title{font-size:1.35rem;font-weight:900;margin-bottom:.3rem}
+    .sm-sub{color:var(--muted);font-size:.83rem;margin-bottom:1.2rem;line-height:1.5}
+    /* stats grid */
+    .sm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.2rem}
+    .sm-stat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:.8rem .5rem}
+    .sm-stat-val{font-size:1.5rem;font-weight:900;margin-bottom:.2rem}
+    .sm-stat-val.green{background:linear-gradient(135deg,#43e97b,#38f9d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sm-stat-val.purple{background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sm-stat-val.orange{background:linear-gradient(135deg,#ffa500,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sm-stat-lbl{font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+    /* error stats — passed/total ko'rsatkichi qizil bo'ladi */
+    .sm-stats.error .sm-stat-val.green{background:linear-gradient(135deg,#ff8fab,#ff6584) !important;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    /* sm-btn-retry tugmasi */
+    .sm-btn-retry{background:linear-gradient(135deg,#ff6584,#ff8fab);color:#fff;border:none}
+    /* equipment drop in modal */
+    .sm-equip{display:none;margin-bottom:1.2rem;border:2px solid;border-radius:16px;padding:.9rem 1rem;text-align:left;animation:smPop .5s .2s both cubic-bezier(.175,.885,.32,1.275)}
+    .sm-equip.show{display:block}
+    .sm-equip-label{font-size:.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.5rem}
+    .sm-equip-row{display:flex;align-items:center;gap:.8rem}
+    .sm-equip-icon{font-size:2.2rem}
+    .sm-equip-name{font-size:.95rem;font-weight:800}
+    .sm-equip-rar{font-size:.72rem;font-weight:700;margin-top:.1rem}
+    .sm-equip-bonus{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+    /* error modal variant */
+    .score-modal.error-modal{border-color:rgba(255,101,132,0.3)}
+    .sm-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
+    .sm-btn{padding:.75rem 1.4rem;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;transition:transform .2s}
     .sm-btn-next{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;border:none;box-shadow:0 4px 18px rgba(108,99,255,0.35)}
     .sm-btn-next:hover{transform:translateY(-2px)}
+    .sm-btn-retry{background:linear-gradient(135deg,#ff6584,#ff8fab);color:#fff;border:none;box-shadow:0 4px 18px rgba(255,101,132,0.3)}
+    .sm-btn-retry:hover{transform:translateY(-2px)}
     .sm-btn-out{background:transparent;color:var(--text);border:1px solid var(--border)}
     .sm-btn-out:hover{border-color:var(--accent)}
   </style>
@@ -178,26 +212,28 @@
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sb-logo"><a href="index.html">⚔️ Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
+  <div class="sb-logo"><a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
   <nav class="sb-nav" style="padding:.8rem .7rem">
     <div class="nav-section">O'quv</div>
-    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
-    <a class="nav-item active" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
-    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
-    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item active" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
     <div class="nav-section">Jamoa</div>
-    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
-    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
-    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
     <div class="nav-section">Shaxsiy</div>
-    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
       <div class="avatar-sm" data-user-init>?</div>
       <div class="info"><div class="name" data-user-name>...</div><div class="role" data-user-role>Student</div></div>
-      <button onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+      <button onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
@@ -206,7 +242,7 @@
 <div class="task-panel">
   <div class="tp-header">
     <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
-      <h3 style="flex:1">💻 Amaliyot</h3>
+      <h3 style="flex:1"><i class="ra ra-anvil"></i> Amaliyot</h3>
       <span class="lv-badge b" id="lvBadge">Boshlang'ich</span>
     </div>
     <div class="tp-meta" id="tpMeta">9-mavzu · Stringlar bilan ishlash</div>
@@ -215,6 +251,11 @@
       <button class="lv-tab lb active-lb" id="lvTabB" onclick="switchLevel('beginner')">🟢 Bosh.</button>
       <button class="lv-tab lo" id="lvTabO" onclick="switchLevel('intermediate')">🟠 O'rta</button>
       <button class="lv-tab ly" id="lvTabY" onclick="switchLevel('advanced')">🔴 Yuqori</button>
+    </div>
+    <!-- Qulflangan daraja haqida xabar -->
+    <div class="lock-info-bar" id="lockInfoBar">
+      <i class="ra ra-lock"></i>
+      <span id="lockInfoMsg">Bu darajani ochish uchun oldingi darajani tugatng.</span>
     </div>
     <div class="tp-progress">
       <div class="tp-prog-info"><span id="tpProgLabel">0 / 10 topshiriq</span><span style="color:#43e97b" id="tpBall">+0 ball</span></div>
@@ -225,7 +266,7 @@
     <div id="taskListEl"></div>
     <div class="sep-line"></div>
     <div class="mini-proj" id="projectItem" onclick="loadProject()">
-      <div class="mp-label">🚀 Loyiha</div>
+      <div class="mp-label"><i class="ra ra-relic-blade"></i> Loyiha</div>
       <div class="mp-name" id="projectName">Matn tahlilchisi yaratish</div>
     </div>
   </div>
@@ -240,8 +281,8 @@
       <h3 id="curTaskName">String uzunligini hisoblash</h3>
     </div>
     <div class="topbar-actions">
-      <button class="tb-btn" onclick="switchView('desc')" id="btnDesc">📋 Topshiriq</button>
-      <button class="tb-btn" onclick="switchView('code')" id="btnCode" style="border-color:var(--accent);color:#a78bfa">💻 Kod</button>
+      <button class="tb-btn" onclick="switchView('desc')" id="btnDesc"><i class="ra ra-scroll"></i> Topshiriq</button>
+      <button class="tb-btn" onclick="switchView('code')" id="btnCode" style="border-color:var(--accent);color:#a78bfa"><i class="ra ra-anvil"></i> Kod</button>
       <button class="tb-btn run" id="runBtn" onclick="runCode()">▶ Run</button>
       <button class="tb-btn submit" id="submitBtn" onclick="submitCode()">✅ Submit</button>
     </div>
@@ -260,11 +301,11 @@
       <!-- Task description -->
       <div class="task-desc-pane" id="descPane">
         <div class="td-section">
-          <div class="td-label">📋 Vazifa</div>
+          <div class="td-label"><i class="ra ra-scroll"></i> Vazifa</div>
           <div class="td-text" id="tdText"></div>
         </div>
         <div class="td-section">
-          <div class="td-label">💡 Maslahat</div>
+          <div class="td-label"><i class="ra ra-lit-candelabra"></i> Maslahat</div>
           <div class="td-code" id="tdHint"></div>
         </div>
         <div class="td-section">
@@ -291,7 +332,7 @@
       <div class="pane-tabs">
         <div class="pane-tab active" id="tab-out" onclick="switchTab('out')">🖥️ Output</div>
         <div class="pane-tab" id="tab-tests" onclick="switchTab('tests')">🧪 Test Cases</div>
-        <div class="pane-tab" id="tab-ai" onclick="switchTab('ai')">🤖 AI Tahlil</div>
+        <div class="pane-tab" id="tab-ai" onclick="switchTab('ai')"><i class="ra ra-crystal-ball"></i> AI Tahlil</div>
       </div>
       <div class="output-panel" id="outPanel">
         <div class="output-content" id="outputContent">
@@ -309,23 +350,51 @@
   <!-- status bar -->
   <div class="status-bar">
     <div class="sb-item"><div class="sb-dot sb-ready" id="statusDot"></div><span id="statusTxt">Tayyor</span></div>
-    <div class="sb-item">📁 C# · .NET 8</div>
-    <div class="sb-item">📝 <span id="lineCount">1</span> qator</div>
+    <div class="sb-item"><i class="ra ra-scroll"></i> C# · .NET 8</div>
+    <div class="sb-item"><i class="ra ra-scroll-unfurled"></i> <span id="lineCount">1</span> qator</div>
     <div class="sb-item" style="margin-left:auto">⭐ <span id="sbRating">—</span> ball · 🔥 <span id="sbStreak">—</span> kun</div>
   </div>
 </div>
 
 <!-- SCORE MODAL -->
 <div class="score-modal-overlay" id="scoreModal">
-  <div class="score-modal">
+  <div class="score-modal" id="scoreModalInner">
     <div class="sm-icon" id="smIcon">🎉</div>
     <div class="sm-title" id="smTitle">Topshiriq qabul qilindi!</div>
     <div class="sm-sub" id="smSub">Barcha test caselar o'tdi</div>
-    <div class="sm-score" id="smScore">+12</div>
-    <div class="sm-of">ball qo'shildi</div>
-    <div class="sm-btns">
-      <button class="sm-btn sm-btn-next" onclick="nextTask()">Keyingi topshiriq →</button>
-      <button class="sm-btn sm-btn-out" onclick="closeModal()">Dashboard →</button>
+
+    <!-- 3 ustunli statistika -->
+    <div class="sm-stats" id="smStats">
+      <div class="sm-stat">
+        <div class="sm-stat-val green" id="smTestsPassed">—/—</div>
+        <div class="sm-stat-lbl">Test cases</div>
+      </div>
+      <div class="sm-stat">
+        <div class="sm-stat-val purple" id="smAttempts">—</div>
+        <div class="sm-stat-lbl">Urinish</div>
+      </div>
+      <div class="sm-stat">
+        <div class="sm-stat-val orange" id="smScore">+0</div>
+        <div class="sm-stat-lbl">FA ball</div>
+      </div>
+    </div>
+
+    <!-- Qurol-Aslaha drop (agar tushsa) -->
+    <div class="sm-equip" id="smEquip">
+      <div class="sm-equip-label" id="smEquipLabel">🎁 Qurol-Aslaha Topildi!</div>
+      <div class="sm-equip-row">
+        <div class="sm-equip-icon" id="smEquipIcon">⚔️</div>
+        <div>
+          <div class="sm-equip-name" id="smEquipName">Qilich</div>
+          <div class="sm-equip-rar" id="smEquipRar">Noyob</div>
+          <div class="sm-equip-bonus" id="smEquipBonus"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sm-btns" id="smBtns">
+      <button class="sm-btn sm-btn-next" id="smBtnNext" onclick="nextTask()">Keyingi topshiriq →</button>
+      <button class="sm-btn sm-btn-out" onclick="closeModal()">Yopish</button>
     </div>
   </div>
 </div>
@@ -595,6 +664,16 @@ let curLevel  = 'beginner';
 let curIdx    = 0;
 let isProject = false;
 
+// Urinishlar soni: kalit = `${level}_${idx}` yoki `${level}_proj`
+const _taskAttempts = {};
+
+// Modal ochiq bo'lganda tushgan equipment ni saqlash
+let _pendingEquipDrop = null;
+
+function _attemptKey() { return isProject ? `${curLevel}_proj` : `${curLevel}_${curIdx}`; }
+function _getAttempts() { return _taskAttempts[_attemptKey()] || 0; }
+function _incAttempts() { const k = _attemptKey(); _taskAttempts[k] = (_taskAttempts[k] || 0) + 1; return _taskAttempts[k]; }
+
 // API dan yuklangan topshiriqlar (TOPIC_ID bo'lsa to'ldiriladi)
 let API_TASKS = {};
 
@@ -603,16 +682,27 @@ function getCurProject() { const s = Object.keys(API_TASKS).length ? API_TASKS :
 
 /* ── Level switch ── */
 function switchLevel(level) {
+  const lockBar  = document.getElementById('lockInfoBar');
+  const lockMsg  = document.getElementById('lockInfoMsg');
+  const lockMsgs = {
+    intermediate: "🔒 O'rta daraja qulflangan — Boshlang'ich darajasi testini o'ting!",
+    advanced:     "🔒 Yuqori daraja qulflangan — O'rta daraja testini o'ting!",
+  };
+
   if (LEVEL_LOCKS[level]) {
-    showToast('🔒 Bu daraja qulflanmagan! Avvalgi darajani tugatng.');
+    lockBar.classList.add('show');
+    lockMsg.textContent = lockMsgs[level] || '🔒 Bu daraja qulflangan.';
+    showToast(lockMsgs[level] || '🔒 Bu daraja qulflangan!');
     return;
   }
-  curLevel = level;
-  curIdx   = 0;
+  lockBar.classList.remove('show');
+
+  curLevel  = level;
+  curIdx    = 0;
   isProject = false;
 
   // Tab styling
-  const map = {beginner:'lb', intermediate:'lo', advanced:'ly'};
+  const map    = {beginner:'lb', intermediate:'lo', advanced:'ly'};
   const actMap = {beginner:'active-lb', intermediate:'active-lo', advanced:'active-ly'};
   const nameMap = {beginner:"Boshlang'ich", intermediate:"O'rta", advanced:'Yuqori'};
   const badgeCls = {beginner:'b', intermediate:'o', advanced:'y'};
@@ -620,6 +710,7 @@ function switchLevel(level) {
   ['beginner','intermediate','advanced'].forEach(lv => {
     const btn = document.getElementById(`lvTab${lv[0].toUpperCase()}`);
     btn.className = `lv-tab ${map[lv]}`;
+    if (LEVEL_LOCKS[lv]) btn.classList.add('locked-lv');
     if (lv === level) btn.classList.add(actMap[lv]);
   });
 
@@ -650,17 +741,25 @@ function renderTaskList(){
   document.getElementById('tpBall').textContent = `+${ball} ball`;
   document.getElementById('taskBar').style.width = (done/total*100)+'%';
 
-  document.getElementById('taskListEl').innerHTML=tasks.map((t,i)=>`
-    <div class="task-item ${!isProject&&i===curIdx?'active':''} ${t.status==='done'?'done':''}" onclick="loadTask(${i})">
+  document.getElementById('taskListEl').innerHTML=tasks.map((t,i)=>{
+    const aKey = `${curLevel}_${i}`;
+    const att  = _taskAttempts[aKey] || 0;
+    const isAct = !isProject && i === curIdx;
+    return `
+    <div class="task-item ${isAct?'active':''} ${t.status==='done'?'done':''}" onclick="loadTask(${i})">
       <div class="ti-row">
-        <div class="ti-num ${t.status==='done'?'tn-done':!isProject&&i===curIdx?'tn-active':'tn-todo'}">${t.status==='done'?'✓':t.n}</div>
+        <div class="ti-num ${t.status==='done'?'tn-done':isAct?'tn-active':'tn-todo'}">${t.status==='done'?'✓':t.n}</div>
         <div class="ti-info">
           <div class="ti-name">${t.name}</div>
-          <span class="ti-diff ${t.diff==='easy'?'d-easy':t.diff==='medium'?'d-med':'d-hard'}">${t.diff==='easy'?'Oson':t.diff==='medium'?"O'rta":'Qiyin'}</span>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-top:.2rem">
+            <span class="ti-diff ${t.diff==='easy'?'d-easy':t.diff==='medium'?'d-med':'d-hard'}">${t.diff==='easy'?'Oson':t.diff==='medium'?"O'rta":'Qiyin'}</span>
+            ${att>0?`<span class="ti-attempts">🔄 ${att}×</span>`:''}
+          </div>
         </div>
-        ${t.score?`<div class="ti-score" style="color:#43e97b">+${t.score}</div>`:''}
+        ${t.score!=null?`<div class="ti-score" style="color:#43e97b">+${t.score}</div>`:''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 /* ── Load task ── */
@@ -678,7 +777,7 @@ function loadTask(i){
     <div class="td-example">
       <div class="ex-label">Misol</div>
       <div class="ex-io">📥 Kiritish: <strong>${e.in.replace(/\n/g,' | ')}</strong></div>
-      <div class="ex-io">📤 Chiqarish: <strong>${e.out}</strong></div>
+      <div class="ex-io"><i class="ra ra-scroll"></i> Chiqarish: <strong>${e.out}</strong></div>
     </div>`).join('');
   document.getElementById('codeArea').value=t.template||'';
   updateLines();
@@ -703,7 +802,7 @@ function loadProject(){
     <div class="td-example">
       <div class="ex-label">Misol</div>
       <div class="ex-io">📥 Kiritish: <strong>${e.in.replace(/\n/g,' | ')}</strong></div>
-      <div class="ex-io">📤 Chiqarish: <strong>${e.out.replace(/\n/g,' | ')}</strong></div>
+      <div class="ex-io"><i class="ra ra-scroll"></i> Chiqarish: <strong>${e.out.replace(/\n/g,' | ')}</strong></div>
     </div>`).join('');
   document.getElementById('codeArea').value=p.template||'';
   updateLines(); clearOutput(); hideBanner();
@@ -771,7 +870,7 @@ function runCode(){
       <div class="out-line" style="height:1px;background:rgba(255,255,255,0.06);margin:.3rem 0"></div>
       <div class="out-line out-success">${ex.out}</div>
       <div class="out-line" style="height:1px;background:rgba(255,255,255,0.06);margin:.3rem 0"></div>
-      <div class="out-line out-info">⏱️ Vaqt: ${Math.floor(Math.random()*50+20)}ms · Xotira: ${Math.floor(Math.random()*8+12)}MB</div>`;
+      <div class="out-line out-info"><i class="ra ra-hourglass"></i> Vaqt: ${Math.floor(Math.random()*50+20)}ms · Xotira: ${Math.floor(Math.random()*8+12)}MB</div>`;
     setStatus('ready','Tayyor');
   },1200);
 }
@@ -785,7 +884,10 @@ async function submitCode() {
   const t = isProject ? getCurProject() : getCurTasks()[curIdx];
   if (!t) return;
 
-  setStatus('run', 'Tekshirilmoqda...');
+  const attemptNo = _incAttempts();
+  renderTaskList();
+
+  setStatus('run', `Tekshirilmoqda... (${attemptNo}-urinish)`);
   switchView('code');
   switchTab('tests');
 
@@ -855,19 +957,42 @@ function _pollSubmission(subId, t) {
 
 let _lastInvCount = 0;
 async function _checkEquipmentDrop() {
-  // Inventar sonini oldingi bilan solishtirish — yangi item tushgani bildiriladigan
   try {
     await new Promise(r => setTimeout(r, 3000)); // Celery task tugashini kutish
     const inv = await api.inventory().catch(() => null);
     if (!inv) return;
     const items = Array.isArray(inv) ? inv : [];
     if (_lastInvCount > 0 && items.length > _lastInvCount) {
-      // Yangi item(lar) tushgan!
       const newItems = items.slice(0, items.length - _lastInvCount);
-      newItems.forEach(ue => showEquipmentDrop(ue.equipment));
+      newItems.forEach(ue => {
+        // Modal ochiq bo'lsa — modal ichida ko'rsat, aks holda floating notification
+        if (document.getElementById('scoreModal').classList.contains('open')) {
+          _showEquipInModal(ue.equipment);
+        } else {
+          showEquipmentDrop(ue.equipment);
+        }
+      });
     }
     _lastInvCount = items.length;
   } catch(e) {}
+}
+
+function _showEquipInModal(eq) {
+  if (!eq) return;
+  const RARITY_COLORS = {common:'#94a3b8',rare:'#4299e1',epic:'#a855f7',legendary:'#ffd700'};
+  const RARITY_UZ    = {common:'Oddiy',rare:'Noyob',epic:'Epic',legendary:'⭐ Afsonaviy'};
+  const col = RARITY_COLORS[eq.rarity] || '#94a3b8';
+  const el  = document.getElementById('smEquip');
+  el.style.borderColor = col;
+  el.style.background  = `linear-gradient(135deg,rgba(0,0,0,.2),${col}11)`;
+  document.getElementById('smEquipLabel').style.color = col;
+  document.getElementById('smEquipIcon').textContent  = eq.icon || '⚔️';
+  document.getElementById('smEquipName').textContent  = eq.name || 'Qurol';
+  document.getElementById('smEquipRar').textContent   = RARITY_UZ[eq.rarity] || eq.rarity;
+  document.getElementById('smEquipRar').style.color   = col;
+  const bonus = [eq.attack_bonus?`⚔️ +${eq.attack_bonus}% hujum`:'',eq.defense_bonus?`🛡️ +${eq.defense_bonus}% himoya`:''].filter(Boolean).join('  ');
+  document.getElementById('smEquipBonus').textContent = bonus;
+  el.classList.add('show');
 }
 
 function _simulateSubmit(t) {
@@ -899,10 +1024,16 @@ function _simulateSubmit(t) {
 }
 
 function showSuccess(t, sub) {
-  const pts = (sub && sub.score_awarded) || t.score || (isProject ? 15 : 10);
-  const total = (sub && sub.test_results ? sub.test_results.length : null) || (t.testCases||[]).length || 1;
-  showBanner(true, `✅ Barcha test caselar o'tdi — ${total}/${total}`, `+${pts} ball`);
+  const pts    = (sub && sub.score_awarded) || t.score || (isProject ? 15 : 1);
+  const total  = (sub && sub.test_results ? sub.test_results.length : null) || (t.testCases||[]).length || 1;
+  const att    = _getAttempts();
+
+  showBanner(true, `✅ Barcha test caselar o'tdi`,
+    `<span class="rb-chip rb-tests">${total}/${total} test</span>` +
+    `<span class="rb-chip rb-attempts">🔄 ${att}-urinish</span>` +
+    `<span class="rb-score">+${pts} ball</span>`);
   showAiFeedback(true, t);
+
   if (isProject) {
     const p = getCurProject(); if (p) { p.done = true; p.score = pts; }
     document.getElementById('projectItem').className = 'mini-proj done';
@@ -911,26 +1042,79 @@ function showSuccess(t, sub) {
     if (tasks[curIdx]) { tasks[curIdx].status = 'done'; tasks[curIdx].score = pts; }
   }
   renderTaskList();
+
   setTimeout(() => {
-    document.getElementById('smIcon').textContent = '🎉';
-    document.getElementById('smTitle').textContent = 'Topshiriq qabul qilindi!';
-    document.getElementById('smSub').textContent = `${t.name} · Barcha test caselar o'tdi`;
-    document.getElementById('smScore').textContent = '+' + pts;
+    const modal = document.getElementById('scoreModalInner');
+    modal.classList.remove('error-modal');
+
+    document.getElementById('smIcon').textContent          = att === 1 ? '🏆' : '🎉';
+    document.getElementById('smTitle').textContent         = "Topshiriq qabul qilindi!";
+    document.getElementById('smSub').textContent           = `${t.name}`;
+    document.getElementById('smStats').className           = 'sm-stats';
+    document.getElementById('smTestsPassed').textContent   = `${total}/${total}`;
+    document.getElementById('smTestsPassed').className     = 'sm-stat-val green';
+    document.getElementById('smAttempts').textContent      = att;
+    document.getElementById('smScore').textContent         = `+${pts}`;
+
+    // Equipment drop — agar topilgan bo'lsa
+    document.getElementById('smEquip').classList.remove('show');
+
+    // Keyingi tugma matni
+    const tasks = getCurTasks();
+    const isLast = !isProject && curIdx >= tasks.length - 1;
+    document.getElementById('smBtnNext').textContent =
+      isProject ? 'Darslarga qaytish →' : (isLast ? 'Loyihaga o\'tish →' : 'Keyingi topshiriq →');
+
     document.getElementById('scoreModal').classList.add('open');
-  }, 800);
+  }, 700);
 }
+
+let _errorModalTimer = null;
 
 function showError(passed, total) {
-  showBanner(false, `❌ ${passed}/${total} test case o'tdi`, '');
+  const att = _getAttempts();
+  showBanner(false,
+    `❌ ${passed}/${total} test case o'tdi`,
+    `<span class="rb-chip rb-attempts">🔄 ${att}-urinish</span>`);
   showAiFeedback(false, isProject ? getCurProject() : getCurTasks()[curIdx]);
+
+  // 3+ urinishdan keyin hint modal — oldingi timeoutni bekor qilish
+  if (_errorModalTimer) { clearTimeout(_errorModalTimer); _errorModalTimer = null; }
+  if (att >= 3) {
+    _errorModalTimer = setTimeout(() => {
+      _errorModalTimer = null;
+      const modal = document.getElementById('scoreModalInner');
+      modal.classList.add('error-modal');
+      document.getElementById('smIcon').textContent        = '😓';
+      document.getElementById('smTitle').textContent       = `${passed}/${total} test o'tdi`;
+      document.getElementById('smSub').textContent         = `${att}-urinish · Quyidagi maslahatni o'qib qayta urinib ko'ring`;
+      document.getElementById('smStats').className         = 'sm-stats error';
+      document.getElementById('smTestsPassed').textContent = `${passed}/${total}`;
+      document.getElementById('smTestsPassed').className   = 'sm-stat-val green'; // gradient error via CSS
+      document.getElementById('smAttempts').textContent    = att;
+      document.getElementById('smScore').textContent       = '—';
+      document.getElementById('smEquip').classList.remove('show');
+
+      // Tugmalar: "Qayta urinish" va "Maslahat ko'rish"
+      document.getElementById('smBtnNext').textContent = 'Maslahat ko\'rish →';
+      document.getElementById('smBtnNext').onclick = () => {
+        closeModal();
+        switchView('desc');
+        document.getElementById('smBtnNext').onclick = nextTask;
+      };
+
+      document.getElementById('scoreModal').classList.add('open');
+    }, 800);
+  }
 }
 
-function showBanner(ok,msg,score){
-  const b=document.getElementById('resultBanner');
-  b.className='result-banner '+(ok?'success':'error');
-  document.getElementById('resultMsg').textContent=msg;
-  document.getElementById('resultScore').textContent=score;
-  document.getElementById('resultScore').style.display=score?'inline':'none';
+function showBanner(ok, msg, rightHtml) {
+  const b = document.getElementById('resultBanner');
+  b.className = 'result-banner ' + (ok ? 'success' : 'error');
+  document.getElementById('resultMsg').textContent = msg;
+  const rs = document.getElementById('resultScore');
+  if (rightHtml) { rs.innerHTML = rightHtml; rs.style.display = 'flex'; rs.style.gap = '.4rem'; rs.style.alignItems = 'center'; }
+  else { rs.innerHTML = ''; rs.style.display = 'none'; }
 }
 function hideBanner(){document.getElementById('resultBanner').className='result-banner';}
 
@@ -938,11 +1122,11 @@ function showAiFeedback(ok,t){
   const ai=document.getElementById('aiFeedback');
   ai.innerHTML=ok?`
     <div class="ai-bubble">
-      <div class="ai-head">🤖 AI Tahlil · Ajoyib!</div>
+      <div class="ai-head"><i class="ra ra-crystal-ball"></i> AI Tahlil · Ajoyib!</div>
       <p>Kodingiz barcha test caselardan muvaffaqiyatli o'tdi. <strong>Kuchli tomonlar:</strong> mantiqiy tuzilish to'g'ri, o'zgaruvchilar nomlanishi yaxshi.</p>
     </div>
     <div class="ai-bubble">
-      <div class="ai-head">💡 Optimizatsiya</div>
+      <div class="ai-head"><i class="ra ra-lit-candelabra"></i> Optimizatsiya</div>
       <p>Kodingizni yanada qisqartirish mumkin. <code>string.Length</code> o'rniga LINQ <code>.Count()</code> ham ishlatsa bo'ladi, ammo <code>Length</code> O(1) — tezroq.</p>
     </div>
     <div class="ai-bubble">
@@ -950,11 +1134,11 @@ function showAiFeedback(ok,t){
       <p>Ushbu mavzu bo'yicha <strong>Advanced darajasi</strong>ni ham sinab ko'ring — u yerda regex bilan string validatsiya mavzusi mavjud.</p>
     </div>`:`
     <div class="ai-bubble">
-      <div class="ai-head">🤖 AI Xato tahlili</div>
+      <div class="ai-head"><i class="ra ra-crystal-ball"></i> AI Xato tahlili</div>
       <p>Ba'zi test caselar xato chiqdi. Ko'pincha sabab: <strong>bo'sh string</strong> yoki <strong>maxsus belgilar</strong> holati hisoblanmagan.</p>
     </div>
     <div class="ai-bubble">
-      <div class="ai-head">💡 Maslahat</div>
+      <div class="ai-head"><i class="ra ra-lit-candelabra"></i> Maslahat</div>
       <p>Kiritilgan qiymat bo'sh bo'lishi mumkin. Tekshiring: <code>if (string.IsNullOrEmpty(s))</code> — bu holatni alohida qayta ishlang.</p>
     </div>`;
 }
@@ -1059,7 +1243,13 @@ function nextTask() {
   else if (!isProject) loadProject();
   else window.location.href = TOPIC_ID ? `mainquest.html?topic=${TOPIC_ID}` : 'mainquest.html';
 }
-function closeModal() { document.getElementById('scoreModal').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('scoreModal').classList.remove('open');
+  // Error yo'lida o'zgartirilgan handler ni tiklash
+  const btn = document.getElementById('smBtnNext');
+  btn.textContent = 'Keyingi topshiriq →';
+  btn.onclick = nextTask;
+}
 
 /* ── API task mapping ── */
 function _mapTask(t, idx) {
@@ -1156,6 +1346,12 @@ async function initSidequest() {
 
 initSidequest();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
+<script>
+(async function(){
+  if(typeof api==='undefined'||typeof Auth==='undefined'||!Auth.isLoggedIn())return;
+  try{const d=await api.msgUnread();const b=document.getElementById('msgBadge');if(b&&d?.unread>0){b.textContent=d.unread>9?'9+':d.unread;b.style.display='';}}catch(e){}
+})();
+</script>
 </body>
 </html>

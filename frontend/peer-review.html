@@ -57,7 +57,7 @@
     @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
     .stat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
     .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
-    .stat-box::after{content:attr(data-icon);position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:.08}
+    .stat-box .stat-bg{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.08;pointer-events:none}
     .stat-box .label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem}
     .stat-box .value{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:.3rem}
     .stat-box .sub{font-size:.78rem;color:var(--muted)}
@@ -151,7 +151,7 @@
     .fb-reviewer{font-size:.85rem;font-weight:600;flex:1}
     .fb-date{font-size:.72rem;color:var(--muted)}
     .fb-topic{font-size:.78rem;color:var(--accent);margin-bottom:.4rem}
-    .fb-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.6rem;max-width:280px}
+    .fb-scores{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.6rem;max-width:340px}
     .fb-score-item{background:rgba(255,255,255,0.03);border-radius:8px;padding:.4rem .6rem;text-align:center}
     .fb-score-label{font-size:.65rem;color:var(--muted)}
     .fb-score-val{font-size:.88rem;font-weight:700}
@@ -188,22 +188,24 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-logo">
-    <a href="index.html">⚔️ Coders War</a>
+    <a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
     <div class="sub">Algoritmik tillar va dasturlash</div>
   </div>
   <nav class="sb-nav">
     <div class="nav-section">O'quv</div>
-    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
-    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
-    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
-    <a class="nav-item active" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item active" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
     <div class="nav-section">Jamoa</div>
-    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
-    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
-    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
     <div class="nav-section">Shaxsiy</div>
-    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
@@ -212,7 +214,7 @@
         <div class="name" data-user-name>...</div>
         <div class="role" data-user-role>Student</div>
       </div>
-      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
@@ -221,7 +223,7 @@
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
-      <h2>🔍 Peer Review</h2>
+      <h2><i class="ra ra-scroll-unfurled"></i> Peer Review</h2>
       <div class="breadcrumb">Shaxsiy • O'zaro tekshirish</div>
     </div>
     <div class="topbar-right">
@@ -237,22 +239,22 @@
 
     <!-- STATS -->
     <div class="stats-row">
-      <div class="stat-box" data-icon="🔍">
+      <div class="stat-box" ><i class="ra ra-scroll-unfurled stat-bg" aria-hidden="true"></i>
         <div class="label">Tekshirganlarim</div>
         <div class="value" style="color:#a78bfa" id="statGiven">—</div>
         <div class="sub">Jami baholash</div>
       </div>
-      <div class="stat-box" data-icon="📥">
+      <div class="stat-box" ><i class="ra ra-scroll stat-bg" aria-hidden="true"></i>
         <div class="label">Men olgan</div>
         <div class="value" style="color:#43e97b" id="statReceived">—</div>
         <div class="sub">Peer review</div>
       </div>
-      <div class="stat-box" data-icon="⏳">
+      <div class="stat-box" ><i class="ra ra-hourglass stat-bg" aria-hidden="true"></i>
         <div class="label">Navbatdagi</div>
         <div class="value" style="color:#ffd700" id="statQueue">—</div>
         <div class="sub">Baholash kutmoqda</div>
       </div>
-      <div class="stat-box" data-icon="⭐">
+      <div class="stat-box" ><i class="ra ra-gem stat-bg" aria-hidden="true"></i>
         <div class="label">O'rtacha reyting</div>
         <div class="value" style="color:#ff6584" id="statRating">—</div>
         <div class="sub">/ 5.0 yulduz</div>
@@ -261,10 +263,10 @@
 
     <!-- TABS -->
     <div class="tabs">
-      <button class="tab-btn active" id="tabQueueBtn" onclick="switchTab('queue')">⏳ Navbat (<span id="queueCount">0</span>)</button>
+      <button class="tab-btn active" id="tabQueueBtn" onclick="switchTab('queue')"><i class="ra ra-hourglass"></i> Navbat (<span id="queueCount">0</span>)</button>
       <button class="tab-btn" onclick="switchTab('myreviews')">✅ Tekshirganlarim</button>
       <button class="tab-btn" onclick="switchTab('received')">📥 Men olganlar</button>
-      <button class="tab-btn" onclick="switchTab('leaderboard')">🏆 Top Reviewerlar</button>
+      <button class="tab-btn" onclick="switchTab('leaderboard')"><i class="ra ra-trophy"></i> Top Reviewerlar</button>
     </div>
 
     <!-- TAB: QUEUE -->
@@ -279,7 +281,7 @@
         <!-- HOW IT WORKS -->
         <div>
           <div class="card" style="margin-bottom:1.5rem">
-            <div class="card-header"><span class="card-title">💡 Peer Review nima?</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-lit-candelabra"></i> Peer Review nima?</span></div>
             <div style="display:flex;flex-direction:column;gap:.9rem;font-size:.85rem">
               <div style="display:flex;gap:.8rem;align-items:flex-start">
                 <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">1</div>
@@ -287,7 +289,7 @@
               </div>
               <div style="display:flex;gap:.8rem;align-items:flex-start">
                 <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">2</div>
-                <div><strong>Mezon bo'yicha baholash</strong><br><span style="color:var(--muted)">3 ta mezon bo'yicha slayderlar yordamida baholang</span></div>
+                <div><strong>Mezon bo'yicha baholash</strong><br><span style="color:var(--muted)">4 ta mezon bo'yicha slayderlar yordamida baholang</span></div>
               </div>
               <div style="display:flex;gap:.8rem;align-items:flex-start">
                 <div style="width:28px;height:28px;border-radius:8px;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">3</div>
@@ -300,19 +302,22 @@
             </div>
           </div>
           <div class="card">
-            <div class="card-header"><span class="card-title">📊 Baholash mezoni</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-compass"></i> Baholash mezoni</span></div>
             <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.82rem">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,215,0,0.06);border-radius:8px">
+                <span>⭐ Motivatsion (Mo)</span><span style="color:#ffd700;font-weight:700">15 ball</span>
+              </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(108,99,255,0.06);border-radius:8px">
-                <span>🧠 Kognitiv (Ko)</span><span style="color:#a78bfa;font-weight:700">30 ball</span>
+                <span><i class="ra ra-crystal-ball"></i> Kognitiv (Ko)</span><span style="color:#a78bfa;font-weight:700">30 ball</span>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(67,233,123,0.05);border-radius:8px">
-                <span>⚙️ Faoliyat (Fa)</span><span style="color:#43e97b;font-weight:700">35 ball</span>
+                <span><i class="ra ra-cog"></i> Faoliyat (Fa)</span><span style="color:#43e97b;font-weight:700">35 ball</span>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;background:rgba(255,101,132,0.05);border-radius:8px">
-                <span>💬 Reflektiv (Re)</span><span style="color:#fb923c;font-weight:700">20 ball</span>
+                <span><i class="ra ra-scroll-unfurled"></i> Reflektiv (Re)</span><span style="color:#fb923c;font-weight:700">20 ball</span>
               </div>
               <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:.4rem;margin-top:.2rem">
-                <span style="color:var(--muted)">Jami maksimal</span><span style="color:var(--text);font-weight:800">85 ball</span>
+                <span style="color:var(--muted)">Jami maksimal</span><span style="color:var(--text);font-weight:800">100 ball</span>
               </div>
             </div>
           </div>
@@ -347,13 +352,13 @@
       <div class="grid-1-1">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🏆 Top Reviewerlar — Bu oy</span>
+            <span class="card-title"><i class="ra ra-trophy"></i> Top Reviewerlar — Bu oy</span>
           </div>
           <div class="reviewer-list" id="reviewerList"></div>
         </div>
         <div>
           <div class="card" style="margin-bottom:1.5rem">
-            <div class="card-header"><span class="card-title">🎖️ Reviewer nishonlari</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-trophy"></i> Reviewer nishonlari</span></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
               <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:.8rem;text-align:center">
                 <div style="font-size:1.8rem;margin-bottom:.3rem">🌟</div>
@@ -378,7 +383,7 @@
             </div>
           </div>
           <div class="card">
-            <div class="card-header"><span class="card-title">📈 Review faolligim</span></div>
+            <div class="card-header"><span class="card-title"><i class="ra ra-level-three-advanced"></i> Review faolligim</span></div>
             <div style="display:flex;flex-direction:column;gap:.7rem;font-size:.83rem">
               <div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span>Bu oy</span><span style="color:#a78bfa;font-weight:700">8 ta review</span></div>
@@ -405,20 +410,20 @@
 <div class="modal-overlay" id="reviewModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('reviewModal')">✕</button>
-    <h3 style="margin-bottom:.3rem">🔍 Kodni baholash</h3>
-    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem" id="reviewModalMeta">Mavzu: Rekursiya asoslari</p>
+    <h3 style="margin-bottom:.3rem"><i class="ra ra-scroll-unfurled"></i> Kodni baholash</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem" id="reviewModalMeta">—</p>
 
     <!-- CODE VIEW -->
     <div class="diff-view" style="margin-bottom:1.5rem">
       <div class="diff-header">
         <span class="diff-lang">C#</span>
-        <span class="diff-file">Fibonacci.cs — Bobur Nazarov</span>
+        <span class="diff-file" id="reviewDiffFile">—</span>
       </div>
       <div class="diff-body" id="modalCode"></div>
     </div>
 
     <!-- CRITERIA SCORING -->
-    <div style="font-size:.9rem;font-weight:700;margin-bottom:.8rem">📊 Baholash mezoni</div>
+    <div style="font-size:.9rem;font-weight:700;margin-bottom:.8rem"><i class="ra ra-compass"></i> Baholash mezoni</div>
     <div class="criteria-grid" id="criteriaGrid"></div>
 
     <!-- STAR RATING -->
@@ -434,11 +439,11 @@
     </div>
 
     <!-- COMMENT -->
-    <div style="font-size:.85rem;font-weight:600;margin-bottom:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">💬 Izoh va tavsiyalar</div>
+    <div style="font-size:.85rem;font-weight:600;margin-bottom:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px"><i class="ra ra-scroll-unfurled"></i> Izoh va tavsiyalar</div>
     <textarea class="comment-area" id="reviewComment" placeholder="Kodni o'qib chiqgach, nima yaxshi, nima yaxshilanishi mumkin — konstruktiv fikr yozing..."></textarea>
 
     <div style="display:flex;align-items:center;justify-content:space-between">
-      <div style="font-size:.82rem;color:var(--muted)">Jami ball: <strong id="totalScore" style="color:#a78bfa">0 / 85</strong></div>
+      <div style="font-size:.82rem;color:var(--muted)">Jami ball: <strong id="totalScore" style="color:#a78bfa">0 / 100</strong></div>
       <div class="review-submit-row">
         <button class="btn btn-outline" onclick="closeModal('reviewModal')">Bekor qilish</button>
         <button class="btn btn-primary" onclick="submitReview()">✅ Yuborish</button>
@@ -507,11 +512,12 @@ let selectedStars = 3;
 
 // ─── Criteria config ─────────────────────────────────────────────────────────
 const criteria = [
-  {name:'Kognitiv (Ko)', max:30, key:'ko_score'},
-  {name:'Faoliyat (Fa)', max:35, key:'fa_score'},
-  {name:'Reflektiv (Re)',max:20, key:'re_score'},
+  {name:'Motivatsion (Mo)', max:15, key:'mo_score'},
+  {name:'Kognitiv (Ko)',    max:30, key:'ko_score'},
+  {name:'Faoliyat (Fa)',   max:35, key:'fa_score'},
+  {name:'Reflektiv (Re)',  max:20, key:'re_score'},
 ];
-const scores = {ko_score:0, fa_score:0, re_score:0};
+const scores = {mo_score:0, ko_score:0, fa_score:0, re_score:0};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
@@ -617,9 +623,9 @@ function renderQueue() {
         📊 Talaba ushbu mavzu bo'yicha barcha topshiriqlarni yakunlagan. Mezon bo'yicha baholang.
       </div>
       <div class="rc-footer">
-        <span class="rc-meta">📚 Mavzu ${ts.topic_number || ''} • C#</span>
+        <span class="rc-meta"><i class="ra ra-book"></i> Mavzu ${ts.topic_number || ''} • C#</span>
         <div class="rc-actions">
-          <button class="rc-btn rc-btn-review" onclick="openReview(${ts.id})">🔍 Baholash</button>
+          <button class="rc-btn rc-btn-review" onclick="openReview(${ts.id})"><i class="ra ra-scroll-unfurled"></i> Baholash</button>
         </div>
       </div>`;
     el.appendChild(div);
@@ -637,7 +643,7 @@ function renderMyReviews() {
   _myRevData.forEach(r => {
     const stars = r.star_rating || 0;
     const starsHtml = '⭐'.repeat(stars) + '<span class="star-empty">' + '⭐'.repeat(5 - stars) + '</span>';
-    const chips = ['ko_score','fa_score','re_score']
+    const chips = ['mo_score','ko_score','fa_score','re_score']
       .map(k => `<span class="score-chip">${k.replace('_score','').toUpperCase()}: ${r[k] || 0}</span>`).join('');
     const reviewee = r.reviewee ? (r.reviewee.full_name || r.reviewee.username || 'Talaba') : 'Talaba';
     el.innerHTML += `<div class="mr-item">
@@ -665,7 +671,7 @@ function renderReceived() {
   _fbData.forEach(f => {
     const reviewer = f.reviewer ? (f.reviewer.full_name || f.reviewer.username || 'Reviewer') : 'Reviewer';
     const init = reviewer[0].toUpperCase();
-    const scoreItems = ['ko_score','fa_score','re_score']
+    const scoreItems = ['mo_score','ko_score','fa_score','re_score']
       .map(k => `<div class="fb-score-item"><div class="fb-score-label">${k.replace('_score','').toUpperCase()}</div><div class="fb-score-val" style="color:#a78bfa">${f[k] || 0}</div></div>`).join('');
     el.innerHTML += `<div class="fb-item">
       <div class="fb-header">
@@ -673,7 +679,7 @@ function renderReceived() {
         <div class="fb-reviewer">${reviewer}</div>
         <div class="fb-date">${fmtDate(f.created_at)}</div>
       </div>
-      <div class="fb-topic">📚 Mavzu ${f.topic_number || ''}: ${f.topic_title || ''}</div>
+      <div class="fb-topic"><i class="ra ra-book"></i> Mavzu ${f.topic_number || ''}: ${f.topic_title || ''}</div>
       <div class="fb-scores">${scoreItems}</div>
       <div class="fb-comment">"${f.comment || ''}"</div>
     </div>`;
@@ -738,7 +744,7 @@ function updateScore(key, val, max) {
   scores[key] = parseInt(val);
   $('val-' + key).textContent = val + '/' + max;
   const total = Object.values(scores).reduce((a, b) => a + b, 0);
-  $('totalScore').textContent = total + ' / 85';
+  $('totalScore').textContent = total + ' / 100';
 }
 
 // ─── Star picker ──────────────────────────────────────────────────────────────
@@ -779,10 +785,9 @@ async function submitReview() {
 
     await api.submitPeerReview({
       topic_score: activeTopicScoreId,
+      mo_score:    scores.mo_score,
       ko_score:    scores.ko_score,
       fa_score:    scores.fa_score,
-      ad_score:    scores.ad_score,
-      kr_score:    scores.kr_score,
       re_score:    scores.re_score,
       comment,
       star_rating: selectedStars,
@@ -828,6 +833,12 @@ function openGuide()    { openModal('guideModal'); }
 document.querySelectorAll('.modal-overlay').forEach(m =>
   m.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); }));
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
+<script>
+(async function(){
+  if(typeof api==='undefined'||typeof Auth==='undefined'||!Auth.isLoggedIn())return;
+  try{const d=await api.msgUnread();const b=document.getElementById('msgBadge');if(b&&d?.unread>0){b.textContent=d.unread>9?'9+':d.unread;b.style.display='';}}catch(e){}
+})();
+</script>
 </body>
 </html>

@@ -52,7 +52,7 @@
     @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
     .stat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
     .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
-    .stat-box::after{content:attr(data-icon);position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:.08}
+    .stat-box .stat-bg{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.08;pointer-events:none}
     .stat-box .label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem}
     .stat-box .value{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:.3rem}
     .stat-box .sub{font-size:.78rem;color:var(--muted)}
@@ -167,27 +167,29 @@
 <body>
 <div id="page-bg" style="position:fixed;inset:0;background:url('static/img/dashboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-<button class="mob-toggle" onclick="toggleSidebar()">☰</button>
+<button class="mob-toggle" onclick="toggleSidebar()"><i class="ra ra-plain-dagger"></i></button>
 
 <!-- ── SIDEBAR ── -->
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
-    <a href="index.html">⚔️ Coders War</a>
+    <a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
     <div class="sub">Algoritmik tillar va dasturlash</div>
   </div>
   <nav class="sb-nav">
     <div class="nav-section">O'quv</div>
-    <a class="nav-item active" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
-    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
-    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
-    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review <span class="badge" id="notifBadge" style="display:none">0</span></a>
+    <a class="nav-item active" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review <span class="badge" id="notifBadge" style="display:none">0</span></a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
     <div class="nav-section">Jamoa</div>
-    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
-    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
-    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
     <div class="nav-section">Shaxsiy</div>
-    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
@@ -196,7 +198,7 @@
         <div class="name" data-user-name>...</div>
         <div class="role" data-user-role>Student</div>
       </div>
-      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
@@ -209,8 +211,8 @@
       <div class="breadcrumb" id="topbarGreet">Xush kelibsiz! · Ma'lumot yuklanmoqda...</div>
     </div>
     <div class="topbar-right">
-      <div class="search-bar">🔍 <span>Qidirish...</span></div>
-      <div class="notif-btn" onclick="window.location.href='/profile.html'">🔔<div class="notif-dot" id="notifDot" style="display:none"></div></div>
+      <div class="search-bar"><i class="ra ra-awareness"></i> <span>Qidirish...</span></div>
+      <div class="notif-btn" onclick="window.location.href='profile.html'"><i class="ra ra-ringing-bell"></i><div class="notif-dot" id="notifDot" style="display:none"></div></div>
     </div>
   </div>
 
@@ -218,22 +220,26 @@
 
     <!-- STATS ROW -->
     <div class="stats-row">
-      <div class="stat-box" data-icon="⭐">
+      <div class="stat-box">
+        <i class="ra ra-gem stat-bg" aria-hidden="true"></i>
         <div class="label">Rating Score</div>
         <div class="value" id="statRating" style="background:linear-gradient(135deg,#6c63ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
         <div class="sub">/ 4500 maksimal</div>
       </div>
-      <div class="stat-box" data-icon="📈">
+      <div class="stat-box">
+        <i class="ra ra-level-three-advanced stat-bg" aria-hidden="true"></i>
         <div class="label">Academic Score</div>
         <div class="value" id="statAcademic" style="background:linear-gradient(135deg,#43e97b,#38f9d7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
         <div class="sub">/ 100 o'rtacha</div>
       </div>
-      <div class="stat-box" data-icon="📚">
+      <div class="stat-box">
+        <i class="ra ra-book stat-bg" aria-hidden="true"></i>
         <div class="label">Mavzular</div>
         <div class="value" id="statTopics" style="background:linear-gradient(135deg,#ffd700,#ffa500);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
         <div class="sub">/ 45 yakunlangan</div>
       </div>
-      <div class="stat-box" data-icon="🔥">
+      <div class="stat-box">
+        <i class="ra ra-fire stat-bg" aria-hidden="true"></i>
         <div class="label">Streak</div>
         <div class="value" id="statStreak" style="background:linear-gradient(135deg,#ff6584,#ff8fab);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div>
         <div class="sub" id="statMaxStreak">kun uzluksiz</div>
@@ -244,8 +250,8 @@
     <div class="grid-2-1">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">📊 O'quv Trayektoriyasi</span>
-          <a class="card-action" href="/trajectory.html">To'liq ko'rish</a>
+          <span class="card-title"><i class="ra ra-compass"></i> O'quv Trayektoriyasi</span>
+          <a class="card-action" href="trajectory.html">To'liq ko'rish</a>
         </div>
         <div class="chart-wrap">
           <canvas id="lineChart"></canvas>
@@ -253,10 +259,10 @@
       </div>
       <div class="card">
         <div class="card-header">
-          <span class="card-title">🏆 Daraja</span>
+          <span class="card-title"><i class="ra ra-trophy"></i> Daraja</span>
         </div>
         <div class="level-display">
-          <div class="level-badge-big" id="levelIcon">🛡️</div>
+          <div class="level-badge-big" id="levelIcon"><i class="ra ra-shield"></i></div>
           <div class="level-name" id="levelName">—</div>
           <div class="level-range" id="levelRange">—</div>
           <div class="xp-track">
@@ -269,7 +275,7 @@
           <!-- Personaj -->
           <div class="char-display" id="charDisplay" style="display:none">
             <div class="char-row">
-              <div class="char-ava" id="charAva">⚔️</div>
+              <div class="char-ava" id="charAva"><i class="ra ra-crossed-swords"></i></div>
               <div class="char-info">
                 <div class="char-nm" id="charName">—</div>
                 <div class="char-en" id="charEn">—</div>
@@ -285,14 +291,14 @@
     <div class="grid-2-1">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">📚 Mavzular holati</span>
+          <span class="card-title"><i class="ra ra-book"></i> Mavzular holati</span>
           <a class="card-action" href="mainquest.html">Barchasi →</a>
         </div>
         <div class="topic-list" id="topicList"></div>
       </div>
       <div class="card">
         <div class="card-header">
-          <span class="card-title">🎯 4 Mezon Tahlili</span>
+          <span class="card-title"><i class="ra ra-archery-target"></i> 4 Mezon Tahlili</span>
         </div>
         <div class="radar-wrap">
           <canvas id="radarChart" width="220" height="220"></canvas>
@@ -304,27 +310,22 @@
     <div class="grid-1-1">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">🤖 AI Tavsiyalar</span>
+          <span class="card-title"><i class="ra ra-crystal-ball"></i> AI Tavsiyalar</span>
         </div>
         <div class="ai-list">
-          <div class="ai-item"><div class="ai-ic">💡</div><div class="ai-text"><strong>Refleksiv-baholovchi mezon</strong> (max 20 ball) bo'yicha ballingiz pastroq. Har mavzu yakunida refleksiya formasi va peer-review'ni to'ldirishga e'tibor bering.</div></div>
-          <div class="ai-item"><div class="ai-ic">⚡</div><div class="ai-text"><strong>Faoliyatli mezon</strong> (max 30 ball) — amaliy topshiriqlar avtomatik, loyiha esa o'qituvchi tomonidan baholanadi (max 10 ball).</div></div>
-          <div class="ai-item"><div class="ai-ic">🏆</div><div class="ai-text"><strong>Kognitiv mezon</strong> (max 35 ball) uchun barcha 3 darajadagi testlarni yaxshi natija bilan topshiring — boshlang'ich (5), o'rta (15), yuqori va o'sish (15).</div></div>
-          <div class="ai-item"><div class="ai-ic">🎯</div><div class="ai-text">Keyingi mavzuga o'tishdan oldin joriy mavzu <strong>peer-review</strong> va <strong>refleksiya</strong>sini yakunlang — RE mezon 20 ballgacha beradi.</div></div>
+          <div class="ai-item"><div class="ai-ic"><i class="ra ra-lit-candelabra"></i></div><div class="ai-text"><strong>Refleksiv-baholovchi mezon</strong> (max 20 ball) bo'yicha ballingiz pastroq. Har mavzu yakunida refleksiya formasi va peer-review'ni to'ldirishga e'tibor bering.</div></div>
+          <div class="ai-item"><div class="ai-ic"><i class="ra ra-anvil"></i></div><div class="ai-text"><strong>Faoliyatli mezon</strong> (max 30 ball) — amaliy topshiriqlar avtomatik, loyiha esa o'qituvchi tomonidan baholanadi (max 10 ball).</div></div>
+          <div class="ai-item"><div class="ai-ic"><i class="ra ra-trophy"></i></div><div class="ai-text"><strong>Kognitiv mezon</strong> (max 35 ball) uchun barcha 3 darajadagi testlarni yaxshi natija bilan topshiring — boshlang'ich (5), o'rta (15), yuqori va o'sish (15).</div></div>
+          <div class="ai-item"><div class="ai-ic"><i class="ra ra-archery-target"></i></div><div class="ai-text">Keyingi mavzuga o'tishdan oldin joriy mavzu <strong>peer-review</strong> va <strong>refleksiya</strong>sini yakunlang — RE mezon 20 ballgacha beradi.</div></div>
         </div>
       </div>
       <div class="card">
         <div class="card-header">
-          <span class="card-title">⚡ So'nggi Faoliyat</span>
+          <span class="card-title"><i class="ra ra-crossed-swords"></i> So'nggi Faoliyat</span>
           <a class="card-action" href="profile.html">Barchasi</a>
         </div>
-        <div class="activity-list">
-          <div class="act-item"><div class="act-icon ai-code">💻</div><div class="act-info"><div class="at"><strong>9-mavzu</strong> assignment #7 qabul qilindi</div><div class="time">10 daqiqa avval</div></div></div>
-          <div class="act-item"><div class="act-icon ai-quiz">📝</div><div class="act-info"><div class="at"><strong>9-mavzu</strong> quiz 18/20 natija</div><div class="time">1 soat avval</div></div></div>
-          <div class="act-item"><div class="act-icon ai-badge">🏅</div><div class="act-info"><div class="at"><strong>"Code Warrior"</strong> badge olindi</div><div class="time">Bugun, 14:22</div></div></div>
-          <div class="act-item"><div class="act-icon ai-duel">⚔️</div><div class="act-info"><div class="at"><strong>Duel</strong> — Javlon U. ni yutdingiz!</div><div class="time">Kecha, 20:15</div></div></div>
-          <div class="act-item"><div class="act-icon ai-topic">📚</div><div class="act-info"><div class="at"><strong>8-mavzu</strong> yakunlandi · 91 ball</div><div class="time">Kecha, 16:40</div></div></div>
-          <div class="act-item"><div class="act-icon ai-code">💻</div><div class="act-info"><div class="at"><strong>8-mavzu</strong> mini-loyiha topshirildi</div><div class="time">2 kun avval</div></div></div>
+        <div class="activity-list" id="activityFeed">
+          <div style="color:var(--muted);padding:1rem;text-align:center;font-size:.83rem"><i class="ra ra-hourglass"></i> Yuklanmoqda...</div>
         </div>
       </div>
     </div>
@@ -333,25 +334,16 @@
     <div class="grid-1-1">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">🏅 Nishonlar (Badges)</span>
+          <span class="card-title"><i class="ra ra-trophy"></i> Nishonlar (Badges)</span>
           <a class="card-action" href="profile.html">Barchasi</a>
         </div>
         <div class="badges-grid">
-          <div class="badge-chip"><div class="bi">🥇</div><div class="bn">First Blood</div></div>
-          <div class="badge-chip"><div class="bi">💻</div><div class="bn">Code Warrior</div></div>
-          <div class="badge-chip"><div class="bi">⚡</div><div class="bn">Speed Coder</div></div>
-          <div class="badge-chip"><div class="bi">🔥</div><div class="bn">On Fire</div></div>
-          <div class="badge-chip"><div class="bi">🧠</div><div class="bn">Big Brain</div></div>
-          <div class="badge-chip"><div class="bi">⚔️</div><div class="bn">Duelist</div></div>
-          <div class="badge-chip locked"><div class="bi">👑</div><div class="bn">Legend</div></div>
-          <div class="badge-chip locked"><div class="bi">🚀</div><div class="bn">Titan</div></div>
-          <div class="badge-chip locked"><div class="bi">🏰</div><div class="bn">Clan Lord</div></div>
-          <div class="badge-chip locked"><div class="bi">🎯</div><div class="bn">Perfectionist</div></div>
+          <div style="color:var(--muted);font-size:.82rem;padding:1rem;text-align:center;width:100%"><i class="ra ra-hourglass"></i> Yuklanmoqda…</div>
         </div>
       </div>
       <div class="card">
         <div class="card-header">
-          <span class="card-title">📅 Faollik Tarqalishi (30 kun)</span>
+          <span class="card-title"><i class="ra ra-hourglass"></i> Faollik Tarqalishi (30 kun)</span>
         </div>
         <div class="streak-row" id="streakRow"></div>
         <div style="margin-top:1rem;display:flex;gap:1rem;font-size:.78rem;color:var(--muted)">
@@ -381,17 +373,21 @@ function closeSidebar(){
 }
 
 const LEVEL_META = {
-  recruit: {icon:'🗡️', range:'0–300'},   warden: {icon:'🛡️', range:'301–750'},
-  knight:  {icon:'⚔️', range:'751–1300'}, hero:   {icon:'🦸', range:'1301–1900'},
-  legend:  {icon:'🌟', range:'1901–2600'},lord:   {icon:'👑', range:'2601–3350'},
-  deity:   {icon:'✨', range:'3351–4050'},titan:  {icon:'🏔️', range:'4051–4500'},
+  recruit: {icon:'<img src="static/img/rank-recruit.png" style="width:64px;height:64px;object-fit:contain">', range:'0–300'},
+  warden:  {icon:'<img src="static/img/rank-warden.png"  style="width:64px;height:64px;object-fit:contain">', range:'301–750'},
+  knight:  {icon:'<img src="static/img/rank-knight.png"  style="width:64px;height:64px;object-fit:contain">', range:'751–1300'},
+  hero:    {icon:'<img src="static/img/rank-hero.png"    style="width:64px;height:64px;object-fit:contain">', range:'1301–1900'},
+  legend:  {icon:'<img src="static/img/rank-legend.png"  style="width:64px;height:64px;object-fit:contain">', range:'1901–2600'},
+  lord:    {icon:'<img src="static/img/rank-lord.png"    style="width:64px;height:64px;object-fit:contain">', range:'2601–3350'},
+  deity:   {icon:'<img src="static/img/rank-deity.png"   style="width:64px;height:64px;object-fit:contain">', range:'3351–4050'},
+  titan:   {icon:'<img src="static/img/rank-titan.png"   style="width:64px;height:64px;object-fit:contain">', range:'4051–4500'},
 };
 const CHAR_DATA = {
-  warrior:    {avatar:'⚔️', name:'Jangchi',      en:'Warrior',    weapons:['⚔️ Qilich','🏹 Nayza','🛡️ Zirh']},
-  ranger:     {avatar:'🏹', name:'Sarguzashtchi', en:'Ranger',     weapons:['🏹 Nayza','👟 Etik','🥋 Engil Zirh']},
-  sorceress:  {avatar:'🔮', name:'Sehrgar Ayol',  en:'Sorceress',  weapons:['🪄 Tayoqcha','💍 Uzuk']},
-  knight:     {avatar:'🛡️', name:'Ritsar',        en:'Knight',     weapons:['⚔️ Qilich','🛡️ Qalqon','🏰 Zirh']},
-  ladyknight: {avatar:'⚜️', name:'Ayol Ritsar',   en:'Lady Knight',weapons:['⚔️ Qilich','🛡️ Qalqon','🏰 Zirh','💍 Uzuk']},
+  warrior:    {avatar:'<i class="ra ra-crossed-swords"></i>', name:'Jangchi',      en:'Warrior',    weapons:['<i class="ra ra-sword"></i> Qilich','<i class="ra ra-archer"></i> Nayza','<i class="ra ra-shield"></i> Zirh']},
+  ranger:     {avatar:'<i class="ra ra-archer"></i>', name:'Sarguzashtchi', en:'Ranger',     weapons:['<i class="ra ra-archer"></i> Nayza','👟 Etik','🥋 Engil Zirh']},
+  sorceress:  {avatar:'<i class="ra ra-crystal-ball"></i>', name:'Sehrgar Ayol',  en:'Sorceress',  weapons:['🪄 Tayoqcha','💍 Uzuk']},
+  knight:     {avatar:'<i class="ra ra-shield"></i>', name:'Ritsar',        en:'Knight',     weapons:['<i class="ra ra-sword"></i> Qilich','<i class="ra ra-shield"></i> Qalqon','<i class="ra ra-castle-emblem"></i> Zirh']},
+  ladyknight: {avatar:'<i class="ra ra-crown"></i>', name:'Ayol Ritsar',   en:'Lady Knight',weapons:['<i class="ra ra-sword"></i> Qilich','<i class="ra ra-shield"></i> Qalqon','<i class="ra ra-castle-emblem"></i> Zirh','💍 Uzuk']},
 };
 const SCORE_COLOR = s => s>=85?'#43e97b':s>=70?'#4299e1':s>=60?'#ffa500':'#ff6584';
 const BAR_GRAD    = s => s>=85?'linear-gradient(90deg,#43e97b,#38f9d7)':s>=70?'linear-gradient(90deg,#4299e1,#63b3ed)':'linear-gradient(90deg,#ffa500,#ffd700)';
@@ -433,6 +429,12 @@ async function loadDashboard() {
       if (dot)  dot.style.display  = '';
       if (badge){ badge.style.display = ''; badge.textContent = unread > 9 ? '9+' : unread; }
     }
+
+    // O'qilmagan xabarlar soni
+    api.msgUnread().then(d => {
+      const b = document.getElementById('msgBadge');
+      if (b && d?.unread > 0) { b.textContent = d.unread > 9 ? '9+' : d.unread; b.style.display = ''; }
+    }).catch(() => {});
 
     // Stats
     const completed = scores.filter(s => s.is_completed).length;
@@ -478,6 +480,9 @@ async function loadDashboard() {
     // Badges
     renderBadges(badges);
 
+    // Activity feed (real data)
+    renderActivity(notifs, scores, badges);
+
     // Streak
     drawStreak(streak);
 
@@ -490,7 +495,7 @@ function renderCharacter(charId) {
   const c = CHAR_DATA[charId] || CHAR_DATA.warrior;
   const wrap = document.getElementById('charDisplay');
   if (!wrap) return;
-  document.getElementById('charAva').textContent     = c.avatar;
+  document.getElementById('charAva').innerHTML       = c.avatar;
   document.getElementById('charName').textContent    = c.name;
   document.getElementById('charEn').textContent      = c.en;
   document.getElementById('charWeapons').innerHTML   =
@@ -532,10 +537,10 @@ function renderTopics(scores) {
     const title = t.topic_title  || `Mavzu ${num}`;
     // O'qituvchi baholanishini kutayotgan mavzu
     const needsGrading = pct > 0 && ((t.fa_project_score ?? 0) === 0 || (t.re_peer_score ?? 0) === 0);
-    return `<div class="topic-item" onclick="window.location.href='/mainquest.html'">
+    return `<div class="topic-item" onclick="window.location.href='mainquest.html'">
       <div class="t-num">${num}</div>
       <div class="t-info">
-        <div class="t-name">${title}${needsGrading ? ' <span style="font-size:.62rem;color:#ffa500;font-weight:600">⏳ baholanmoqda</span>' : ''}</div>
+        <div class="t-name">${title}${needsGrading ? ' <span style="font-size:.62rem;color:#ffa500;font-weight:600"><i class="ra ra-hourglass"></i> baholanmoqda</span>' : ''}</div>
         <div class="t-bar-wrap">
           <div class="t-bar"><div class="t-bar-fill" style="width:${pct}%;background:${pct?BAR_GRAD(pct):'rgba(255,255,255,0.1)'}"></div></div>
           <div class="t-pct">${pct ? pct + '/100' : ''}</div>
@@ -547,12 +552,91 @@ function renderTopics(scores) {
   }).join('');
 }
 
+function relAgo(iso) {
+  if (!iso) return '';
+  const m = Math.floor((Date.now() - new Date(iso)) / 60000);
+  if (m < 1)    return 'hozirgina';
+  if (m < 60)   return m + ' daqiqa avval';
+  if (m < 1440) return Math.floor(m / 60) + ' soat avval';
+  return Math.floor(m / 1440) + ' kun avval';
+}
+
+function renderActivity(notifs, scores, badges) {
+  const list = document.getElementById('activityFeed');
+  if (!list) return;
+  const items = [];
+
+  // Notifications → activity
+  if (Array.isArray(notifs) && notifs.length) {
+    const typeMap = {
+      badge:  { cls:'ai-badge', icon:'<i class="ra ra-trophy"></i>' },
+      duel:   { cls:'ai-duel',  icon:'<i class="ra ra-crossed-swords"></i>' },
+      score:  { cls:'ai-topic', icon:'<i class="ra ra-book"></i>' },
+      review: { cls:'ai-quiz',  icon:'<i class="ra ra-scroll-unfurled"></i>' },
+    };
+    notifs.slice(0, 4).forEach(n => {
+      const t = typeMap[n.notif_type] || { cls:'ai-topic', icon:'<i class="ra ra-ringing-bell"></i>' };
+      items.push({ cls: t.cls, icon: t.icon, text: n.message || 'Bildirishnoma', time: n.created_at });
+    });
+  }
+
+  // Recent topic activity from scores
+  const recentScores = Array.isArray(scores)
+    ? [...scores]
+        .filter(s => s.total_score > 0)
+        .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))
+        .slice(0, 3)
+    : [];
+  recentScores.forEach(s => {
+    const done = s.is_completed;
+    const num  = s.topic_number || s.topic || '';
+    const name = s.topic_title  || `Mavzu #${num}`;
+    items.push({
+      cls:  done ? 'ai-topic' : 'ai-code',
+      icon: done ? '<i class="ra ra-book"></i>' : '<i class="ra ra-anvil"></i>',
+      text: `<strong>${name}</strong> ${done ? 'yakunlandi · ' + s.total_score + ' ball' : '· ' + s.total_score + '/100 ball'}`,
+      time: s.updated_at || s.created_at,
+    });
+  });
+
+  // Recent badges
+  if (Array.isArray(badges) && badges.length) {
+    badges.slice(0, 2).forEach(b => {
+      items.push({
+        cls:  'ai-badge',
+        icon: '<i class="ra ra-trophy"></i>',
+        text: `<strong>"${b.badge?.name || 'Nishon'}"</strong> nishoni olindi`,
+        time: b.earned_at,
+      });
+    });
+  }
+
+  if (!items.length) {
+    list.innerHTML = '<div style="color:var(--muted);padding:1.5rem;text-align:center;font-size:.83rem"><i class="ra ra-compass"></i><br><br>Hali faoliyat yo\'q.<br>O\'qishni boshlang!</div>';
+    return;
+  }
+
+  items.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
+  list.innerHTML = items.slice(0, 6).map(item => `
+    <div class="act-item">
+      <div class="act-icon ${item.cls}">${item.icon}</div>
+      <div class="act-info">
+        <div class="at">${item.text}</div>
+        <div class="time">${relAgo(item.time)}</div>
+      </div>
+    </div>`).join('');
+}
+
 function renderBadges(badges) {
   const wrap = document.querySelector('.badges-grid');
-  if (!wrap || !badges.length) return;
+  if (!wrap) return;
+  if (!badges.length) {
+    wrap.innerHTML = '<div style="color:var(--muted);font-size:.82rem;padding:1rem;text-align:center">Hali nishon yo\'q. O\'qishni davom eting!</div>';
+    return;
+  }
   wrap.innerHTML = badges.map(b => `
     <div class="badge-chip">
-      <div class="bi">${b.badge?.icon || '🏅'}</div>
+      <div class="bi">${b.badge?.icon || '<i class="ra ra-trophy"></i>'}</div>
       <div class="bn">${b.badge?.name || 'Badge'}</div>
     </div>`).join('');
 }
@@ -657,6 +741,6 @@ function drawRadar(values) {
 
 loadDashboard();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

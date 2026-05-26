@@ -161,22 +161,22 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-logo">
-    <a href="dashboard.html">⚔️ Coders War</a>
+    <a href="dashboard.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
     <div class="sub">O'qituvchi Paneli</div>
   </div>
   <nav class="sb-nav">
     <div class="nav-section">Boshqaruv</div>
-    <a class="nav-item" href="teacher-dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item active" href="kontent.html"><span class="icon">📚</span> Kontent</a>
+    <a class="nav-item" href="teacher-dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item active" href="kontent.html"><span class="icon"><i class="ra ra-book"></i></span> Kontent</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
       <div class="av-t" data-user-init>?</div>
       <div>
         <div class="t-name" data-user-name>...</div>
-        <div class="t-role">👨‍🏫 O'qituvchi</div>
+        <div class="t-role"><i class="ra ra-player-king"></i>‍🏫 O'qituvchi</div>
       </div>
-      <button onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+      <button onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
@@ -185,7 +185,7 @@
 <div class="main">
   <div class="topbar">
     <div>
-      <h2>📚 Kontent Boshqaruvi</h2>
+      <h2><i class="ra ra-book"></i> Kontent Boshqaruvi</h2>
       <div style="font-size:.78rem;color:var(--muted);margin-top:.1rem">Mavzu nomlari · Video · Maruza · Test · Topshiriqlar</div>
     </div>
     <a href="teacher-dashboard.html" style="color:var(--muted);text-decoration:none;font-size:.84rem">← Dashboard</a>
@@ -208,9 +208,9 @@
     <div id="step1">
 
       <div class="sem-btns">
-        <button class="sem-btn active" id="semBtn1" onclick="selectSem(1,this)">📗 1-Semestr</button>
-        <button class="sem-btn" id="semBtn2" onclick="selectSem(2,this)">📘 2-Semestr</button>
-        <button class="sem-btn" id="semBtn3" onclick="selectSem(3,this)">📙 3-Semestr</button>
+        <button class="sem-btn active" id="semBtn1" onclick="selectSem(1,this)"><i class="ra ra-book"></i> 1-Semestr</button>
+        <button class="sem-btn" id="semBtn2" onclick="selectSem(2,this)"><i class="ra ra-book"></i> 2-Semestr</button>
+        <button class="sem-btn" id="semBtn3" onclick="selectSem(3,this)"><i class="ra ra-book"></i> 3-Semestr</button>
       </div>
 
       <div class="card">
@@ -219,7 +219,7 @@
             <div class="card-title" id="s1Title">1-Semestr · Mavzu nomlari</div>
             <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Mavzu nomlarini kiriting va saqlang</div>
           </div>
-          <button class="btn-primary" id="saveNamesBtn" onclick="saveAllNames()">💾 Saqlash</button>
+          <button class="btn-primary" id="saveNamesBtn" onclick="saveAllNames()"><i class="ra ra-rune-stone"></i> Saqlash</button>
         </div>
         <div class="name-grid-hd">
           <div style="font-size:.65rem;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.5px">T#</div>
@@ -850,6 +850,6 @@ async function deleteTask(taskId, btn) {
 
 initPage();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

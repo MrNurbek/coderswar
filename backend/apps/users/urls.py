@@ -10,6 +10,7 @@ from .views import (
     StudentListView, StudentProfileView,
     GroupViewSet,
 )
+from .admin_views import server_status_view, system_logs_view
 
 router = DefaultRouter()
 router.register('groups', GroupViewSet, basename='group')
@@ -35,6 +36,10 @@ urlpatterns = [
 
     # Admin actions
     path('users/<int:user_id>/<str:action>/', AdminUserBlockView.as_view(), name='admin_user_action'),
+
+    # Admin monitoring
+    path('admin/server-status/', server_status_view, name='admin_server_status'),
+    path('admin/system-logs/',   system_logs_view,   name='admin_system_logs'),
 
     # Groups
     path('', include(router.urls)),

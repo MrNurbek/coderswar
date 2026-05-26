@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Xabarlar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome/css/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title,.topbar-left h2{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;transition:transform .3s}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .sb-user .info .name{font-size:.88rem;font-weight:600}
+    .sb-user .info .role{font-size:.72rem;color:var(--muted)}
+    .logout-btn{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.3rem;border-radius:8px;transition:color .2s}
+    .logout-btn:hover{color:var(--accent2)}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-left h2{font-size:1.05rem;font-weight:700}
+    .topbar-left .breadcrumb{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .topbar-right{display:flex;align-items:center;gap:1rem}
+    .notif-btn{position:relative;background:var(--card);border:1px solid var(--border);border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:border-color .2s;color:var(--muted);text-decoration:none}
+    .notif-btn:hover{border-color:var(--accent);color:var(--text)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--accent2);border:2px solid var(--bg2)}
+    .content{padding:1.5rem 2rem;flex:1;display:flex;flex-direction:column;gap:1.2rem}
+
+    /* ── MESSAGES LAYOUT ── */
+    .msg-wrap{display:grid;grid-template-columns:340px 1fr;gap:1.2rem;flex:1;min-height:0}
+    @media(max-width:900px){.msg-wrap{grid-template-columns:1fr}}
+
+    /* ── LEFT PANEL ── */
+    .msg-left{background:var(--card);border:1px solid var(--border);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;max-height:calc(100vh - 160px)}
+    .msg-tabs{display:flex;border-bottom:1px solid var(--border)}
+    .msg-tab{flex:1;padding:.75rem;font-size:.82rem;font-weight:600;text-align:center;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none}
+    .msg-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .msg-search{padding:.7rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+    .msg-search input{flex:1;background:none;border:none;color:var(--text);font-size:.84rem;outline:none}
+    .msg-search input::placeholder{color:var(--muted)}
+    .msg-list{flex:1;overflow-y:auto;padding:.5rem}
+    .msg-item{padding:.85rem .9rem;border-radius:14px;cursor:pointer;border:1px solid transparent;transition:all .2s;margin-bottom:.3rem}
+    .msg-item:hover{background:rgba(108,99,255,0.07);border-color:rgba(108,99,255,0.15)}
+    .msg-item.active{background:rgba(108,99,255,0.14);border-color:rgba(108,99,255,0.3)}
+    .msg-item.unread .mi-subject{font-weight:700;color:var(--text)}
+    .mi-row1{display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem}
+    .mi-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+    .mi-name{font-size:.82rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mi-time{font-size:.72rem;color:var(--muted);flex-shrink:0}
+    .mi-subject{font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.2rem}
+    .mi-preview{font-size:.76rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.7}
+    .mi-type{font-size:.65rem;font-weight:700;padding:.1rem .4rem;border-radius:6px;flex-shrink:0}
+    .type-complaint{background:rgba(255,101,132,0.15);color:#ff8fab}
+    .type-question{background:rgba(108,99,255,0.15);color:#a78bfa}
+    .type-advisory{background:rgba(67,233,123,0.15);color:#43e97b}
+    .type-announcement{background:rgba(255,215,0,0.12);color:var(--gold)}
+    .type-general{background:rgba(255,255,255,0.07);color:var(--muted)}
+    .unread-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+    .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+    .empty-state .es-icon{font-size:2.5rem;margin-bottom:.8rem;opacity:.4}
+    .empty-state p{font-size:.85rem}
+
+    /* ── RIGHT PANEL ── */
+    .msg-right{background:var(--card);border:1px solid var(--border);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;max-height:calc(100vh - 160px)}
+    .msg-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--muted);gap:.8rem}
+    .msg-placeholder .ph-icon{font-size:3rem;opacity:.3}
+    .msg-placeholder p{font-size:.9rem;opacity:.6}
+
+    /* Thread header */
+    .thread-header{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.8rem}
+    .th-info{flex:1;min-width:0}
+    .th-subject{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+    .th-meta{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;font-size:.78rem;color:var(--muted)}
+    .th-actions{display:flex;gap:.5rem;flex-shrink:0}
+    .btn-icon{background:var(--card);border:1px solid var(--border);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .2s}
+    .btn-icon:hover{border-color:var(--accent);color:var(--text)}
+
+    /* Thread body */
+    .thread-body{flex:1;overflow-y:auto;padding:1.2rem 1.4rem;display:flex;flex-direction:column;gap:1rem}
+    .msg-bubble{display:flex;gap:.8rem;align-items:flex-start}
+    .msg-bubble.own{flex-direction:row-reverse}
+    .mb-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;flex-shrink:0}
+    .msg-bubble.own .mb-ava{background:linear-gradient(135deg,#43e97b,#38f9d7)}
+    .mb-content{flex:1;min-width:0;max-width:75%}
+    .msg-bubble.own .mb-content{align-items:flex-end;display:flex;flex-direction:column}
+    .mb-top{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.35rem;flex-wrap:wrap}
+    .msg-bubble.own .mb-top{flex-direction:row-reverse}
+    .mb-name{font-size:.85rem;font-weight:700}
+    .mb-role{font-size:.72rem;color:var(--muted);padding:.05rem .4rem;background:rgba(255,255,255,0.06);border-radius:5px}
+    .mb-time{font-size:.72rem;color:var(--muted);margin-left:auto}
+    .msg-bubble.own .mb-time{margin-left:0;margin-right:auto}
+    .mb-text{font-size:.87rem;line-height:1.7;color:var(--text);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:.8rem 1rem;word-break:break-word}
+    .msg-bubble.own .mb-text{background:rgba(108,99,255,0.12);border-color:rgba(108,99,255,0.3)}
+    .mb-topic{font-size:.76rem;color:#a78bfa;margin-top:.35rem;display:flex;align-items:center;gap:.3rem}
+
+    /* Reply box */
+    .reply-box{padding:1rem 1.4rem;border-top:1px solid var(--border)}
+    .reply-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.87rem;padding:.8rem 1rem;resize:none;outline:none;line-height:1.6;transition:border-color .2s;min-height:80px}
+    .reply-textarea:focus{border-color:var(--accent)}
+    .reply-actions{display:flex;justify-content:flex-end;margin-top:.6rem}
+    .btn{padding:.55rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;border:none}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),#a78bfa);color:#fff}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .btn-outline{background:none;border:1px solid var(--border);color:var(--text)}
+    .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-sm{padding:.4rem .9rem;font-size:.8rem}
+    .btn-danger{background:rgba(255,101,132,0.15);border:1px solid rgba(255,101,132,0.3);color:#ff8fab}
+    .btn-danger:hover{background:rgba(255,101,132,0.25)}
+
+    /* ── COMPOSE MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:22px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:1.8rem}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem}
+    .modal-title{font-size:1.05rem;font-weight:700}
+    .modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;padding:.2rem;border-radius:8px;transition:color .2s;line-height:1}
+    .modal-close:hover{color:var(--accent2)}
+    .form-group{margin-bottom:1rem}
+    .form-label{font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;display:block;text-transform:uppercase;letter-spacing:.5px}
+    .form-control{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.87rem;padding:.65rem .9rem;outline:none;transition:border-color .2s}
+    .form-control:focus{border-color:var(--accent)}
+    select.form-control option{background:var(--bg2)}
+    textarea.form-control{resize:vertical;min-height:120px;line-height:1.6}
+    .form-hint{font-size:.75rem;color:var(--muted);margin-top:.3rem}
+    .modal-footer{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--border)}
+
+    /* ── COMPOSE FAB ── */
+    .fab{position:fixed;bottom:2rem;right:2rem;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#a78bfa);border:none;color:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(108,99,255,.5);transition:transform .2s,box-shadow .2s;z-index:30}
+    .fab:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(108,99,255,.7)}
+
+    /* ── TOAST ── */
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.7rem 1.3rem;font-size:.85rem;font-weight:600;z-index:200;transition:transform .3s;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.success{border-color:rgba(67,233,123,.4);color:#43e97b}
+    .toast.error{border-color:rgba(255,101,132,.4);color:#ff8fab}
+
+    /* ── MOBILE ── */
+    .mob-toggle{display:none;position:fixed;top:.9rem;left:1rem;z-index:60;background:var(--bg2);border:1px solid var(--border);border-radius:10px;width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:45}
+    .overlay.show{display:block}
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%)}
+      .sidebar.open{transform:none}
+      .main{margin-left:0}
+      .mob-toggle{display:flex}
+      .content{padding:1rem}
+      .msg-wrap{grid-template-columns:1fr}
+      .msg-right{display:none}
+      .msg-right.panel-open{display:flex}
+      .msg-left.panel-open{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<button class="mob-toggle" onclick="toggleSidebar()"><i class="ra ra-plain-dagger"></i></button>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
+    <div class="sub">Algoritmik tillar va dasturlash</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item active" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="sideUnread" style="display:none">0</span></a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="avatar" data-user-init>?</div>
+      <div class="info">
+        <div class="name" data-user-name>...</div>
+        <div class="role" data-user-role>Talaba</div>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2><i class="ra ra-envelope" style="margin-right:.4rem"></i>Xabarlar</h2>
+      <div class="breadcrumb">Kiruvchi / Chiquvchi xabarlar</div>
+    </div>
+    <div class="topbar-right">
+      <a href="dashboard.html" class="notif-btn" title="Dashboard"><i class="ra ra-sword"></i></a>
+      <button class="btn btn-primary btn-sm" onclick="openCompose()"><i class="ra ra-quill-ink" style="margin-right:.4rem"></i>Xabar yozish</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="msg-wrap">
+
+      <!-- LEFT: list -->
+      <div class="msg-left" id="msgLeft">
+        <div class="msg-tabs">
+          <button class="msg-tab active" onclick="switchTab('inbox',this)"><i class="ra ra-envelope" style="margin-right:.3rem"></i>Kiruvchi <span id="tabInboxCount"></span></button>
+          <button class="msg-tab" onclick="switchTab('sent',this)"><i class="ra ra-quill-ink" style="margin-right:.3rem"></i>Yuborilgan</button>
+        </div>
+        <div class="msg-search">
+          <i class="ra ra-gem" style="color:var(--muted);font-size:.9rem"></i>
+          <input type="text" id="searchInput" placeholder="Xabar qidirish..." oninput="filterMessages()">
+        </div>
+        <div class="msg-list" id="msgList">
+          <div class="empty-state"><div class="es-icon"><i class="ra ra-envelope"></i></div><p>Yuklanmoqda...</p></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: thread -->
+      <div class="msg-right" id="msgRight">
+        <div class="msg-placeholder" id="placeholder">
+          <div class="ph-icon"><i class="ra ra-envelope"></i></div>
+          <p>Xabarni ko'rish uchun tanlang</p>
+        </div>
+
+        <div id="threadView" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+          <div class="thread-header">
+            <div class="th-info">
+              <div class="th-subject" id="thSubject">—</div>
+              <div class="th-meta" id="thMeta"></div>
+            </div>
+            <div class="th-actions">
+              <button class="btn-icon" onclick="goBackMobile()" id="backBtn" title="Orqaga" style="display:none"><i class="ra ra-arrow-left-thin"></i></button>
+            </div>
+          </div>
+          <div class="thread-body" id="threadBody"></div>
+          <div class="reply-box" id="replyBox">
+            <textarea class="reply-textarea" id="replyText" placeholder="Javob yozing..." rows="3"></textarea>
+            <div class="reply-actions">
+              <button class="btn btn-primary btn-sm" onclick="sendReply()" id="replyBtn">
+                <i class="ra ra-quill-ink" style="margin-right:.3rem"></i>Yuborish
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Compose Modal -->
+<div class="modal-overlay" id="composeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="ra ra-quill-ink" style="margin-right:.4rem"></i>Yangi xabar</h3>
+      <button class="modal-close" onclick="closeCompose()">×</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Qabul qiluvchi *</label>
+      <select class="form-control" id="cmpRecipient">
+        <option value="">Tanlang...</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Xabar turi *</label>
+      <select class="form-control" id="cmpType">
+        <option value="general">Umumiy</option>
+        <option value="question">Savol (mavzu/topshiriq)</option>
+        <option value="complaint">Shikoyat / Nosozlik</option>
+        <option value="advisory">Tavsiya / Maslahat</option>
+        <option value="announcement">E'lon</option>
+      </select>
+      <div class="form-hint" id="cmpTypeHint">Umumiy muloqot uchun</div>
+    </div>
+
+    <div class="form-group" id="cmpTopicGroup" style="display:none">
+      <label class="form-label">Mavzu (ixtiyoriy)</label>
+      <select class="form-control" id="cmpTopic">
+        <option value="">Mavzusiz</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Mavzu (sarlavha) *</label>
+      <input class="form-control" type="text" id="cmpSubject" placeholder="Xabar sarlavhasi...">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Xabar matni *</label>
+      <textarea class="form-control" id="cmpBody" placeholder="Xabar mazmunini yozing..."></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeCompose()">Bekor</button>
+      <button class="btn btn-primary" onclick="sendMessage()" id="sendBtn">
+        <i class="ra ra-quill-ink" style="margin-right:.3rem"></i>Yuborish
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts -->
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+/* ═══════════════════════════════════════════
+   Coders War — messages.html
+   ═══════════════════════════════════════════ */
+
+let currentTab      = 'inbox';
+let currentMsgId    = null;
+let allMessages     = [];
+let recipients      = [];
+let topics          = [];
+let me              = null;
+
+const TYPE_LABELS = {
+  complaint:    'Shikoyat',
+  question:     'Savol',
+  advisory:     'Tavsiya',
+  announcement: "E'lon",
+  general:      'Umumiy',
+};
+
+const TYPE_HINTS = {
+  complaint:    'Platforma nosozligi yoki shikoyat uchun',
+  question:     'Mavzu, topshiriq yoki test haqida savol',
+  advisory:     'Tavsiya yoki maslahat',
+  announcement: "Muhim e'lon",
+  general:      'Umumiy muloqot uchun',
+};
+
+/* ── INIT ── */
+(async function init() {
+  if (!Auth.isLoggedIn()) { Auth.logout(); return; }
+
+  Auth.fillUserUI();  // sidebar user info
+
+  me = await api.me().catch(() => null);
+  if (!me) { Auth.logout(); return; }
+
+  await loadRecipients();
+  await loadTopics();
+  await loadMessages();
+  updateUnreadBadge();
+})();
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+/* ── LOAD DATA ── */
+async function loadMessages() {
+  const list = document.getElementById('msgList');
+  list.innerHTML = '<div class="empty-state"><div class="es-icon"><i class="ra ra-hourglass"></i></div><p>Yuklanmoqda...</p></div>';
+
+  try {
+    if (currentTab === 'inbox') {
+      allMessages = await api.msgInbox() || [];
+    } else {
+      allMessages = await api.msgSent() || [];
+    }
+    renderList(allMessages);
+    if (currentTab === 'inbox') {
+      const unread = allMessages.filter(m => !m.is_read).length;
+      document.getElementById('tabInboxCount').textContent = unread ? `(${unread})` : '';
+    }
+  } catch (e) {
+    list.innerHTML = '<div class="empty-state"><div class="es-icon"><i class="ra ra-crypt"></i></div><p>Xabarlarni yuklab bo\'lmadi</p></div>';
+  }
+}
+
+async function loadRecipients() {
+  try {
+    recipients = await api.msgRecipients() || [];
+    const sel = document.getElementById('cmpRecipient');
+    sel.innerHTML = '<option value="">Tanlang...</option>';
+    const groups = {};
+    recipients.forEach(r => {
+      if (!groups[r.role]) groups[r.role] = [];
+      groups[r.role].push(r);
+    });
+    const roleOrder = ['superadmin','admin','teacher','student'];
+    const roleLabel = { superadmin:'Superadmin', admin:'Admin', teacher:"O'qituvchilar", student:'Talabalar' };
+    roleOrder.forEach(role => {
+      if (!groups[role]?.length) return;
+      const grp = document.createElement('optgroup');
+      grp.label = roleLabel[role] || role;
+      groups[role].forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = r.full_name + (r.email ? ` (${r.email})` : '');
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
+    });
+  } catch {}
+}
+
+async function loadTopics() {
+  try {
+    const res = await api.topics();
+    topics = Array.isArray(res) ? res : (res?.results || []);
+    const sel = document.getElementById('cmpTopic');
+    sel.innerHTML = '<option value="">Mavzusiz</option>';
+    topics.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = `#${t.number} ${t.title}`;
+      sel.appendChild(opt);
+    });
+  } catch {}
+}
+
+async function updateUnreadBadge() {
+  try {
+    const data = await api.msgUnread();
+    const badge = document.getElementById('sideUnread');
+    if (data?.unread > 0) {
+      badge.textContent = data.unread;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch {}
+}
+
+/* ── RENDER LIST ── */
+function renderList(msgs) {
+  const list = document.getElementById('msgList');
+  if (!msgs.length) {
+    list.innerHTML = '<div class="empty-state"><div class="es-icon"><i class="ra ra-envelope"></i></div><p>Xabarlar yo\'q</p></div>';
+    return;
+  }
+  list.innerHTML = '';
+  msgs.forEach(m => {
+    const other = currentTab === 'inbox' ? m.sender : m.recipient;
+    const initials = nameInitials(other?.full_name || other?.username || '?');
+    const typeClass = `type-${m.msg_type || 'general'}`;
+    const unreadClass = (!m.is_read && currentTab === 'inbox') ? 'unread' : '';
+    const activeClass = m.id === currentMsgId ? 'active' : '';
+
+    const div = document.createElement('div');
+    div.className = `msg-item ${unreadClass} ${activeClass}`;
+    div.dataset.id = m.id;
+    div.onclick = () => openThread(m.id);
+    div.innerHTML = `
+      <div class="mi-row1">
+        <div class="mi-avatar">${initials}</div>
+        <div class="mi-name">${escHtml(other?.full_name || other?.username || '—')}</div>
+        <div class="mi-time">${timeAgo(m.created_at)}</div>
+        ${(!m.is_read && currentTab==='inbox') ? '<div class="unread-dot"></div>' : ''}
+      </div>
+      <div class="mi-subject">${escHtml(m.subject)}</div>
+      <div style="display:flex;gap:.4rem;align-items:center;margin-top:.2rem">
+        <div class="mi-type ${typeClass}">${TYPE_LABELS[m.msg_type] || m.msg_type}</div>
+        ${m.reply_count ? `<span style="font-size:.72rem;color:var(--muted)">${m.reply_count} javob</span>` : ''}
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+/* ── OPEN THREAD ── */
+async function openThread(id) {
+  currentMsgId = id;
+
+  // active class
+  document.querySelectorAll('.msg-item').forEach(el => {
+    el.classList.toggle('active', +el.dataset.id === id);
+    if (+el.dataset.id === id) el.classList.remove('unread');
+  });
+
+  document.getElementById('placeholder').style.display = 'none';
+  const tv = document.getElementById('threadView');
+  tv.style.display = 'flex';
+
+  const body = document.getElementById('threadBody');
+  body.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)"><i class="ra ra-hourglass"></i> Yuklanmoqda...</div>';
+
+  try {
+    const data = await api.msgDetail(id);
+    renderThread(data);
+  } catch {
+    body.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">Xatoga yo\'l qo\'yildi</div>';
+  }
+
+  // mobile: show right panel
+  if (window.innerWidth <= 768) {
+    document.getElementById('msgLeft').classList.add('panel-open');
+    document.getElementById('msgRight').classList.add('panel-open');
+    document.getElementById('backBtn').style.display = '';
+  }
+
+  // mark read locally
+  const localMsg = allMessages.find(m => m.id === id);
+  if (localMsg && !localMsg.is_read && currentTab === 'inbox') {
+    localMsg.is_read = true;
+    updateUnreadBadge();
+    const unread = allMessages.filter(m => !m.is_read).length;
+    document.getElementById('tabInboxCount').textContent = unread ? `(${unread})` : '';
+  }
+}
+
+function renderThread(data) {
+  document.getElementById('thSubject').textContent = data.subject;
+
+  const typeClass = `type-${data.msg_type}`;
+  const topicPart = data.topic_title ? `<span style="color:#a78bfa"><i class="ra ra-book" style="margin-right:.2rem"></i>${escHtml(data.topic_title)}</span>` : '';
+  document.getElementById('thMeta').innerHTML = `
+    <span class="mi-type ${typeClass}">${TYPE_LABELS[data.msg_type] || data.msg_type}</span>
+    <span>${escHtml(data.sender?.full_name || data.sender?.username || '—')} → ${escHtml(data.recipient?.full_name || data.recipient?.username || '—')}</span>
+    <span>${formatDate(data.created_at)}</span>
+    ${topicPart}`;
+
+  const body = document.getElementById('threadBody');
+  body.innerHTML = '';
+
+  [data, ...(data.replies || [])].forEach(msg => {
+    const isMe = msg.sender?.id === me?.id;
+    const bubble = document.createElement('div');
+    bubble.className = isMe ? 'msg-bubble own' : 'msg-bubble';
+    const initials = nameInitials(msg.sender?.full_name || msg.sender?.username || '?');
+    const roleMap = { student:'Talaba', teacher:"O'qituvchi", admin:'Admin', superadmin:'Superadmin' };
+    bubble.innerHTML = `
+      <div class="mb-ava">${initials}</div>
+      <div class="mb-content">
+        <div class="mb-top">
+          <span class="mb-name">${escHtml(msg.sender?.full_name || msg.sender?.username || '—')}</span>
+          <span class="mb-role">${roleMap[msg.sender?.role] || msg.sender?.role || ''}</span>
+          <span class="mb-time">${formatDate(msg.created_at)}</span>
+        </div>
+        <div class="mb-text">${escHtml(msg.body).replace(/\n/g,'<br>')}</div>
+        ${msg.related_topic && msg.topic_title ? `<div class="mb-topic"><i class="ra ra-book"></i> ${escHtml(msg.topic_title)}</div>` : ''}
+      </div>`;
+    body.appendChild(bubble);
+  });
+
+  body.scrollTop = body.scrollHeight;
+
+  // show reply box only if current user is sender or recipient
+  const canReply = data.sender?.id === me?.id || data.recipient?.id === me?.id;
+  document.getElementById('replyBox').style.display = canReply ? '' : 'none';
+}
+
+/* ── REPLY ── */
+async function sendReply() {
+  if (!currentMsgId) return;
+  const text = document.getElementById('replyText').value.trim();
+  if (!text) { showToast('Javob matnini yozing', 'error'); return; }
+
+  const btn = document.getElementById('replyBtn');
+  btn.disabled = true;
+  try {
+    await api.msgReply(currentMsgId, { body: text });
+    document.getElementById('replyText').value = '';
+    showToast('Javob yuborildi', 'success');
+    await openThread(currentMsgId);
+  } catch (e) {
+    showToast(e.message || 'Xatolik yuz berdi', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ── COMPOSE ── */
+function openCompose() {
+  document.getElementById('composeModal').classList.add('open');
+  document.getElementById('cmpRecipient').value = '';
+  document.getElementById('cmpType').value = 'general';
+  document.getElementById('cmpSubject').value = '';
+  document.getElementById('cmpBody').value = '';
+  document.getElementById('cmpTopicGroup').style.display = 'none';
+  document.getElementById('cmpTypeHint').textContent = TYPE_HINTS['general'];
+}
+
+function closeCompose() {
+  document.getElementById('composeModal').classList.remove('open');
+}
+
+document.getElementById('cmpType').addEventListener('change', function() {
+  const t = this.value;
+  document.getElementById('cmpTypeHint').textContent = TYPE_HINTS[t] || '';
+  document.getElementById('cmpTopicGroup').style.display = t === 'question' ? '' : 'none';
+});
+
+async function sendMessage() {
+  const recipientId = document.getElementById('cmpRecipient').value;
+  const subject     = document.getElementById('cmpSubject').value.trim();
+  const body        = document.getElementById('cmpBody').value.trim();
+  const msgType     = document.getElementById('cmpType').value;
+  const topicId     = document.getElementById('cmpTopic').value;
+
+  if (!recipientId) { showToast('Qabul qiluvchini tanlang', 'error'); return; }
+  if (!subject)     { showToast('Sarlavha kiriting', 'error'); return; }
+  if (!body)        { showToast('Xabar matnini yozing', 'error'); return; }
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  try {
+    const payload = { recipient: +recipientId, subject, body, msg_type: msgType };
+    if (topicId) payload.related_topic = +topicId;
+    await api.msgSend(payload);
+    closeCompose();
+    showToast('Xabar yuborildi!', 'success');
+    if (currentTab === 'sent') await loadMessages();
+  } catch (e) {
+    showToast(e.message || 'Xatolik yuz berdi', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ── TAB SWITCH ── */
+function switchTab(tab, el) {
+  currentTab = tab;
+  currentMsgId = null;
+  document.querySelectorAll('.msg-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('placeholder').style.display = '';
+  document.getElementById('threadView').style.display = 'none';
+  loadMessages();
+}
+
+/* ── FILTER ── */
+function filterMessages() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  if (!q) { renderList(allMessages); return; }
+  renderList(allMessages.filter(m =>
+    m.subject.toLowerCase().includes(q) ||
+    m.body?.toLowerCase().includes(q) ||
+    m.sender?.full_name?.toLowerCase().includes(q) ||
+    m.recipient?.full_name?.toLowerCase().includes(q)
+  ));
+}
+
+/* ── MOBILE BACK ── */
+function goBackMobile() {
+  document.getElementById('msgLeft').classList.remove('panel-open');
+  document.getElementById('msgRight').classList.remove('panel-open');
+  currentMsgId = null;
+}
+
+/* ── UTILS ── */
+function nameInitials(name) {
+  const parts = (name || '?').split(' ').filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return (parts[0]?.[0] || '?').toUpperCase();
+}
+
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function timeAgo(iso) {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1)   return 'Hozirgina';
+  if (min < 60)  return `${min}d oldin`;
+  const h = Math.floor(min / 60);
+  if (h < 24)    return `${h}s oldin`;
+  const d = Math.floor(h / 24);
+  if (d < 7)     return `${d} kun oldin`;
+  return formatDate(iso).split(' ')[0];
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleString('uz-UZ', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close modal on overlay click
+document.getElementById('composeModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCompose();
+});
+</script>
+</body>
+</html>

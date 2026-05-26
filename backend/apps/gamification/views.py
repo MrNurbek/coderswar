@@ -151,6 +151,28 @@ class ClanViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Allaqachon klanga a\'zosiz.'}, status=400)
 
         ClanMembership.objects.create(clan=clan, user=request.user)
+
+        # Liderga yangi a'zo haqida bildiruv yuborish
+        try:
+            from apps.social.models import Notification
+            leader_mb = ClanMembership.objects.filter(
+                clan=clan, role=ClanMembership.Role.LEADER
+            ).select_related('user').first()
+            if leader_mb and leader_mb.user != request.user:
+                full_name = request.user.get_full_name() or request.user.username
+                Notification.objects.create(
+                    user       = leader_mb.user,
+                    title      = '👥 Yangi a\'zo qo\'shildi!',
+                    message    = (
+                        f'{full_name} "{clan.name}" klanga qo\'shildi. '
+                        f'Hozir klaningizda {clan.memberships.count()} a\'zo bor.'
+                    ),
+                    notif_type = 'clan',
+                    link       = '/clan.html',
+                )
+        except Exception:
+            pass
+
         return Response({'detail': f'{clan.name} klanga qo\'shildingiz.'})
 
     @action(detail=True, methods=['post'])
@@ -161,6 +183,28 @@ class ClanViewSet(viewsets.ModelViewSet):
         deleted, _ = ClanMembership.objects.filter(clan=clan, user=request.user).delete()
         if not deleted:
             return Response({'detail': 'A\'zolik topilmadi.'}, status=404)
+
+        # Liderga a'zo chiqib ketgani haqida bildiruv yuborish
+        try:
+            from apps.social.models import Notification
+            leader_mb = ClanMembership.objects.filter(
+                clan=clan, role=ClanMembership.Role.LEADER
+            ).select_related('user').first()
+            if leader_mb:
+                full_name = request.user.get_full_name() or request.user.username
+                Notification.objects.create(
+                    user       = leader_mb.user,
+                    title      = '👤 A\'zo klanidan chiqdi',
+                    message    = (
+                        f'{full_name} "{clan.name}" klanidan chiqdi. '
+                        f'Hozir klaningizda {clan.memberships.count()} a\'zo qoldi.'
+                    ),
+                    notif_type = 'clan',
+                    link       = '/clan.html',
+                )
+        except Exception:
+            pass
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'])

@@ -122,25 +122,25 @@
 <script>
 if (!Auth.requireAuth()) throw 0;
 const CHARS=[
-  {id:'warrior',name:'Jangchi',en:'Warrior',avatar:'⚔️',tag:'tag-warrior',
+  {id:'warrior',name:'Jangchi',en:'Warrior',avatar:'<i class="ra ra-crossed-swords"></i>',tag:'tag-warrior',
    desc:'Kuch va qat\'iyat timsoli. Qiyin vazifalardan qo\'rqmaydi. Har qanday muammoni to\'g\'ridan-to\'g\'ri hal qiladi.',
-   weapons:['⚔️ Sword','🏹 Spear','🛡️ Armor'],
+   weapons:['<i class="ra ra-sword"></i> Sword','<i class="ra ra-archer"></i> Spear','<i class="ra ra-shield"></i> Armor'],
    stats:{strength:95,speed:60,intelligence:65,defense:80}},
-  {id:'ranger',en:'Ranger',name:'Sarguzashtchi',avatar:'🏹',tag:'tag-ranger',
+  {id:'ranger',en:'Ranger',name:'Sarguzashtchi',avatar:'<i class="ra ra-archer"></i>',tag:'tag-ranger',
    desc:'Tezkorlik va aniqlik timsoli. Eng samarali va qisqa yechim topadi. Kodni optimallashtirishda tengsiz.',
-   weapons:['🏹 Spear','👟 Boots','🥋 Light Armor'],
+   weapons:['<i class="ra ra-archer"></i> Spear','👟 Boots','🥋 Light Armor'],
    stats:{strength:65,speed:95,intelligence:75,defense:55}},
-  {id:'sorceress',name:'Sehrgar Ayol',en:'Sorceress',avatar:'🔮',tag:'tag-sorceress',
+  {id:'sorceress',name:'Sehrgar Ayol',en:'Sorceress',avatar:'<i class="ra ra-crystal-ball"></i>',tag:'tag-sorceress',
    desc:'Bilim va sehrli tafakkur timsoli. Algoritmlarni sehrga aylantiradi. Kreativ yechimlar topishda ustun.',
    weapons:['🪄 Wand','💍 Ring'],
    stats:{strength:45,speed:70,intelligence:98,defense:50}},
-  {id:'knight',name:'Ritsar',en:'Knight',avatar:'🛡️',tag:'tag-knight',
+  {id:'knight',name:'Ritsar',en:'Knight',avatar:'<i class="ra ra-shield"></i>',tag:'tag-knight',
    desc:'Adolat va himoya timsoli. Jamoani boshqaradi. Murakkab loyihalarni tartibli hal qiladi.',
-   weapons:['⚔️ Sword','🛡️ Shield','🏰 Armor'],
+   weapons:['<i class="ra ra-sword"></i> Sword','<i class="ra ra-shield"></i> Shield','🏰 Armor'],
    stats:{strength:80,speed:55,intelligence:70,defense:95}},
-  {id:'ladyknight',name:'Ayol Ritsar',en:'Lady Knight',avatar:'⚜️',tag:'tag-ladyknight',
+  {id:'ladyknight',name:'Ayol Ritsar',en:'Lady Knight',avatar:'<i class="ra ra-crown"></i>',tag:'tag-ladyknight',
    desc:'Qat\'iyat va himoya timsoli. Barcha cheklovlarni engib o\'tadi. Kuch va aql muvozanatini saqlaydi.',
-   weapons:['⚔️ Sword','🛡️ Shield','🏰 Armor','💍 Ring'],
+   weapons:['<i class="ra ra-sword"></i> Sword','<i class="ra ra-shield"></i> Shield','🏰 Armor','💍 Ring'],
    stats:{strength:78,speed:72,intelligence:78,defense:88}}
 ];
 
@@ -175,7 +175,7 @@ function pick(id){
   document.getElementById('card-'+id).classList.add('active');
   const c=CHARS.find(x=>x.id===id);
   // detail panel
-  document.getElementById('dpAvatar').textContent=c.avatar;
+  document.getElementById('dpAvatar').innerHTML=c.avatar;
   document.getElementById('dpName').textContent=c.name;
   document.getElementById('dpEn').textContent=c.en;
   document.getElementById('dpDesc').textContent=c.desc;
@@ -190,7 +190,7 @@ function pick(id){
   panel.scrollIntoView({behavior:'smooth',block:'nearest'});
   const btn=document.getElementById('confirmBtn');
   btn.classList.add('ready');
-  btn.textContent=`${c.avatar} ${c.name}ni tanlash →`;
+  btn.innerHTML=`${c.avatar} ${c.name}ni tanlash →`;
   document.getElementById('confirmHint').textContent=`${c.name} (${c.en}) tanlandi`;
 }
 
@@ -212,7 +212,18 @@ async function confirm(){
 }
 
 renderChars();
+
+// Foydalanuvchining mavjud personajini oldindan belgilash
+(async () => {
+  try {
+    const user = await api.me();
+    const current = user?.student_profile?.character;
+    if (current && CHARS.find(c => c.id === current)) {
+      pick(current);
+    }
+  } catch {}
+})();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

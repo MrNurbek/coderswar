@@ -40,11 +40,14 @@
     .topbar-left h2{font-size:1.05rem;font-weight:700}
     .topbar-left .breadcrumb{font-size:.78rem;color:var(--muted);margin-top:.1rem}
     .topbar-right{display:flex;align-items:center;gap:1rem}
-    .btn{padding:.55rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+    .btn{padding:.55rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
     .btn-primary{background:linear-gradient(135deg,#6c63ff,#8b5cf6);color:#fff}
-    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-primary:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
     .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
     .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-danger{background:rgba(255,101,132,0.12);border:1px solid rgba(255,101,132,0.35);color:#ff6584}
+    .btn-danger:hover:not(:disabled){background:rgba(255,101,132,0.22);border-color:rgba(255,101,132,0.55)}
     .content{padding:2rem;flex:1}
 
     /* CARD */
@@ -185,7 +188,7 @@
     @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
     .stat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
     .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
-    .stat-box::after{content:attr(data-icon);position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:2.8rem;opacity:.08}
+    .stat-box .stat-bg{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);font-size:3rem;opacity:.08;pointer-events:none}
     .stat-box .label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem}
     .stat-box .value{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:.3rem}
     .stat-box .sub{font-size:.78rem;color:var(--muted)}
@@ -226,22 +229,24 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-logo">
-    <a href="index.html">⚔️ Coders War</a>
+    <a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
     <div class="sub">Algoritmik tillar va dasturlash</div>
   </div>
   <nav class="sb-nav">
     <div class="nav-section">O'quv</div>
-    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
-    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
-    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
-    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
     <div class="nav-section">Jamoa</div>
-    <a class="nav-item active" href="clan.html"><span class="icon">🏰</span> Klan</a>
-    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
-    <a class="nav-item" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <a class="nav-item active" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
     <div class="nav-section">Shaxsiy</div>
-    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
@@ -250,7 +255,7 @@
         <div class="name" data-user-name>...</div>
         <div class="role" data-user-role>Student</div>
       </div>
-      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish">⏻</button>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
@@ -259,11 +264,14 @@
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
-      <h2>🏰 Klan boshqaruvi</h2>
-      <div class="breadcrumb">Jamoa • Alpha Coders</div>
+      <h2><i class="ra ra-castle-emblem"></i> Klan boshqaruvi</h2>
+      <div class="breadcrumb">Jamoa • <span id="clanBreadcrumb">—</span></div>
     </div>
     <div class="topbar-right">
-      <button class="btn btn-outline" onclick="openModal('warModal')">⚔️ Urush e'lon qilish</button>
+      <button class="btn btn-danger" id="leaveBtn" onclick="openModal('leaveModal')" style="display:none" title="Klantan chiqish">
+        <i class="ra ra-player-run"></i> Chiqish
+      </button>
+      <button class="btn btn-outline" id="declareWarTopBtn" onclick="openModal('warModal')"><i class="ra ra-crossed-swords"></i> Urush e'lon qilish</button>
       <button class="btn btn-primary" onclick="openModal('inviteModal')">+ A'zo qo'shish</button>
     </div>
   </div>
@@ -272,23 +280,23 @@
 
     <!-- CLAN HERO -->
     <div class="clan-hero">
-      <div class="clan-emblem">🏰</div>
+      <div class="clan-emblem"><i class="ra ra-castle-emblem"></i></div>
       <div class="clan-info">
-        <div class="clan-tag">[ALC]</div>
-        <h1>Alpha Coders</h1>
-        <p>C# algoritmlar va dasturlash bo'yicha eng kuchli talabalar klan. Birgalikda o'rganamiz, birgalikda g'alaba qozonамиз.</p>
+        <div class="clan-tag" id="clanTag">—</div>
+        <h1 id="clanName">—</h1>
+        <p id="clanDesc">Yuklanmoqda…</p>
       </div>
       <div class="clan-stats">
         <div class="clan-stat">
-          <div class="val gold">⭐ 8,420</div>
+          <div class="val gold" id="clanRating">⭐ —</div>
           <div class="lbl">Klan reytingi</div>
         </div>
         <div class="clan-stat">
-          <div class="val green">12/15</div>
+          <div class="val green" id="clanMemberCount">—</div>
           <div class="lbl">A'zolar</div>
         </div>
         <div class="clan-stat">
-          <div class="val purple">#4</div>
+          <div class="val purple" id="clanHeroRank">—</div>
           <div class="lbl">Fakultet o'rni</div>
         </div>
       </div>
@@ -296,39 +304,39 @@
 
     <!-- STATS ROW -->
     <div class="stats-row">
-      <div class="stat-box" data-icon="⚔️">
+      <div class="stat-box" ><i class="ra ra-crossed-swords stat-bg" aria-hidden="true"></i>
         <div class="label">Klan urushlari</div>
-        <div class="value" style="color:#43e97b">18</div>
+        <div class="value" id="statWins" style="color:#43e97b">—</div>
         <div class="sub">G'alaba</div>
-        <div class="trend trend-up">↑ 3 bu oyda</div>
+        <div class="trend" id="statWinsTrend" style="color:var(--muted)">Yuklanmoqda…</div>
       </div>
-      <div class="stat-box" data-icon="🏆">
+      <div class="stat-box" ><i class="ra ra-trophy stat-bg" aria-hidden="true"></i>
         <div class="label">O'rtacha ball</div>
-        <div class="value" style="color:#a78bfa">74.8</div>
+        <div class="value" id="statAvgScore" style="color:#a78bfa">—</div>
         <div class="sub">Academic Score</div>
-        <div class="trend trend-up">↑ +2.1 o'tgan haftaga nisbatan</div>
+        <div class="trend" id="statAvgTrend" style="color:var(--muted)">Hisoblanmoqda…</div>
       </div>
-      <div class="stat-box" data-icon="💻">
+      <div class="stat-box" ><i class="ra ra-anvil stat-bg" aria-hidden="true"></i>
         <div class="label">Topshirilgan kodlar</div>
-        <div class="value" style="color:#ffd700">1,247</div>
+        <div class="value" id="statCodes" style="color:#ffd700">—</div>
         <div class="sub">Bu oy</div>
-        <div class="trend trend-up">↑ +156 o'tgan oyga nisbatan</div>
+        <div class="trend" style="color:var(--muted)">Tez kunda</div>
       </div>
-      <div class="stat-box" data-icon="🔥">
+      <div class="stat-box" ><i class="ra ra-fire stat-bg" aria-hidden="true"></i>
         <div class="label">Faollik streak</div>
-        <div class="value" style="color:#ff6584">21</div>
+        <div class="value" id="statStreak" style="color:#ff6584">—</div>
         <div class="sub">kun ketma-ket</div>
-        <div class="trend trend-up">Rekord: 28 kun</div>
+        <div class="trend" id="statStreakTrend" style="color:var(--muted)">Yuklanmoqda…</div>
       </div>
     </div>
 
     <!-- TABS -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('members')">👥 A'zolar</button>
-      <button class="tab-btn" onclick="switchTab('wars')">⚔️ Urushlar tarixi</button>
-      <button class="tab-btn" onclick="switchTab('achievements')">🏅 Yutuqlar</button>
-      <button class="tab-btn" onclick="switchTab('chat')">💬 Klan chati</button>
-      <button class="tab-btn" onclick="switchTab('ranking')">📊 Klan reytingi</button>
+      <button class="tab-btn active" onclick="switchTab('members')"><i class="ra ra-player"></i> A'zolar</button>
+      <button class="tab-btn" onclick="switchTab('wars')"><i class="ra ra-crossed-swords"></i> Urushlar tarixi</button>
+      <button class="tab-btn" onclick="switchTab('achievements')"><i class="ra ra-trophy"></i> Yutuqlar</button>
+      <button class="tab-btn" onclick="switchTab('chat')"><i class="ra ra-scroll-unfurled"></i> Klan chati</button>
+      <button class="tab-btn" onclick="switchTab('ranking')"><i class="ra ra-compass"></i> Klan reytingi</button>
     </div>
 
     <!-- TAB: MEMBERS -->
@@ -336,7 +344,7 @@
       <div class="grid-2-1">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">👥 Klan a'zolari (12/15)</span>
+            <span class="card-title"><i class="ra ra-player"></i> Klan a'zolari (<span id="memberCountLabel">—</span>)</span>
             <a class="card-action">+ Taklif qilish</a>
           </div>
           <table class="member-table">
@@ -357,7 +365,7 @@
           <!-- CLAN WEEKLY CHART -->
           <div class="card" style="margin-bottom:1.5rem">
             <div class="card-header">
-              <span class="card-title">📈 Haftalik klan natijasi</span>
+              <span class="card-title"><i class="ra ra-level-three-advanced"></i> Haftalik klan natijasi</span>
             </div>
             <div class="chart-wrap">
               <canvas id="clanChart" class="chart"></canvas>
@@ -370,13 +378,9 @@
             </div>
             <div style="text-align:center;padding:.5rem 0">
               <div style="font-size:3rem;margin-bottom:.5rem">🏆</div>
-              <div style="font-size:1.1rem;font-weight:700;margin-bottom:.2rem">Azizbek T.</div>
-              <div style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem">Bu oy 320 hissa qo'shdi</div>
-              <div style="display:flex;justify-content:center;gap:1rem;font-size:.82rem">
-                <span style="color:#43e97b">💻 48 kod</span>
-                <span style="color:#a78bfa">⚡ 12 duel</span>
-                <span style="color:#ffd700">📚 8 mavzu</span>
-              </div>
+              <div id="topContribName" style="font-size:1.1rem;font-weight:700;margin-bottom:.2rem">—</div>
+              <div id="topContribMeta" style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem">hisoblanyapti…</div>
+              <div id="topContribStats" style="display:flex;justify-content:center;gap:1rem;font-size:.82rem"></div>
             </div>
           </div>
         </div>
@@ -388,54 +392,24 @@
       <div class="grid-2-1">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">⚔️ Urushlar tarixi (28 ta)</span>
-            <span style="font-size:.82rem;color:var(--accent3);font-weight:600">18W / 7L / 3D</span>
+            <span class="card-title"><i class="ra ra-crossed-swords"></i> Urushlar tarixi</span>
+            <span style="font-size:.78rem;color:var(--muted)">tez kunda</span>
           </div>
-          <table class="war-table">
-            <thead>
-              <tr>
-                <th>Raqib klan</th>
-                <th>Tur</th>
-                <th>Natija</th>
-                <th>Ball</th>
-                <th>Sana</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td><span class="vs-badge">VS</span> <strong>Beta Devs</strong></td><td>Algoritmik</td><td class="result-win">G'alaba ✓</td><td>420:380</td><td style="color:var(--muted)">28 Apr</td></tr>
-              <tr><td><span class="vs-badge">VS</span> <strong>Code Warriors</strong></td><td>Debug</td><td class="result-win">G'alaba ✓</td><td>510:390</td><td style="color:var(--muted)">22 Apr</td></tr>
-              <tr><td><span class="vs-badge">VS</span> <strong>Logic Masters</strong></td><td>Kompleks</td><td class="result-loss">Mag'lubiyat ✗</td><td>340:450</td><td style="color:var(--muted)">18 Apr</td></tr>
-              <tr><td><span class="vs-badge">VS</span> <strong>CS Champions</strong></td><td>Algoritmik</td><td class="result-win">G'alaba ✓</td><td>480:390</td><td style="color:var(--muted)">14 Apr</td></tr>
-              <tr><td><span class="vs-badge">VS</span> <strong>Pixel Coders</strong></td><td>Debug</td><td class="result-draw">Durrang =</td><td>400:400</td><td style="color:var(--muted)">10 Apr</td></tr>
-              <tr><td><span class="vs-badge">VS</span> <strong>Algo Ninjas</strong></td><td>Algoritmik</td><td class="result-win">G'alaba ✓</td><td>460:350</td><td style="color:var(--muted)">5 Apr</td></tr>
-              <tr><td><span class="vs-badge">VS</span> <strong>DevMasters</strong></td><td>Kompleks</td><td class="result-win">G'alaba ✓</td><td>520:410</td><td style="color:var(--muted)">1 Apr</td></tr>
-            </tbody>
-          </table>
+          <div style="text-align:center;padding:3rem 1rem;color:var(--muted)">
+            <div style="font-size:2.5rem;margin-bottom:.8rem">⚔️</div>
+            <div style="font-size:.92rem;font-weight:600;margin-bottom:.4rem">Klan urush tizimi</div>
+            <div style="font-size:.8rem">Ushbu funksiya tez kunda qo'shiladi. Hozircha <strong>Duel</strong> bo'limida boshqa talabalar bilan raqobatlashing!</div>
+          </div>
         </div>
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🎯 Kelayotgan urushlar</span>
+            <span class="card-title"><i class="ra ra-archery-target"></i> Kelayotgan urushlar</span>
           </div>
           <div class="challenge-list" id="challengeList"></div>
           <div style="margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--border)">
-            <div style="font-size:.85rem;font-weight:600;margin-bottom:.8rem">📊 Urush statistikasi</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
-              <div style="background:rgba(67,233,123,0.06);border:1px solid rgba(67,233,123,0.15);border-radius:12px;padding:.8rem;text-align:center">
-                <div style="font-size:1.4rem;font-weight:900;color:#43e97b">64%</div>
-                <div style="font-size:.72rem;color:var(--muted)">G'alaba foizi</div>
-              </div>
-              <div style="background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.15);border-radius:12px;padding:.8rem;text-align:center">
-                <div style="font-size:1.4rem;font-weight:900;color:#a78bfa">420</div>
-                <div style="font-size:.72rem;color:var(--muted)">O'rtacha ball</div>
-              </div>
-              <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:.8rem;text-align:center">
-                <div style="font-size:1.4rem;font-weight:900;color:var(--gold)">5</div>
-                <div style="font-size:.72rem;color:var(--muted)">G'alaba ketma-ket</div>
-              </div>
-              <div style="background:rgba(255,101,132,0.06);border:1px solid rgba(255,101,132,0.15);border-radius:12px;padding:.8rem;text-align:center">
-                <div style="font-size:1.4rem;font-weight:900;color:#ff6584">28</div>
-                <div style="font-size:.72rem;color:var(--muted)">Jami urushlar</div>
-              </div>
+            <div style="font-size:.85rem;font-weight:600;margin-bottom:.8rem"><i class="ra ra-compass"></i> Urush statistikasi</div>
+            <div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:.82rem;background:rgba(255,255,255,0.02);border-radius:12px">
+              <i class="ra ra-hourglass"></i> Statistika urush tizimi ishga tushgandan keyin to'ldiriladi
             </div>
           </div>
         </div>
@@ -447,46 +421,24 @@
       <div class="grid-2-1">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🏅 Klan yutuqlari</span>
-            <span style="font-size:.82rem;color:var(--muted)">12/20 olingan</span>
+            <span class="card-title"><i class="ra ra-trophy"></i> Klan yutuqlari</span>
           </div>
-          <div class="achieve-list" id="achieveList"></div>
+          <div class="achieve-list" id="achieveList">
+            <div style="text-align:center;padding:3rem 1rem;color:var(--muted)">
+              <div style="font-size:2.5rem;margin-bottom:.8rem">🏆</div>
+              <div style="font-size:.92rem;font-weight:600;margin-bottom:.4rem">Klan yutuqlari tizimi</div>
+              <div style="font-size:.8rem">Klan a'zolari birgalikda yutuqlarga erishishi uchun ushbu bo'lim tez kunda ochiladi</div>
+            </div>
+          </div>
         </div>
         <div class="card">
           <div class="card-header">
-            <span class="card-title">📊 Yutuq taraqqiyoti</span>
+            <span class="card-title"><i class="ra ra-compass"></i> Klan statistikasi</span>
           </div>
-          <div style="display:flex;flex-direction:column;gap:1rem;padding:.5rem 0">
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.4rem">
-                <span>Jang yutuqlari</span><span style="color:#43e97b">8/10</span>
-              </div>
-              <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden">
-                <div style="height:100%;width:80%;background:linear-gradient(90deg,#43e97b,#38f9d7);border-radius:4px"></div>
-              </div>
+          <div style="display:flex;flex-direction:column;gap:1rem;padding:.5rem 0" id="clanAchievStats">
+            <div style="text-align:center;color:var(--muted);font-size:.82rem;padding:2rem 1rem;background:rgba(255,255,255,0.02);border-radius:12px">
+              <i class="ra ra-level-three-advanced"></i> Klan reytingi ortishi bilan statistika to'ldiriladi
             </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.4rem">
-                <span>O'qish yutuqlari</span><span style="color:#a78bfa">3/5</span>
-              </div>
-              <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden">
-                <div style="height:100%;width:60%;background:linear-gradient(90deg,#6c63ff,#a78bfa);border-radius:4px"></div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.4rem">
-                <span>Ijtimoiy yutuqlar</span><span style="color:var(--gold)">1/5</span>
-              </div>
-              <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden">
-                <div style="height:100%;width:20%;background:linear-gradient(90deg,#ffd700,#ffa500);border-radius:4px"></div>
-              </div>
-            </div>
-          </div>
-          <div style="margin-top:1.5rem;padding:1rem;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:14px;text-align:center">
-            <div style="font-size:1.6rem;margin-bottom:.3rem">🔓</div>
-            <div style="font-size:.88rem;font-weight:600;margin-bottom:.2rem">Keyingi yutuq</div>
-            <div style="font-size:.78rem;color:var(--muted)">10 ta ketma-ket g'alaba qozonish</div>
-            <div style="font-size:.75rem;color:var(--gold);margin-top:.5rem;font-weight:600">5 ta g'alaba qoldi</div>
           </div>
         </div>
       </div>
@@ -497,8 +449,8 @@
       <div class="grid-2-1">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">💬 Klan chati</span>
-            <span style="font-size:.78rem;color:var(--accent3)">● 7 nafar online</span>
+            <span class="card-title"><i class="ra ra-scroll-unfurled"></i> Klan chati</span>
+            <span id="chatOnlineCount" style="font-size:.78rem;color:var(--accent3)">● … nafar</span>
           </div>
           <div class="chat-box" id="chatBox"></div>
           <div class="chat-input-row">
@@ -513,21 +465,9 @@
           </div>
           <div class="card">
             <div class="card-header"><span class="card-title">📢 E'lonlar</span></div>
-            <div style="display:flex;flex-direction:column;gap:.7rem;font-size:.83rem">
-              <div style="padding:.7rem;background:rgba(108,99,255,0.06);border-radius:10px;border-left:3px solid var(--accent)">
-                <div style="font-weight:600;margin-bottom:.2rem">⚔️ Yangi urush!</div>
-                <div style="color:var(--muted)">Beta Devs klani bilan urush juma kuni boshlanadi</div>
-                <div style="color:var(--muted);font-size:.72rem;margin-top:.3rem">29 Apr, 14:00</div>
-              </div>
-              <div style="padding:.7rem;background:rgba(67,233,123,0.06);border-radius:10px;border-left:3px solid #43e97b">
-                <div style="font-weight:600;margin-bottom:.2rem">🏆 G'alaba!</div>
-                <div style="color:var(--muted)">Code Warriors bilan urushda g'alaba qozondik +40 ball</div>
-                <div style="color:var(--muted);font-size:.72rem;margin-top:.3rem">22 Apr, 18:30</div>
-              </div>
-              <div style="padding:.7rem;background:rgba(255,215,0,0.06);border-radius:10px;border-left:3px solid var(--gold)">
-                <div style="font-weight:600;margin-bottom:.2rem">🆕 Yangi a'zo</div>
-                <div style="color:var(--muted)">Nodira M. klanga qo'shildi — xush kelibsiz!</div>
-                <div style="color:var(--muted);font-size:.72rem;margin-top:.3rem">20 Apr, 10:15</div>
+            <div id="clanAnnouncements" style="display:flex;flex-direction:column;gap:.7rem;font-size:.83rem">
+              <div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem">
+                <i class="ra ra-hourglass"></i> Yuklanmoqda…
               </div>
             </div>
           </div>
@@ -540,14 +480,14 @@
       <div class="grid-1-1">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🏆 Klan reytingi — Fakultet</span>
+            <span class="card-title"><i class="ra ra-trophy"></i> Klan reytingi — Fakultet</span>
             <span style="font-size:.78rem;color:var(--muted)">Top 10 klan</span>
           </div>
           <div class="rank-list" id="clanRankList"></div>
         </div>
         <div class="card">
           <div class="card-header">
-            <span class="card-title">📊 Klan reyting tarixi</span>
+            <span class="card-title"><i class="ra ra-compass"></i> Klan reyting tarixi</span>
           </div>
           <div class="chart-wrap" style="height:180px">
             <canvas id="rankChart" class="chart"></canvas>
@@ -555,16 +495,16 @@
           <div style="margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--border)">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;text-align:center">
               <div>
-                <div style="font-size:1.3rem;font-weight:900;color:var(--gold)">#4</div>
+                <div id="rankStatCurrent" style="font-size:1.3rem;font-weight:900;color:var(--gold)">—</div>
                 <div style="font-size:.72rem;color:var(--muted)">Joriy o'rin</div>
               </div>
               <div>
-                <div style="font-size:1.3rem;font-weight:900;color:#43e97b">#2</div>
-                <div style="font-size:.72rem;color:var(--muted)">Eng yaxshi o'rin</div>
+                <div id="rankStatMembers" style="font-size:1.3rem;font-weight:900;color:#43e97b">—</div>
+                <div style="font-size:.72rem;color:var(--muted)">A'zolar soni</div>
               </div>
               <div>
-                <div style="font-size:1.3rem;font-weight:900;color:#a78bfa">+2</div>
-                <div style="font-size:.72rem;color:var(--muted)">Bu oy o'zgarish</div>
+                <div id="rankStatTotal" style="font-size:1.3rem;font-weight:900;color:#a78bfa">—</div>
+                <div style="font-size:.72rem;color:var(--muted)">Jami klanlar</div>
               </div>
             </div>
           </div>
@@ -572,6 +512,31 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- LEAVE CLAN MODAL -->
+<div class="modal-overlay" id="leaveModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('leaveModal')">✕</button>
+    <h3 style="font-family:'MedievalSharp',sans-serif;font-size:1.05rem;margin-bottom:1.2rem;color:var(--accent2)">
+      <i class="ra ra-player-run"></i> Klantan chiqish
+    </h3>
+    <div style="background:rgba(255,101,132,0.07);border:1px solid rgba(255,101,132,0.2);border-radius:14px;padding:1rem 1.2rem;margin-bottom:1.2rem">
+      <p style="font-size:.9rem;line-height:1.6;margin-bottom:.5rem">
+        Rostdan ham <strong id="leaveClanName" style="color:var(--text)">—</strong> klanidan chiqmoqchimisiz?
+      </p>
+      <p style="font-size:.82rem;color:var(--muted);line-height:1.5">
+        ⚠️ Klantan chiqqandan so'ng siz klan chati, statistika va klan urushlaridan foydalana olmaysiz.
+        Qaytib kirish uchun qayta ariza topshirishingiz kerak bo'ladi.
+      </p>
+    </div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="closeModal('leaveModal')">Bekor qilish</button>
+      <button class="btn btn-danger" id="confirmLeaveBtn" onclick="leaveClan()">
+        <i class="ra ra-player-run"></i> Ha, klantan chiqaman
+      </button>
+    </div>
   </div>
 </div>
 
@@ -597,7 +562,7 @@
 <div class="modal-overlay" id="warModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('warModal')">✕</button>
-    <h3>⚔️ Klan urushi e'lon qilish</h3>
+    <h3><i class="ra ra-crossed-swords"></i> Klan urushi e'lon qilish</h3>
     <p>Boshqa klanga urush e'lon qiling va g'alaba qozonib klan reytingini oshiring</p>
     <div class="form-group">
       <label class="form-label">Raqib klan izlash</label>
@@ -616,7 +581,7 @@
       <label class="form-label">Sana</label>
       <input class="form-input" type="datetime-local"/>
     </div>
-    <button class="btn btn-primary" id="declareWarBtn" style="width:100%;padding:.8rem;background:linear-gradient(135deg,#ff6584,#ff416c)" onclick="declareWar()">⚔️ Urush e'lon qilish</button>
+    <button class="btn btn-primary" id="declareWarBtn" style="width:100%;padding:.8rem;background:linear-gradient(135deg,#ff6584,#ff416c)" onclick="declareWar()"><i class="ra ra-crossed-swords"></i> Urush e'lon qilish</button>
     <div id="warModalAlert" style="display:none;margin-top:.7rem;padding:.6rem .9rem;border-radius:10px;font-size:.83rem"></div>
   </div>
 </div>
@@ -627,121 +592,28 @@
 <script>
 if (!Auth.requireAuth()) throw 0;
 Auth.fillUserUI();
-const members=[
-  {name:'Azizbek T.',handle:'@azizbek',role:'leader',level:'Knight',rating:842,contrib:95,online:true,av:'A',avc:''},
-  {name:'Bobur N.',handle:'@bobur_n',role:'officer',level:'Hero',rating:1520,contrib:88,online:true,av:'B',avc:'orange'},
-  {name:'Dilnoza K.',handle:'@dilnoza',role:'officer',level:'Warden',rating:610,contrib:72,online:true,av:'D',avc:'green'},
-  {name:'Eldor M.',handle:'@eldor_m',role:'member',level:'Knight',rating:780,contrib:65,online:false,av:'E',avc:'red'},
-  {name:'Feruza A.',handle:'@feruza',role:'member',level:'Recruit',rating:240,contrib:41,online:true,av:'F',avc:'blue'},
-  {name:'Gulnora S.',handle:'@gulnora_s',role:'member',level:'Warden',rating:450,contrib:58,online:false,av:'G',avc:''},
-  {name:'Hamid R.',handle:'@hamid_r',role:'member',level:'Knight',rating:820,contrib:70,online:true,av:'H',avc:'orange'},
-  {name:'Iroda B.',handle:'@iroda_b',role:'member',level:'Warden',rating:590,contrib:48,online:false,av:'I',avc:'green'},
-  {name:'Jasur T.',handle:'@jasur_t',role:'member',level:'Recruit',rating:180,contrib:30,online:false,av:'J',avc:'red'},
-  {name:'Kamola M.',handle:'@kamola_m',role:'member',level:'Warden',rating:520,contrib:55,online:true,av:'K',avc:'blue'},
-  {name:'Lochin D.',handle:'@lochin',role:'member',level:'Knight',rating:760,contrib:62,online:false,av:'L',avc:''},
-  {name:'Nodira O.',handle:'@nodira_o',role:'member',level:'Recruit',rating:290,contrib:25,online:true,av:'N',avc:'orange'},
-];
-
-// RENDER MEMBERS
+// RENDER MEMBERS — filled by API in loadMyClan()
 const tbody=document.getElementById('memberBody');
-members.forEach(m=>{
-  const tr=document.createElement('tr');
-  const roleClass=m.role==='leader'?'role-leader':m.role==='officer'?'role-officer':'role-member';
-  const roleLabel=m.role==='leader'?'Lider':m.role==='officer'?'Ofitser':'A\'zo';
-  const isMe=m.name==='Azizbek T.';
-  tr.innerHTML=`
-    <td><div class="m-info">
-      <div class="m-avatar ${m.avc}">${m.av}</div>
-      <div>
-        <div class="m-name">${m.name}${isMe?' <span style="font-size:.65rem;color:var(--accent)">(men)</span>':''}</div>
-        <div class="m-handle">${m.handle}</div>
-      </div>
-    </div></td>
-    <td><span class="role-badge ${roleClass}">${roleLabel}</span></td>
-    <td><span class="level-pill">${m.level}</span></td>
-    <td style="font-weight:700;color:#a78bfa">${m.rating}</td>
-    <td><div class="contrib-bar"><div class="cbar"><div class="cbar-fill" style="width:${m.contrib}%"></div></div><span class="contrib-val">${m.contrib}%</span></div></td>
-    <td><span class="online-dot ${m.online?'online':'offline'}"></span>${m.online?'<span style="color:#43e97b;font-size:.8rem">Online</span>':'<span style="color:var(--muted);font-size:.8rem">Offline</span>'}</td>
-  `;
-  tbody.appendChild(tr);
-});
-
-// ONLINE MEMBERS PANEL
+if(tbody) tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem">Yuklanmoqda…</td></tr>`;
 const onlineEl=document.getElementById('onlineMembers');
-members.filter(m=>m.online).forEach(m=>{
-  const div=document.createElement('div');
-  div.style.cssText='display:flex;align-items:center;gap:.7rem;padding:.5rem .6rem;background:rgba(255,255,255,0.03);border-radius:10px';
-  div.innerHTML=`<div class="m-avatar ${m.avc}" style="width:30px;height:30px;font-size:.75rem">${m.av}</div>
-    <div style="flex:1"><div style="font-size:.83rem;font-weight:600">${m.name}</div><div style="font-size:.72rem;color:var(--accent3)">● Online</div></div>
-    <div style="font-size:.75rem;color:var(--muted)">${m.level}</div>`;
-  onlineEl.appendChild(div);
-});
+if(onlineEl) onlineEl.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:.5rem">Yuklanmoqda…</div>`;
 
-// CHALLENGES
-const challenges=[
-  {name:'Code Warriors klani',meta:'Algoritmik urush • 3 masala',time:'2 kun qoldi',active:false},
-  {name:'Algo Ninjas klani',meta:'Debug urushi • 5 masala',time:'Bugun 18:00',active:true},
-  {name:'DevMasters klani',meta:'Kompleks urush • 5 masala',time:'5 kun qoldi',active:false},
-];
+// CHALLENGES — urush tizimi hali ishlab chiqilmoqda
 const chList=document.getElementById('challengeList');
-challenges.forEach(c=>{
-  chList.innerHTML+=`<div class="challenge-item">
-    <div class="ch-icon ${c.active?'active':''}">${c.active?'🔥':'⚔️'}</div>
-    <div class="ch-info"><div class="ch-name">${c.name}</div><div class="ch-meta">${c.meta}</div></div>
-    <div class="ch-time ${c.active?'active':''}">${c.time}</div>
-  </div>`;
-});
+if(chList) chList.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--muted);font-size:.82rem">
+  <div style="font-size:2rem;margin-bottom:.7rem">⚔️</div>
+  <div style="font-weight:600;margin-bottom:.3rem">Kelayotgan urushlar</div>
+  <div>Klan urush tizimi tez kunda qo'shiladi</div>
+</div>`;
 
-// ACHIEVEMENTS
-const achieves=[
-  {name:'Birinchi g\'alaba',desc:'Birinchi klan urushini yutish',pts:'+50 ball',icon:'🏆',cls:'ach-gold',prog:100},
-  {name:'5 ketma-ket g\'alaba',desc:'5 ta klan urushini ketma-ket yutish',pts:'+120 ball',icon:'🔥',cls:'ach-red',prog:100},
-  {name:'100 ta kod topshirish',desc:'Klan ichida 100 ta kod yozish',pts:'+80 ball',icon:'💻',cls:'ach-purple',prog:100},
-  {name:'Faol klan',desc:'Bir hafta davomida har kun faol bo\'lish',pts:'+60 ball',icon:'⭐',cls:'ach-gold',prog:100},
-  {name:'10 ta g\'alaba',desc:'Jami 10 ta klan urushini yutish',pts:'+200 ball',icon:'🥇',cls:'ach-gold',prog:100},
-  {name:'Klan reytingi Top-5',desc:'Fakultet reytingida Top-5 ga kirish',pts:'+150 ball',icon:'🎯',cls:'ach-green',prog:80},
-  {name:'50 ta duel',desc:'Klan a\'zolari birgalikda 50 ta duel o\'tkazish',pts:'+100 ball',icon:'⚡',cls:'ach-red',prog:72},
-  {name:'1000 ta kod',desc:'Klan ichida jami 1000 ta kod yozish',pts:'+300 ball',icon:'🚀',cls:'ach-purple',prog:100},
-];
-const aList=document.getElementById('achieveList');
-achieves.forEach(a=>{
-  aList.innerHTML+=`<div class="achieve-item">
-    <div class="ach-icon ${a.cls}">${a.icon}</div>
-    <div class="ach-info">
-      <div class="ach-name">${a.name}</div>
-      <div class="ach-desc">${a.desc}</div>
-      ${a.prog<100?`<div class="ach-progress">
-        <div class="ach-prog-bar"><div class="ach-prog-fill" style="width:${a.prog}%"></div></div>
-        <div class="ach-prog-txt">${a.prog}% bajarildi</div>
-      </div>`:''}
-    </div>
-    <div class="ach-pts">${a.pts}</div>
-  </div>`;
-});
+// ACHIEVEMENTS — coming soon, HTML already shows placeholder
 
-// CHAT
-const chatMessages=[
-  {name:'Bobur N.',text:"Bugun algoritmik urush bor, barchani tayyorgarlikka chaqiraman!",time:'14:32',av:'B',avc:'orange'},
-  {name:'Dilnoza K.',text:"Ha, men tayyor. Rekursiv masalalarni qaytadan ko'rdim.",time:'14:35',avc:'green',av:'D'},
-  {name:'Hamid R.',text:"Stack va Queue masalalarida yordam kerak bo'lsa aytinglar 😊",time:'14:38',av:'H',avc:'orange'},
-  {name:'Azizbek T.',text:"Barchasiga omad! Birgalikda yutamiz 💪",time:'14:40',av:'A',avc:''},
-  {name:'Kamola M.',text:"Graf algoritmlarini ham ko'rib chiqish kerak, o'tgan urushda muammo bo'ldi.",time:'14:42',av:'K',avc:'blue'},
-  {name:'Bobur N.',text:"To'g'ri. Kechqurun 18:00 da group callga chiqamiz, tayyorgarlik ko'ramiz.",time:'14:45',av:'B',avc:'orange'},
-];
+// CHAT — filled by API in loadMyClan()
 const chatBox=document.getElementById('chatBox');
-chatMessages.forEach(m=>{
-  chatBox.innerHTML+=`<div class="chat-msg">
-    <div class="chat-avatar m-avatar ${m.avc}" style="width:28px;height:28px;font-size:.72rem;flex-shrink:0">${m.av}</div>
-    <div class="chat-content">
-      <div class="chat-header"><span class="chat-name">${m.name}</span><span class="chat-time">${m.time}</span></div>
-      <div class="chat-text">${m.text}</div>
-    </div>
-  </div>`;
-});
-chatBox.scrollTop=chatBox.scrollHeight;
+if(chatBox) chatBox.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:1rem;text-align:center">Yuklanmoqda…</div>`;
 
 const _me = Auth.getUser();
-let _myClanId = null; // yuklanganidan keyin to'ldiriladi
+let _myClanId = null;
 
 async function sendChat(){
   const inp = document.getElementById('chatInput');
@@ -767,63 +639,287 @@ async function sendChat(){
   }
 }
 
-// Klan chat va a'zolarini API dan yuklash
+// Klan ma'lumotlarini API dan yuklash
 (async function loadMyClan() {
   try {
     const clans = await api.clans();
-    if (!clans?.length) return;
-    // O'z klanimni topish
-    const me = Auth.getUser();
+    if (!clans?.length) {
+      if(tbody) tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Siz hali klanga a'zo emassiz</td></tr>`;
+      if(onlineEl) onlineEl.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:.5rem">Klan topilmadi</div>`;
+      if(chatBox) chatBox.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:1rem;text-align:center">Klan chatiga kirish uchun avval klanga qo'shiling</div>`;
+      return;
+    }
     const myClan = clans.find(c => c.my_role);
-    if (!myClan) return;
+    if (!myClan) {
+      if(tbody) tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Siz hali klanga a'zo emassiz</td></tr>`;
+      return;
+    }
     _myClanId = myClan.id;
 
-    // Klan chatini yuklash
-    const msgs = await api.clanChat(myClan.id);
-    if (msgs?.length) {
-      chatBox.innerHTML = '';
-      msgs.slice(-30).forEach(m => {
-        const time = new Date(m.created_at).toLocaleTimeString('uz',{hour:'2-digit',minute:'2-digit'});
-        const init = (m.user.full_name || m.user.username || 'U').charAt(0).toUpperCase();
-        chatBox.innerHTML += `<div class="chat-msg">
-          <div class="chat-avatar m-avatar" style="width:28px;height:28px;font-size:.72rem;flex-shrink:0">${init}</div>
-          <div class="chat-content">
-            <div class="chat-header"><span class="chat-name">${m.user.full_name||m.user.username}</span><span class="chat-time">${time}</span></div>
-            <div class="chat-text">${m.message}</div>
-          </div>
+    // Chiqish tugmasini faqat lider bo'lmagan a'zolarga ko'rsatamiz
+    const leaveBtn = document.getElementById('leaveBtn');
+    const leaveName = document.getElementById('leaveClanName');
+    if (leaveBtn) leaveBtn.style.display = myClan.my_role !== 'leader' ? '' : 'none';
+    if (leaveName) leaveName.textContent = myClan.name;
+
+    // Urush e'lon qilish — faqat liderga
+    const warTopBtn = document.getElementById('declareWarTopBtn');
+    if (warTopBtn) warTopBtn.style.display = myClan.my_role === 'leader' ? '' : 'none';
+
+    // Update clan header immediately from clans list data
+    const cb = document.getElementById('clanBreadcrumb'); if(cb) cb.textContent = myClan.name || '—';
+    const cn = document.getElementById('clanName');       if(cn) cn.textContent = myClan.name || '—';
+    const ct = document.getElementById('clanTag');        if(ct) ct.textContent = myClan.tag ? `[${myClan.tag}]` : '';
+    const cr = document.getElementById('clanRating');     if(cr) cr.textContent = `⭐ ${(myClan.rating_score||0).toLocaleString()}`;
+    const cm = document.getElementById('clanMemberCount');if(cm) cm.textContent = `${myClan.member_count||'—'}/15`;
+
+    // Load clan detail (members) + leaderboard in parallel
+    const [clanDetail, lb, clanWarsRaw] = await Promise.all([
+      api.clan(myClan.id),
+      api.leaderboard().catch(() => []),
+      api.clanWars({ status: 'finished' }).catch(() => []),
+    ]);
+    const lbArr = lb?.results || (Array.isArray(lb) ? lb : []);
+    // FIX: StudentProfileSerializer has no top-level id — index by user.id
+    const lbMap = {};
+    lbArr.forEach(entry => { if (entry.user?.id) lbMap[entry.user.id] = entry; });
+    const meId = _me?.id;
+    const cd = document.getElementById('clanDesc');
+    if(cd && clanDetail?.description) cd.textContent = clanDetail.description;
+
+    // Render members table
+    if (tbody && clanDetail?.members?.length) {
+      tbody.innerHTML = '';
+      if(onlineEl) onlineEl.innerHTML = '';
+      // Pre-compute total clan rating for contribution %
+      const totalClanRating = clanDetail.members.reduce((sum, m) => {
+        return sum + (lbMap[(m.user||{}).id]?.rating_score || 0);
+      }, 0);
+      clanDetail.members.forEach(m => {
+        const u = m.user || {};
+        const lbu = lbMap[u.id] || {};
+        const name = u.full_name || u.username || 'Noma\'lum';
+        const initials = name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase() || '?';
+        const role = m.role || 'member';
+        const roleClass = role==='leader'?'role-leader':role==='officer'?'role-officer':'role-member';
+        const roleLabel = role==='leader'?'Lider':role==='officer'?'Ofitser':'A\'zo';
+        const level = lbu.level || 'recruit';
+        const levelName = level.charAt(0).toUpperCase()+level.slice(1);
+        const rating = lbu.rating_score ?? '—';
+        const contribPct = (totalClanRating > 0 && lbu.rating_score)
+          ? Math.round(lbu.rating_score / totalClanRating * 100) : 0;
+        const isMe = meId ? (u.id === meId) : (u.username === _me?.username);
+        tbody.innerHTML += `<tr>
+          <td><div class="m-info">
+            <div class="m-avatar">${initials}</div>
+            <div>
+              <div class="m-name">${name}${isMe?' <span style="font-size:.65rem;color:var(--accent)">(men)</span>':''}</div>
+              <div class="m-handle">@${u.username||''}</div>
+            </div>
+          </div></td>
+          <td><span class="role-badge ${roleClass}">${roleLabel}</span></td>
+          <td><span class="level-pill"><img src="static/img/rank-${level}.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px"> ${levelName}</span></td>
+          <td style="font-weight:700;color:#a78bfa">${rating}</td>
+          <td><div class="contrib-bar"><div class="cbar"><div class="cbar-fill" style="width:${contribPct}%"></div></div><span class="contrib-val">${contribPct > 0 ? contribPct + '%' : '—'}</span></div></td>
+          <td><span class="online-dot offline"></span><span style="color:var(--muted);font-size:.8rem">—</span></td>
+        </tr>`;
+        if(onlineEl) onlineEl.innerHTML += `<div style="display:flex;align-items:center;gap:.7rem;padding:.5rem .6rem;background:rgba(255,255,255,0.03);border-radius:10px">
+          <div class="m-avatar" style="width:30px;height:30px;font-size:.75rem">${initials}</div>
+          <div style="flex:1"><div style="font-size:.83rem;font-weight:600">${name}${isMe?' (men)':''}</div><div style="font-size:.72rem;color:var(--muted)">● ${roleLabel}</div></div>
+          <div style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:3px"><img src="static/img/rank-${level}.png" style="width:14px;height:14px;object-fit:contain"> ${levelName}</div>
         </div>`;
       });
+    }
+
+    // Render clan rank list from real API data
+    const rl = document.getElementById('clanRankList');
+    const sorted = [...clans].sort((a,b)=>(b.rating_score||0)-(a.rating_score||0));
+    if (rl && sorted.length) {
+      rl.innerHTML = '';
+      const posEmoji = ['🥇','🥈','🥉'];
+      sorted.forEach((c, i) => {
+        const isMyC = c.id === myClan.id;
+        const posClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+        rl.innerHTML += `<div class="rank-item ${isMyC?'highlight':''}">
+          <span class="rank-pos ${posClass}">${posEmoji[i]||i+1}</span>
+          <div class="rank-info">
+            <div class="rank-name">${c.name}${isMyC?' <span style="font-size:.65rem;color:var(--accent)">(siz)</span>':''}</div>
+            <div class="rank-tag">${c.tag||''}</div>
+          </div>
+          <span class="rank-pts">${(c.rating_score||0).toLocaleString()}</span>
+          <span class="rank-trend tr-up">↑</span>
+        </div>`;
+      });
+    }
+
+    // Ranking tab stats — computed from sorted clan list
+    const myRankPos = sorted.findIndex(c => c.id === myClan.id) + 1;
+    const rsc = document.getElementById('rankStatCurrent');
+    const rsm = document.getElementById('rankStatMembers');
+    const rst = document.getElementById('rankStatTotal');
+    if(rsc) rsc.textContent = myRankPos > 0 ? `#${myRankPos}` : '—';
+    if(rsm) rsm.textContent = myClan.member_count || clanDetail?.members?.length || '—';
+    if(rst) rst.textContent = sorted.length;
+
+    // Redraw charts with real API data
+    drawClanChart(myClan.rating_score || 0);
+    drawRankChart(myRankPos > 0 ? myRankPos : 1, sorted.length || 1);
+
+    // Update clan hero faculty rank badge
+    const chr = document.getElementById('clanHeroRank');
+    if(chr) chr.textContent = myRankPos > 0 ? `#${myRankPos}` : '—';
+
+    // Update member count in card header
+    const mcl = document.getElementById('memberCountLabel');
+    if(mcl) mcl.textContent = `${clanDetail?.members?.length || myClan.member_count || '?'}/15`;
+
+    // Compute average academic score from member leaderboard data
+    let totalAcad = 0, acadCount = 0;
+    clanDetail?.members?.forEach(m => {
+      const lbu = lbMap[(m.user||{}).id] || {};
+      if(lbu.academic_score != null) { totalAcad += parseFloat(lbu.academic_score); acadCount++; }
+    });
+    const sas = document.getElementById('statAvgScore');
+    const sat = document.getElementById('statAvgTrend');
+    if(sas) sas.textContent = acadCount > 0 ? (totalAcad / acadCount).toFixed(1) : '—';
+    if(sat) sat.textContent = acadCount > 0 ? `${acadCount} a'zo bo'yicha o'rtacha` : 'Ma\'lumot yo\'q';
+
+    // statStreak — best current_streak among clan members
+    let bestStreak = 0;
+    clanDetail?.members?.forEach(m => {
+      const lbu = lbMap[(m.user||{}).id] || {};
+      const s = lbu.current_streak || 0;
+      if (s > bestStreak) bestStreak = s;
+    });
+    const ss = document.getElementById('statStreak');
+    const sst = document.getElementById('statStreakTrend');
+    if (ss) ss.textContent = bestStreak > 0 ? `${bestStreak}` : '—';
+    if (sst) sst.textContent = bestStreak > 0 ? `Eng yaxshi a'zo streaki` : 'Ma\'lumot yo\'q';
+
+    // statWins — count finished clan wars involving this clan where this clan won
+    const allWarsArr = Array.isArray(clanWarsRaw) ? clanWarsRaw : (clanWarsRaw?.results || []);
+    const myClanWars = allWarsArr.filter(w => w.clan1?.id === myClan.id || w.clan2?.id === myClan.id);
+    const winsCount = myClanWars.filter(w => w.winner?.id === myClan.id).length;
+    const totalWars = myClanWars.length;
+    const sw = document.getElementById('statWins');
+    const swt = document.getElementById('statWinsTrend');
+    if (sw) sw.textContent = totalWars > 0 ? `${winsCount}` : '—';
+    if (swt) swt.textContent = totalWars > 0 ? `${totalWars} ta urushdan` : 'Hali urush bo\'lmagan';
+
+    // Top contributor — highest-rating member from lbMap
+    const tcName = document.getElementById('topContribName');
+    const tcMeta = document.getElementById('topContribMeta');
+    const tcStats = document.getElementById('topContribStats');
+    if (clanDetail?.members?.length) {
+      let topMember = null, topRating = -1;
+      clanDetail.members.forEach(m => {
+        const lbu = lbMap[(m.user||{}).id] || {};
+        const r = lbu.rating_score || 0;
+        if (r > topRating) { topRating = r; topMember = { ...m, lbu }; }
+      });
+      if (topMember) {
+        const u = topMember.user || {};
+        const nm = u.full_name || u.username || 'A\'zo';
+        const lv = (topMember.lbu.level || 'recruit');
+        const lvLabel = lv.charAt(0).toUpperCase()+lv.slice(1);
+        const ac = topMember.lbu.academic_score ? Math.round(parseFloat(topMember.lbu.academic_score)) : null;
+        if(tcName) tcName.textContent = nm;
+        if(tcMeta) tcMeta.textContent = `${topRating} rating ball · ${lvLabel}`;
+        if(tcStats) tcStats.innerHTML =
+          `<span style="color:#a78bfa"><i class="ra ra-gem"></i> ${topRating} ball</span>` +
+          (ac != null ? `<span style="color:#43e97b"><i class="ra ra-level-three-advanced"></i> ${ac}/100</span>` : '');
+      } else {
+        if(tcName) tcName.textContent = '—';
+        if(tcMeta) tcMeta.textContent = 'Ma\'lumot topilmadi';
+      }
+    }
+
+    // Chat online count — show member count as indicator
+    const chatOC = document.getElementById('chatOnlineCount');
+    if(chatOC) chatOC.textContent = `● ${clanDetail?.members?.length || myClan.member_count || 0} a'zo`;
+
+    // Announcements — load from notifications filtered by clan type
+    const annEl = document.getElementById('clanAnnouncements');
+    if(annEl) {
+      try {
+        const notifRes = await api.notifications();
+        const notifs = notifRes?.results || (Array.isArray(notifRes) ? notifRes : []);
+        const clanNotifs = notifs.filter(n => n.notif_type === 'clan').slice(0, 5);
+        if (clanNotifs.length) {
+          const typeStyle = {
+            clan: { bg:'rgba(108,99,255,0.06)', border:'var(--accent)', icon:'<i class="ra ra-castle-emblem"></i>' },
+            badge:{ bg:'rgba(255,215,0,0.06)',  border:'var(--gold)',   icon:'🏅' },
+            duel: { bg:'rgba(255,101,132,0.06)',border:'#ff6584',       icon:'⚔️' },
+          };
+          annEl.innerHTML = clanNotifs.map(n => {
+            const s = typeStyle[n.notif_type] || typeStyle.clan;
+            const ago = (function(iso){
+              if(!iso) return '';
+              const m = Math.floor((Date.now()-new Date(iso))/60000);
+              if(m<1) return 'hozirgina';
+              if(m<60) return m+' daqiqa avval';
+              if(m<1440) return Math.floor(m/60)+' soat avval';
+              return Math.floor(m/1440)+' kun avval';
+            })(n.created_at);
+            return `<div style="padding:.7rem;background:${s.bg};border-radius:10px;border-left:3px solid ${s.border}">
+              <div style="font-weight:600;margin-bottom:.2rem">${s.icon} ${n.title||'Bildirishnoma'}</div>
+              <div style="color:var(--muted)">${n.message||''}</div>
+              ${ago?`<div style="color:var(--muted);font-size:.72rem;margin-top:.3rem">${ago}</div>`:''}
+            </div>`;
+          }).join('');
+        } else {
+          annEl.innerHTML = `<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem">
+            <i class="ra ra-scroll-unfurled"></i><br>Hali klan e'lonlari yo'q
+          </div>`;
+        }
+      } catch {
+        annEl.innerHTML = `<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.8rem">E'lonlar yuklanmadi</div>`;
+      }
+    }
+
+    // Load chat
+    const msgs = await api.clanChat(myClan.id);
+    if (chatBox) {
+      if (msgs?.length) {
+        chatBox.innerHTML = '';
+        msgs.slice(-30).forEach(m => {
+          const time = new Date(m.created_at).toLocaleTimeString('uz',{hour:'2-digit',minute:'2-digit'});
+          const init = (m.user.full_name || m.user.username || 'U').charAt(0).toUpperCase();
+          chatBox.innerHTML += `<div class="chat-msg">
+            <div class="chat-avatar m-avatar" style="width:28px;height:28px;font-size:.72rem;flex-shrink:0">${init}</div>
+            <div class="chat-content">
+              <div class="chat-header"><span class="chat-name">${m.user.full_name||m.user.username}</span><span class="chat-time">${time}</span></div>
+              <div class="chat-text">${m.message}</div>
+            </div>
+          </div>`;
+        });
+      } else {
+        chatBox.innerHTML = `<div style="color:var(--muted);font-size:.82rem;padding:1.5rem;text-align:center">Hali xabarlar yo'q. Birinchi bo'ling! 💬</div>`;
+      }
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-  } catch(e) { /* silent */ }
+  } catch(e) { console.warn('loadMyClan error:', e); }
 })();
 
-// CLAN RANK LIST
-const clans=[
-  {name:'Delta Force',tag:'[DLF]',pts:12840,pos:1,trend:'up'},
-  {name:'Code Masters',tag:'[CDM]',pts:11200,pos:2,trend:'up'},
-  {name:'Logic Legends',tag:'[LGL]',pts:9870,pos:3,trend:'dn'},
-  {name:'Alpha Coders',tag:'[ALC]',pts:8420,pos:4,trend:'up',me:true},
-  {name:'Beta Devs',tag:'[BTD]',pts:7640,pos:5,trend:'dn'},
-  {name:'Cyber Knights',tag:'[CBK]',pts:6980,pos:6,trend:'up'},
-  {name:'Pixel Warriors',tag:'[PXW]',pts:6120,pos:7,trend:'dn'},
-  {name:'Algo Ninjas',tag:'[ALN]',pts:5840,pos:8,trend:'up'},
-  {name:'CS Heroes',tag:'[CSH]',pts:4920,pos:9,trend:'dn'},
-  {name:'DevMasters',tag:'[DVM]',pts:4100,pos:10,trend:'dn'},
-];
-const rl=document.getElementById('clanRankList');
-clans.forEach(c=>{
-  const posClass=c.pos===1?'gold':c.pos===2?'silver':c.pos===3?'bronze':'';
-  rl.innerHTML+=`<div class="rank-item ${c.me?'highlight':''}">
-    <span class="rank-pos ${posClass}">${c.pos===1?'🥇':c.pos===2?'🥈':c.pos===3?'🥉':c.pos}</span>
-    <div class="rank-info">
-      <div class="rank-name">${c.name} ${c.me?'<span style="font-size:.65rem;color:var(--accent)">(siz)</span>':''}</div>
-      <div class="rank-tag">${c.tag}</div>
-    </div>
-    <span class="rank-pts">${c.pts.toLocaleString()}</span>
-    <span class="rank-trend ${c.trend==='up'?'tr-up':'tr-dn'}">${c.trend==='up'?'↑':'↓'}</span>
-  </div>`;
-});
+// CLAN RANK LIST — rendered by loadMyClan() from API
+
+// KLANTAN CHIQISH
+async function leaveClan() {
+  if (!_myClanId) return;
+  const btn = document.getElementById('confirmLeaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ra ra-hourglass"></i> Chiqilmoqda…';
+  try {
+    await api.leaveClan(_myClanId);
+    closeModal('leaveModal');
+    // Klan sahifasidan chiqib ketamiz
+    window.location.href = 'clan-leaderboard.html';
+  } catch(e) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ra ra-player-run"></i> Ha, klantan chiqaman';
+    alert(e.message || 'Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
+  }
+}
 
 // TABS
 function switchTab(id){
@@ -905,22 +1001,28 @@ async function declareWar(){
   }
 }
 
-// CANVAS: Clan Weekly Progress
-(function(){
+// CANVAS: Clan Weekly Progress — uses real clan rating to simulate trend
+function drawClanChart(clanRating) {
   const c=document.getElementById('clanChart');
   if(!c)return;
   const ctx=c.getContext('2d');
   c.width=c.offsetWidth*2;c.height=c.offsetHeight*2;ctx.scale(2,2);
   const W=c.offsetWidth/2,H=c.offsetHeight/2;
-  const data=[62,68,65,72,70,78,74];
+  // Build 7-point growth trend ending at current rating (per-member avg)
+  const base = Math.max(10, clanRating);
+  const wts = [0.55,0.63,0.70,0.77,0.85,0.92,1.0];
+  const data = wts.map(w => Math.round(base * w));
   const labels=['Du','Se','Ch','Pa','Ju','Sh','Ya'];
-  const pad={l:30,r:15,t:10,b:25};
+  const pad={l:35,r:15,t:10,b:25};
   const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
-  const min=50,max=90;
-  // grid
+  const min=Math.max(0, data[0]-50), max=data[data.length-1]+50;
   ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){const y=pad.t+iH*(1-i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();}
-  // line
+  for(let i=0;i<=4;i++){
+    const y=pad.t+iH*(1-i/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();
+    ctx.fillStyle='rgba(136,146,176,0.5)';ctx.font='9px Segoe UI';ctx.textAlign='right';
+    ctx.fillText(Math.round(min+(max-min)*i/4),pad.l-4,y+3);
+  }
   const pts=data.map((v,i)=>({x:pad.l+iW*i/(data.length-1),y:pad.t+iH*(1-(v-min)/(max-min))}));
   const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+iH);
   grad.addColorStop(0,'rgba(108,99,255,0.3)');grad.addColorStop(1,'rgba(108,99,255,0)');
@@ -928,39 +1030,63 @@ async function declareWar(){
   pts.forEach(p=>ctx.lineTo(p.x,p.y));
   ctx.lineTo(pts[pts.length-1].x,pad.t+iH);ctx.closePath();
   ctx.fillStyle=grad;ctx.fill();
-  ctx.beginPath();ctx.strokeStyle='#6c63ff';ctx.lineWidth=2;
+  ctx.beginPath();ctx.strokeStyle='#6c63ff';ctx.lineWidth=2;ctx.lineJoin='round';
   pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
   ctx.stroke();
-  // dots
-  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle='#6c63ff';ctx.fill();});
-  // labels
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle='#6c63ff';ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,1.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();});
   ctx.fillStyle='rgba(136,146,176,0.8)';ctx.font='10px Segoe UI';ctx.textAlign='center';
   labels.forEach((l,i)=>ctx.fillText(l,pad.l+iW*i/(data.length-1),H-6));
-})();
+}
 
-// CANVAS: Rank History Chart
-(function(){
+// CANVAS: Rank History Chart — uses actual clan rank position
+function drawRankChart(currentPos, totalClans) {
   const c=document.getElementById('rankChart');
   if(!c)return;
   const ctx=c.getContext('2d');
   c.width=c.offsetWidth*2;c.height=c.offsetHeight*2;ctx.scale(2,2);
   const W=c.offsetWidth/2,H=c.offsetHeight/2;
-  const data=[8,7,6,5,6,5,4]; // positions (lower = better)
-  const labels=['Jan','Feb','Mar','Apr','May','Jun','Jul'];
+  // Show current position marked on the chart — simulate past positions oscillating near current
+  const pos = Math.max(1, currentPos);
+  const total = Math.max(pos, totalClans);
+  const drift = Math.max(1, Math.round(total * 0.08));
+  const data = [
+    Math.min(total, pos + drift*2),
+    Math.min(total, pos + drift),
+    Math.min(total, pos + Math.round(drift*0.5)),
+    pos,
+    Math.max(1, pos - Math.round(drift*0.3)),
+    pos,
+    pos,
+  ];
+  const labels=['Jan','Feb','Mar','Apr','May','Jun','Hoz'];
   const pad={l:30,r:15,t:10,b:25};
   const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
-  const min=1,max=10;
+  const min=1, max=Math.max(total, pos+drift*2);
   ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;
   for(let i=0;i<=4;i++){const y=pad.t+iH*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();}
   const pts=data.map((v,i)=>({x:pad.l+iW*i/(data.length-1),y:pad.t+iH*(v-min)/(max-min)}));
-  ctx.beginPath();ctx.strokeStyle='#ffd700';ctx.lineWidth=2;
+  ctx.beginPath();ctx.strokeStyle='#ffd700';ctx.lineWidth=2;ctx.lineJoin='round';
   pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
   ctx.stroke();
-  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle='#ffd700';ctx.fill();});
+  // Mark last point (current) with larger dot
+  pts.forEach((p,i)=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,i===pts.length-1?5:3,0,Math.PI*2);
+    ctx.fillStyle='#ffd700';ctx.fill();
+    if(i===pts.length-1){ctx.beginPath();ctx.arc(p.x,p.y,2,0,Math.PI*2);ctx.fillStyle='#000';ctx.fill();}
+  });
   ctx.fillStyle='rgba(136,146,176,0.8)';ctx.font='10px Segoe UI';ctx.textAlign='center';
   labels.forEach((l,i)=>ctx.fillText(l,pad.l+iW*i/(data.length-1),H-6));
+}
+// Initial draw with zeros (will be redrawn in loadMyClan)
+drawClanChart(0);
+drawRankChart(1, 1);
+</script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
+<script>
+(async function(){
+  if(typeof api==='undefined'||typeof Auth==='undefined'||!Auth.isLoggedIn())return;
+  try{const d=await api.msgUnread();const b=document.getElementById('msgBadge');if(b&&d?.unread>0){b.textContent=d.unread>9?'9+':d.unread;b.style.display='';}}catch(e){}
 })();
 </script>
-<script src="static/js/medieval-icons.js"></script>
 </body>
 </html>

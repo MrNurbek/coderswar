@@ -1,0 +1,926 @@
+﻿<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coders War — Klanlar Reytingi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/nagoshiashumari/Rpg-Awesome/css/rpg-awesome.min.css">
+  <style>
+    :root{--bg:#0a0e1a;--bg2:#0f1628;--bg3:#141c35;--accent:#6c63ff;--accent2:#ff6584;--accent3:#43e97b;--gold:#ffd700;--text:#e8eaf6;--muted:#8892b0;--card:rgba(255,255,255,0.04);--border:rgba(108,99,255,0.2);--sidebar:220px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    h1,h2,h3,h4,h5,h6,.sb-logo a,.nav-section,.card-title,.modal-title{font-family:'MedievalSharp','Segoe UI',system-ui,sans-serif}
+    body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50}
+    .sb-logo{padding:1.5rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+    .sb-logo a{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#6c63ff,#ff6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .sb-logo .sub{font-size:.62rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-nav{flex:1;padding:1rem .8rem;overflow-y:auto}
+    .nav-section{font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding:.6rem .5rem .3rem;margin-top:.5rem}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border-radius:12px;cursor:pointer;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .2s;text-decoration:none;margin-bottom:.15rem}
+    .nav-item:hover{background:rgba(108,99,255,0.1);color:var(--text)}
+    .nav-item.active{background:rgba(108,99,255,0.18);color:#a78bfa;font-weight:600}
+    .nav-item .icon{font-size:1rem;width:20px;text-align:center}
+    .nav-item .badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:10px}
+    .sb-bottom{padding:1rem .8rem;border-top:1px solid var(--border)}
+    .sb-user{display:flex;align-items:center;gap:.75rem}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0}
+    .sb-user .info .name{font-size:.88rem;font-weight:600}
+    .sb-user .info .role{font-size:.72rem;color:var(--muted)}
+    .logout-btn{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.3rem;border-radius:8px;transition:color .2s}
+    .logout-btn:hover{color:var(--accent2)}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar-left h2{font-size:1.05rem;font-weight:700}
+    .topbar-left .breadcrumb{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+    .topbar-right{display:flex;align-items:center;gap:.8rem}
+    .content{padding:2rem;flex:1}
+
+    /* ── BUTTONS ── */
+    .btn{padding:.55rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;text-decoration:none}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn-primary{background:linear-gradient(135deg,#6c63ff,#8b5cf6);color:#fff}
+    .btn-primary:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-green{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#000}
+    .btn-green:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
+    .btn-danger{background:rgba(255,101,132,0.15);border:1px solid rgba(255,101,132,0.3);color:#ff6584}
+    .btn-danger:hover{background:rgba(255,101,132,0.25)}
+    .btn-sm{padding:.35rem .8rem;font-size:.78rem;border-radius:8px}
+
+    /* ── STATUS BANNERS ── */
+    .status-banner{border-radius:20px;padding:1.5rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;position:relative;overflow:hidden}
+    .status-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;opacity:.15}
+
+    /* Klanim bor banner */
+    .banner-inclan{background:linear-gradient(135deg,rgba(108,99,255,0.18),rgba(255,101,132,0.1));border:1px solid rgba(108,99,255,0.35)}
+    .banner-inclan::before{background:radial-gradient(circle,#6c63ff,transparent 70%)}
+    .banner-emblem{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;flex-shrink:0;box-shadow:0 6px 20px rgba(108,99,255,0.4)}
+    .banner-emblem.purple{background:linear-gradient(135deg,#6c63ff,#8b5cf6)}
+    .banner-info h3{font-size:1.25rem;font-weight:900;margin-bottom:.2rem}
+    .banner-info .meta{font-size:.82rem;color:var(--muted);display:flex;gap:1rem;flex-wrap:wrap;margin-top:.4rem}
+    .banner-info .meta span{display:flex;align-items:center;gap:.3rem}
+    .banner-role{display:inline-block;font-size:.72rem;font-weight:700;padding:.2rem .7rem;border-radius:8px;letter-spacing:.5px;margin-bottom:.4rem}
+    .role-leader{background:rgba(255,215,0,0.2);color:var(--gold);border:1px solid rgba(255,215,0,0.3)}
+    .role-officer{background:rgba(108,99,255,0.2);color:#a78bfa;border:1px solid rgba(108,99,255,0.3)}
+    .role-member{background:rgba(67,233,123,0.15);color:var(--accent3);border:1px solid rgba(67,233,123,0.25)}
+    .banner-actions{margin-left:auto;display:flex;gap:.8rem;flex-shrink:0}
+
+    /* Klanim yo'q banner */
+    .banner-noclan{background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,101,132,0.06));border:1px dashed rgba(255,215,0,0.3);text-align:center;justify-content:center;flex-direction:column;gap:1rem}
+    .banner-noclan::before{background:radial-gradient(circle,var(--gold),transparent 70%)}
+    .banner-noclan h3{font-size:1.15rem;font-weight:900;margin-bottom:.2rem}
+    .banner-noclan p{font-size:.85rem;color:var(--muted);max-width:420px}
+    .banner-noclan-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+
+    /* ── SEARCH + FILTER ── */
+    .toolbar{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+    .search-wrap{position:relative;flex:1;min-width:200px}
+    .search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.65rem 1rem .65rem 2.4rem;color:var(--text);font-size:.88rem;outline:none;transition:border-color .2s}
+    .search-wrap input:focus{border-color:var(--accent)}
+    .search-wrap input::placeholder{color:var(--muted)}
+    .search-wrap .si{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem}
+    .filter-btns{display:flex;gap:.5rem}
+    .filter-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:.5rem .9rem;border-radius:10px;font-size:.8rem;cursor:pointer;transition:all .2s}
+    .filter-btn.active,.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .total-label{font-size:.82rem;color:var(--muted);white-space:nowrap}
+
+    /* ── CLAN TABLE ── */
+    .clan-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+    .clan-table{width:100%;border-collapse:collapse}
+    .clan-table thead th{background:rgba(255,255,255,0.03);font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:.8rem 1rem;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+    .clan-table thead th.sortable{cursor:pointer;user-select:none}
+    .clan-table thead th.sortable:hover{color:var(--accent)}
+    .clan-table thead th .sort-icon{margin-left:.3rem;opacity:.5}
+    .clan-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background .15s}
+    .clan-table tbody tr:hover{background:rgba(108,99,255,0.05)}
+    .clan-table tbody tr.my-row{background:rgba(108,99,255,0.08);border-left:3px solid var(--accent)}
+    .clan-table tbody tr:last-child{border-bottom:none}
+    .clan-table td{padding:.85rem 1rem;vertical-align:middle;font-size:.88rem}
+
+    /* rank cell */
+    .rank-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-size:.88rem;font-weight:800}
+    .rank-1{background:linear-gradient(135deg,#ffd700,#ffa500);color:#000;font-size:1.1rem}
+    .rank-2{background:linear-gradient(135deg,#c0c0c0,#a0a0a0);color:#000;font-size:1.1rem}
+    .rank-3{background:linear-gradient(135deg,#cd7f32,#b8662a);color:#fff;font-size:1.1rem}
+    .rank-other{background:rgba(255,255,255,0.06);color:var(--muted)}
+
+    /* clan name cell */
+    .clan-name-cell{display:flex;align-items:center;gap:.85rem}
+    .emblem-sm{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+    .clan-title{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+    .my-badge{background:rgba(108,99,255,0.25);color:#a78bfa;font-size:.62rem;font-weight:700;padding:.15rem .5rem;border-radius:6px;letter-spacing:.3px;white-space:nowrap}
+    .tag-label{font-size:.72rem;color:var(--muted);margin-top:.15rem;font-family:monospace}
+
+    /* stats cells */
+    .stat-chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.83rem}
+    .rating-val{font-weight:800;font-size:.95rem}
+    .rating-low{color:var(--muted)}
+    .rating-mid{color:#4299e1}
+    .rating-high{color:#a78bfa}
+    .rating-elite{color:var(--gold)}
+
+    /* leader cell */
+    .leader-mini{display:flex;align-items:center;gap:.5rem}
+    .leader-dot{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0}
+
+    /* action cell */
+    .action-cell{text-align:right}
+
+    /* empty state */
+    .empty-state{text-align:center;padding:4rem 2rem;color:var(--muted)}
+    .empty-state .icon{font-size:3rem;margin-bottom:1rem;opacity:.6}
+    .empty-state h4{font-size:1rem;font-weight:600;margin-bottom:.4rem;color:var(--text)}
+    .empty-state p{font-size:.85rem}
+
+    /* loading skeleton */
+    .skel-row td{padding:.85rem 1rem}
+    .skel{background:linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:18px;display:inline-block}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* ── MODALS ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal-overlay.show{display:flex}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:2rem;width:100%;max-width:480px;position:relative;max-height:90vh;overflow-y:auto}
+    .modal-lg{max-width:580px}
+    .modal-close{position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,0.06);border:none;border-radius:8px;color:var(--muted);cursor:pointer;font-size:1rem;width:30px;height:30px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .modal-close:hover{background:rgba(255,101,132,0.15);color:var(--accent2)}
+    .modal-title{font-size:1.1rem;font-weight:900;margin-bottom:1.5rem;padding-right:2rem}
+
+    /* ── CREATE CLAN MODAL ── */
+    .form-group{margin-bottom:1.2rem}
+    .form-label{font-size:.78rem;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem;display:block}
+    .form-label span{color:var(--accent2)}
+    .form-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;color:var(--text);font-size:.9rem;outline:none;font-family:inherit;transition:border-color .2s}
+    .form-input:focus{border-color:var(--accent)}
+    .form-input::placeholder{color:var(--muted)}
+    textarea.form-input{resize:vertical;min-height:80px}
+    .input-row{display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:end}
+    .tag-preview{font-size:.88rem;color:#a78bfa;font-family:monospace;min-width:70px;text-align:center;padding:.7rem .8rem;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.25);border-radius:12px;font-weight:700}
+    .char-count{font-size:.72rem;color:var(--muted);text-align:right;margin-top:.25rem}
+    .form-hint{font-size:.75rem;color:var(--muted);margin-top:.3rem}
+
+    /* Emoji picker */
+    .emblem-picker{display:flex;flex-wrap:wrap;gap:.4rem;padding:.8rem;background:rgba(0,0,0,0.2);border-radius:12px;border:1px solid var(--border);max-height:140px;overflow-y:auto}
+    .emblem-opt{width:36px;height:36px;border-radius:8px;background:none;border:2px solid transparent;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .emblem-opt:hover{background:rgba(108,99,255,0.15)}
+    .emblem-opt.selected{border-color:var(--accent);background:rgba(108,99,255,0.2)}
+    .emblem-display{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+    .emblem-preview{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#6c63ff,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+
+    /* form submit row */
+    .form-actions{display:flex;gap:.8rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border)}
+
+    /* ── CLAN DETAIL MODAL ── */
+    .detail-hero{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+    .detail-emblem{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#6c63ff,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:2.2rem;flex-shrink:0;box-shadow:0 6px 20px rgba(108,99,255,0.35)}
+    .detail-info h3{font-size:1.25rem;font-weight:900;margin-bottom:.25rem}
+    .detail-tag{font-size:.75rem;color:#a78bfa;font-family:monospace;font-weight:700;background:rgba(108,99,255,0.15);padding:.2rem .6rem;border-radius:6px;display:inline-block;margin-bottom:.4rem}
+    .detail-desc{font-size:.85rem;color:var(--muted);line-height:1.6}
+    .detail-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+    .detail-stat{text-align:center;padding:1rem;background:rgba(255,255,255,0.03);border-radius:14px;border:1px solid var(--border)}
+    .detail-stat .val{font-size:1.4rem;font-weight:900;margin-bottom:.2rem}
+    .detail-stat .lbl{font-size:.72rem;color:var(--muted)}
+    .detail-leader{display:flex;align-items:center;gap:.8rem;padding:.9rem;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:12px;margin-bottom:1.2rem}
+    .detail-leader-dot{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffa500);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;color:#000;flex-shrink:0}
+    .detail-leader-info .name{font-size:.9rem;font-weight:700}
+    .detail-leader-info .role{font-size:.75rem;color:var(--gold)}
+    .join-confirm-text{font-size:.88rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.6;padding:.9rem;background:rgba(108,99,255,0.07);border-radius:10px;border-left:3px solid var(--accent)}
+
+    /* ── TOAST ── */
+    #toast{position:fixed;bottom:2rem;right:2rem;z-index:300;display:flex;flex-direction:column;gap:.6rem}
+    .toast-item{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:.8rem 1.2rem;font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideIn .3s ease;min-width:240px}
+    .toast-item.success{border-color:rgba(67,233,123,0.4);color:var(--accent3)}
+    .toast-item.error{border-color:rgba(255,101,132,0.4);color:var(--accent2)}
+    .toast-item.info{border-color:rgba(108,99,255,0.4);color:#a78bfa}
+    @keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:none;opacity:1}}
+
+    /* ── MOBILE ── */
+    .mob-toggle{display:none;position:fixed;top:.9rem;left:1rem;z-index:60;background:var(--bg2);border:1px solid var(--border);border-radius:10px;width:38px;height:38px;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:45}
+    .overlay.show{display:block}
+    @media(max-width:900px){
+      .clan-table thead th:nth-child(5){display:none}
+      .clan-table tbody td:nth-child(5){display:none}
+    }
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%)}
+      .sidebar.open{transform:none}
+      .main{margin-left:0}
+      .mob-toggle{display:flex}
+      .content{padding:1rem}
+      .status-banner{flex-direction:column;text-align:center}
+      .banner-actions{margin-left:0}
+      .detail-stats{grid-template-columns:1fr 1fr}
+      .clan-table thead th:nth-child(4){display:none}
+      .clan-table tbody td:nth-child(4){display:none}
+    }
+  </style>
+</head>
+<body>
+<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/dashboard.png') center/cover no-repeat;opacity:.28;z-index:-1;pointer-events:none;"></div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<button class="mob-toggle" onclick="toggleSidebar()"><i class="ra ra-plain-dagger"></i></button>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
+    <div class="sub">Algoritmik tillar va dasturlash</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">O'quv</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
+    <div class="nav-section">Jamoa</div>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item active" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
+    <div class="nav-section">Shaxsiy</div>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
+    <a class="nav-item" href="character.html"><span class="icon"><i class="ra ra-dragon"></i></span> Xarakter</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="avatar" data-user-init>?</div>
+      <div class="info">
+        <div class="name" data-user-name>...</div>
+        <div class="role" data-user-role>Student</div>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2><i class="ra ra-trophy" style="color:var(--gold);margin-right:.4rem"></i> Klanlar Reytingi</h2>
+      <div class="breadcrumb">Barcha klanlar · Reyting bo'yicha tartiblangan</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-outline" id="btnRefresh" onclick="reload()" title="Yangilash">
+        <i class="ra ra-player-teleport"></i>
+      </button>
+      <button class="btn btn-primary" id="btnCreate" onclick="openCreateModal()" style="display:none">
+        <i class="ra ra-castle-emblem"></i> Klan yaratish
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── MY CLAN BANNER (if in clan) ── -->
+    <div class="status-banner banner-inclan" id="bannerInClan" style="display:none">
+      <div class="banner-emblem purple" id="bannerEmblem">🏰</div>
+      <div class="banner-info">
+        <div class="banner-role" id="bannerRole">A'zo</div>
+        <h3 id="bannerName">—</h3>
+        <div class="meta">
+          <span><i class="ra ra-player"></i> <span id="bannerMembers">—</span> a'zo</span>
+          <span>⭐ <span id="bannerRating">—</span> ball</span>
+          <span><i class="ra ra-crown"></i> Lider: <span id="bannerLeader">—</span></span>
+        </div>
+      </div>
+      <div class="banner-actions">
+        <a href="clan.html" class="btn btn-primary"><i class="ra ra-castle-emblem"></i> Klan paneliga o'tish</a>
+      </div>
+    </div>
+
+    <!-- ── NO CLAN BANNER (if not in clan) ── -->
+    <div class="status-banner banner-noclan" id="bannerNoClan" style="display:none">
+      <div style="font-size:2.5rem">🏰</div>
+      <h3>Hali klanga a'zo emassiz</h3>
+      <p>Klan yarating yoki mavjud klanga qo'shiling. Klanda o'qish, musobaqalashish va klan urushlarida qatnashing!</p>
+      <div class="banner-noclan-btns">
+        <button class="btn btn-primary" onclick="openCreateModal()">
+          <i class="ra ra-castle-emblem"></i> Yangi klan yaratish
+        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('searchInput').focus()">
+          <i class="ra ra-compass"></i> Klanlarga ko'z tashlash
+        </button>
+      </div>
+    </div>
+
+    <!-- ── TOOLBAR ── -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <i class="ra ra-search si"></i>
+        <input type="text" id="searchInput" placeholder="Klan nomi yoki teg bo'yicha qidiring..." oninput="onSearch(this.value)">
+      </div>
+      <div class="filter-btns">
+        <button class="filter-btn active" onclick="setSort('rating')" id="sortRating">⭐ Reyting</button>
+        <button class="filter-btn" onclick="setSort('members')" id="sortMembers"><i class="ra ra-player"></i> A'zolar</button>
+        <button class="filter-btn" onclick="setSort('name')" id="sortName">A→Z</button>
+      </div>
+      <div class="total-label" id="totalLabel">Yuklanmoqda…</div>
+    </div>
+
+    <!-- ── LEADERBOARD TABLE ── -->
+    <div class="clan-table-wrap">
+      <table class="clan-table">
+        <thead>
+          <tr>
+            <th style="width:52px">#</th>
+            <th>Klan</th>
+            <th style="width:90px"><i class="ra ra-player"></i> A'zolar</th>
+            <th style="width:120px">⭐ Reyting</th>
+            <th style="width:150px"><i class="ra ra-crown"></i> Lider</th>
+            <th style="width:130px;text-align:right">Amal</th>
+          </tr>
+        </thead>
+        <tbody id="clanTbody">
+          <!-- skeleton rows -->
+          <tr class="skel-row"><td><span class="skel" style="width:28px"></span></td><td><span class="skel" style="width:180px"></span></td><td><span class="skel" style="width:40px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:100px"></span></td><td></td></tr>
+          <tr class="skel-row"><td><span class="skel" style="width:28px"></span></td><td><span class="skel" style="width:140px"></span></td><td><span class="skel" style="width:40px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:80px"></span></td><td></td></tr>
+          <tr class="skel-row"><td><span class="skel" style="width:28px"></span></td><td><span class="skel" style="width:160px"></span></td><td><span class="skel" style="width:40px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:110px"></span></td><td></td></tr>
+          <tr class="skel-row"><td><span class="skel" style="width:28px"></span></td><td><span class="skel" style="width:130px"></span></td><td><span class="skel" style="width:40px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:90px"></span></td><td></td></tr>
+          <tr class="skel-row"><td><span class="skel" style="width:28px"></span></td><td><span class="skel" style="width:155px"></span></td><td><span class="skel" style="width:40px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:120px"></span></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ════════════════════════════════════
+     MODAL: KLAN YARATISH
+     ════════════════════════════════════ -->
+<div class="modal-overlay" id="modalCreate">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalCreate')"><i class="ra ra-cancel"></i></button>
+    <div class="modal-title"><i class="ra ra-castle-emblem" style="color:var(--accent)"></i> Yangi Klan Yaratish</div>
+
+    <!-- Emblem preview -->
+    <div class="emblem-display">
+      <div class="emblem-preview" id="createEmblemPreview">🏰</div>
+      <div>
+        <div style="font-size:.82rem;font-weight:600;margin-bottom:.3rem">Klan emblemi</div>
+        <div style="font-size:.75rem;color:var(--muted)">Quyidan emoji tanlang</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">Emblem tanlang</div>
+      <div class="emblem-picker" id="emblemPicker"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Klan nomi <span>*</span></label>
+      <input type="text" class="form-input" id="createName" placeholder="Masalan: Iron Coders" maxlength="50" oninput="onNameInput()">
+      <div class="char-count"><span id="nameCount">0</span>/50</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Klan tegi</label>
+      <div class="input-row">
+        <input type="text" class="form-input" id="createTag" placeholder="CLAN (2-6 harf)" maxlength="6" oninput="onTagInput()" style="text-transform:uppercase">
+        <div class="tag-preview" id="tagPreview">[—]</div>
+      </div>
+      <div class="form-hint">Qisqa kod — ixtiyoriy. Faqat lotin harflari va raqamlar.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Klan tavsifi</label>
+      <textarea class="form-input" id="createDesc" placeholder="Klaningiz haqida qisqacha yozing..." maxlength="300" oninput="document.getElementById('descCount').textContent=this.value.length"></textarea>
+      <div class="char-count"><span id="descCount">0</span>/300</div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalCreate')">Bekor qilish</button>
+      <button class="btn btn-primary" id="btnSubmitCreate" onclick="submitCreate()">
+        <i class="ra ra-castle-emblem"></i> Yaratish
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     MODAL: KLAN DETAIL / QO'SHILISH
+     ════════════════════════════════════ -->
+<div class="modal-overlay" id="modalDetail">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('modalDetail')"><i class="ra ra-cancel"></i></button>
+    <div class="modal-title" id="detailModalTitle">Klan ma'lumotlari</div>
+
+    <!-- Hero -->
+    <div class="detail-hero">
+      <div class="detail-emblem" id="detailEmblem">🏰</div>
+      <div class="detail-info">
+        <h3 id="detailName">—</h3>
+        <div class="detail-tag" id="detailTag" style="display:none"></div>
+        <p class="detail-desc" id="detailDesc">—</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="detail-stats">
+      <div class="detail-stat">
+        <div class="val" id="detailRating" style="color:var(--gold)">—</div>
+        <div class="lbl">⭐ Reyting</div>
+      </div>
+      <div class="detail-stat">
+        <div class="val" id="detailMembers" style="color:var(--accent)">—</div>
+        <div class="lbl"><i class="ra ra-player"></i> A'zolar</div>
+      </div>
+      <div class="detail-stat">
+        <div class="val" id="detailRank" style="color:#a78bfa">—</div>
+        <div class="lbl">🏆 O'rin</div>
+      </div>
+    </div>
+
+    <!-- Leader -->
+    <div class="detail-leader">
+      <div class="detail-leader-dot" id="detailLeaderInit">?</div>
+      <div class="detail-leader-info">
+        <div class="name" id="detailLeaderName">—</div>
+        <div class="role">👑 Klan Lideri</div>
+      </div>
+    </div>
+
+    <!-- Join confirm text -->
+    <div class="join-confirm-text" id="detailJoinText" style="display:none">
+      Ushbu klanga qo'shilishni tasdiqlaysizmi? Siz hozirda hech qanday klanga a'zo emassiz.
+      Klan lideri sizni a'zo sifatida qabul qiladi.
+    </div>
+
+    <!-- Already in clan warning -->
+    <div class="join-confirm-text" id="detailAlreadyText" style="display:none;border-left-color:var(--accent2);color:var(--muted)">
+      Siz allaqachon boshqa klanga a'zosiz. Boshqa klanga qo'shilish uchun avval joriy klangizdan chiqing.
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions" style="padding-top:0;border-top:none">
+      <button class="btn btn-outline" onclick="closeModal('modalDetail')">Yopish</button>
+      <button class="btn btn-primary" id="detailMyClanBtn" onclick="window.location='clan.html'" style="display:none">
+        <i class="ra ra-castle-emblem"></i> Klanim paneliga o'tish
+      </button>
+      <button class="btn btn-green" id="detailJoinBtn" onclick="confirmJoin()" style="display:none">
+        <i class="ra ra-player-teleport"></i> Klanga qo'shilish
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast"></div>
+
+<script src="/static/frontend/js/config.js"></script>
+<script src="/static/frontend/js/auth.js"></script>
+<script src="/static/frontend/js/api.js"></script>
+<script>
+/* ════════════════════════════════════════════════════
+   Klanlar Reytingi — Main Logic
+   ════════════════════════════════════════════════════ */
+
+const EMBLEMS = [
+  '🏰','⚔️','🛡️','🔥','💎','👑','🐉','🦅','🌟','⚡',
+  '🌙','🦁','🐺','🦊','🏹','🪄','🔮','💀','🐍','🦂',
+  '🏆','🌊','🎯','🗺️','🧙','🪖','🗝️','🎖️','🌺','🦋',
+  '🧩','🛸','🗡️','⚗️','🦄','🐲','🔱','🌋','🏔️','🧲',
+];
+
+let allClans    = [];
+let filteredClans = [];
+let userClanId  = null;
+let selectedClanId = null;
+let selectedEmblem = '🏰';
+let currentSort = 'rating';
+let searchQ     = '';
+
+/* ── INIT ── */
+Auth.requireLogin();
+Auth.fillUserUI();
+
+async function init() {
+  try {
+    // Parallel: leaderboard + me (for clan membership context)
+    const [lb] = await Promise.all([
+      api.clanLeaderboard().catch(() => []),
+    ]);
+    allClans = Array.isArray(lb) ? lb : (lb?.results || []);
+
+    // Find user's current clan from my_role field
+    const myClan = allClans.find(c => c.my_role !== null);
+    userClanId = myClan?.id || null;
+
+    renderBanner(myClan);
+    applyFilter();
+
+  } catch(e) {
+    toast('Ma\'lumot yuklashda xato: ' + e.message, 'error');
+    renderEmpty('Serverdan ma\'lumot olib bo\'lmadi');
+  }
+}
+
+async function reload() {
+  document.getElementById('clanTbody').innerHTML = skeletonRows(5);
+  document.getElementById('totalLabel').textContent = 'Yuklanmoqda…';
+  allClans = [];
+  filteredClans = [];
+  userClanId = null;
+  init();
+}
+
+/* ── BANNER ── */
+function renderBanner(myClan) {
+  const inc  = document.getElementById('bannerInClan');
+  const noc  = document.getElementById('bannerNoClan');
+  const cBtn = document.getElementById('btnCreate');
+
+  if (myClan) {
+    inc.style.display = 'flex';
+    noc.style.display = 'none';
+    cBtn.style.display = 'none';
+
+    document.getElementById('bannerEmblem').textContent  = myClan.emblem || '🏰';
+    document.getElementById('bannerName').textContent    = myClan.name;
+    document.getElementById('bannerRating').textContent  = myClan.rating_score || 0;
+    document.getElementById('bannerMembers').textContent = myClan.member_count || 0;
+    document.getElementById('bannerLeader').textContent  =
+      myClan.leader?.full_name || myClan.leader?.username || '—';
+
+    const roleEl = document.getElementById('bannerRole');
+    const roleMap = { leader: 'Lider', officer: 'Ofitser', member: 'A\'zo' };
+    const roleCls = { leader: 'role-leader', officer: 'role-officer', member: 'role-member' };
+    roleEl.textContent  = roleMap[myClan.my_role] || 'A\'zo';
+    roleEl.className    = 'banner-role ' + (roleCls[myClan.my_role] || 'role-member');
+  } else {
+    inc.style.display = 'none';
+    noc.style.display = 'flex';
+    cBtn.style.display = '';
+  }
+}
+
+/* ── SORT & FILTER ── */
+function setSort(key) {
+  currentSort = key;
+  ['rating','members','name'].forEach(k =>
+    document.getElementById('sort' + k.charAt(0).toUpperCase() + k.slice(1))
+      .classList.toggle('active', k === key)
+  );
+  applyFilter();
+}
+
+function onSearch(q) {
+  searchQ = q.trim().toLowerCase();
+  applyFilter();
+}
+
+function applyFilter() {
+  let list = [...allClans];
+
+  if (searchQ) {
+    list = list.filter(c =>
+      c.name.toLowerCase().includes(searchQ) ||
+      (c.tag || '').toLowerCase().includes(searchQ)
+    );
+  }
+
+  if (currentSort === 'members') {
+    list.sort((a, b) => (b.member_count || 0) - (a.member_count || 0));
+  } else if (currentSort === 'name') {
+    list.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  // 'rating' — already sorted by backend (rating_score desc)
+
+  filteredClans = list;
+  renderTable(list);
+  document.getElementById('totalLabel').textContent =
+    list.length === allClans.length
+      ? `Jami ${allClans.length} ta klan`
+      : `${list.length} / ${allClans.length} ta klan`;
+}
+
+/* ── RENDER TABLE ── */
+function ratingClass(score) {
+  if (score >= 1000) return 'rating-elite';
+  if (score >= 500)  return 'rating-high';
+  if (score >= 200)  return 'rating-mid';
+  return 'rating-low';
+}
+
+function rankBadgeHTML(rank) {
+  if (rank === 1) return '<span class="rank-badge rank-1">🥇</span>';
+  if (rank === 2) return '<span class="rank-badge rank-2">🥈</span>';
+  if (rank === 3) return '<span class="rank-badge rank-3">🥉</span>';
+  return `<span class="rank-badge rank-other">${rank}</span>`;
+}
+
+// Find rank of clan in FULL list (before search filter) by id
+function globalRank(clanId) {
+  const idx = allClans.findIndex(c => c.id === clanId);
+  return idx >= 0 ? idx + 1 : '—';
+}
+
+function renderTable(list) {
+  const tbody = document.getElementById('clanTbody');
+  if (!list.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="6">
+        <div class="empty-state">
+          <div class="icon">🏰</div>
+          <h4>Klan topilmadi</h4>
+          <p>Qidiruv so'zini o'zgartiring yoki yangi klan yarating</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map((clan, i) => {
+    const rank     = globalRank(clan.id);
+    const isMe     = clan.my_role !== null;
+    const inAClan  = userClanId !== null;
+    const leaderName = clan.leader?.full_name || clan.leader?.username || '—';
+    const leaderInit = leaderName.charAt(0).toUpperCase();
+    const tagHtml  = clan.tag ? `<div class="tag-label">[${clan.tag}]</div>` : '';
+    const myBadge  = isMe ? '<span class="my-badge">Mening klanim</span>' : '';
+
+    let actionBtn;
+    if (isMe) {
+      actionBtn = `<a href="clan.html" class="btn btn-sm btn-primary" onclick="event.stopPropagation()">
+        <i class="ra ra-castle-emblem"></i> Klanim
+      </a>`;
+    } else if (!inAClan) {
+      actionBtn = `<button class="btn btn-sm btn-green" onclick="event.stopPropagation();quickJoin(${clan.id},'${escHtml(clan.name)}')">
+        <i class="ra ra-player-teleport"></i> Qo'shilish
+      </button>`;
+    } else {
+      actionBtn = `<button class="btn btn-sm btn-outline" onclick="event.stopPropagation();openDetailModal(${clan.id})">
+        Ko'rish
+      </button>`;
+    }
+
+    return `
+      <tr class="${isMe ? 'my-row' : ''}" onclick="openDetailModal(${clan.id})" title="${escHtml(clan.name)}">
+        <td>${rankBadgeHTML(rank)}</td>
+        <td>
+          <div class="clan-name-cell">
+            <div class="emblem-sm" style="background:${emblemBg(rank)}">${clan.emblem || '🏰'}</div>
+            <div>
+              <div class="clan-title">${escHtml(clan.name)} ${myBadge}</div>
+              ${tagHtml}
+            </div>
+          </div>
+        </td>
+        <td><span class="stat-chip"><i class="ra ra-player"></i> ${clan.member_count || 0}</span></td>
+        <td><span class="rating-val ${ratingClass(clan.rating_score || 0)}">${clan.rating_score || 0}</span></td>
+        <td>
+          <div class="leader-mini">
+            <div class="leader-dot">${leaderInit}</div>
+            <span style="font-size:.83rem">${escHtml(leaderName)}</span>
+          </div>
+        </td>
+        <td class="action-cell">${actionBtn}</td>
+      </tr>`;
+  }).join('');
+}
+
+function emblemBg(rank) {
+  if (rank === 1) return 'linear-gradient(135deg,#ffd700,#ffa500)';
+  if (rank === 2) return 'linear-gradient(135deg,#c0c0c0,#a8a8a8)';
+  if (rank === 3) return 'linear-gradient(135deg,#cd7f32,#b8662a)';
+  return 'linear-gradient(135deg,#6c63ff,#8b5cf6)';
+}
+
+function skeletonRows(n) {
+  return Array.from({length:n}).map(() => `
+    <tr class="skel-row">
+      <td><span class="skel" style="width:28px"></span></td>
+      <td><span class="skel" style="width:${140+Math.random()*60|0}px"></span></td>
+      <td><span class="skel" style="width:35px"></span></td>
+      <td><span class="skel" style="width:55px"></span></td>
+      <td><span class="skel" style="width:90px"></span></td>
+      <td></td>
+    </tr>`).join('');
+}
+
+function renderEmpty(msg) {
+  document.getElementById('clanTbody').innerHTML = `
+    <tr><td colspan="6">
+      <div class="empty-state">
+        <div class="icon">⚠️</div>
+        <h4>Xato yuz berdi</h4>
+        <p>${msg}</p>
+      </div>
+    </td></tr>`;
+}
+
+/* ── QUICK JOIN (from table button) ── */
+function quickJoin(clanId, clanName) {
+  // Show detail modal pre-filled, then join from there
+  openDetailModal(clanId);
+}
+
+/* ── DETAIL MODAL ── */
+function openDetailModal(clanId) {
+  const clan = allClans.find(c => c.id === clanId);
+  if (!clan) return;
+  selectedClanId = clanId;
+
+  const rank = globalRank(clanId);
+  const leaderName = clan.leader?.full_name || clan.leader?.username || '—';
+  const leaderInit = leaderName.charAt(0).toUpperCase();
+
+  document.getElementById('detailModalTitle').textContent = clan.name;
+  document.getElementById('detailEmblem').textContent     = clan.emblem || '🏰';
+  document.getElementById('detailName').textContent       = clan.name;
+
+  const tagEl = document.getElementById('detailTag');
+  if (clan.tag) { tagEl.textContent = `[${clan.tag}]`; tagEl.style.display = ''; }
+  else            tagEl.style.display = 'none';
+
+  document.getElementById('detailDesc').textContent      = clan.description || 'Tavsif yo\'q';
+  document.getElementById('detailRating').textContent    = clan.rating_score || 0;
+  document.getElementById('detailMembers').textContent   = clan.member_count || 0;
+  document.getElementById('detailRank').textContent      = rank;
+  document.getElementById('detailLeaderName').textContent = leaderName;
+  document.getElementById('detailLeaderInit').textContent = leaderInit;
+
+  const isMe    = clan.my_role !== null;
+  const inAClan = userClanId !== null;
+
+  // Show/hide buttons and messages
+  document.getElementById('detailMyClanBtn').style.display  = isMe ? '' : 'none';
+  document.getElementById('detailJoinBtn').style.display    = (!isMe && !inAClan) ? '' : 'none';
+  document.getElementById('detailJoinText').style.display   = (!isMe && !inAClan) ? '' : 'none';
+  document.getElementById('detailAlreadyText').style.display = (!isMe && inAClan) ? '' : 'none';
+
+  openModal('modalDetail');
+}
+
+async function confirmJoin() {
+  if (!selectedClanId) return;
+  const clan = allClans.find(c => c.id === selectedClanId);
+  const btn  = document.getElementById('detailJoinBtn');
+
+  btn.disabled   = true;
+  btn.innerHTML  = '<i class="ra ra-hourglass"></i> Qo\'shilmoqda…';
+
+  try {
+    await api.joinClan(selectedClanId);
+    toast(`🎉 ${clan?.name || 'Klan'}ga muvaffaqiyatli qo\'shildingiz!`, 'success');
+    closeModal('modalDetail');
+    // Reload to reflect new membership
+    setTimeout(reload, 800);
+  } catch(e) {
+    toast(e.message || 'Xato yuz berdi', 'error');
+    btn.disabled  = false;
+    btn.innerHTML = '<i class="ra ra-player-teleport"></i> Klanga qo\'shilish';
+  }
+}
+
+/* ══════════════════════════════════════
+   CREATE CLAN MODAL
+   ══════════════════════════════════════ */
+function openCreateModal() {
+  if (userClanId) {
+    toast('Siz allaqachon klanga a\'zosiz!', 'error');
+    return;
+  }
+  selectedEmblem = '🏰';
+  document.getElementById('createName').value = '';
+  document.getElementById('createTag').value  = '';
+  document.getElementById('createDesc').value = '';
+  document.getElementById('nameCount').textContent = '0';
+  document.getElementById('descCount').textContent = '0';
+  document.getElementById('tagPreview').textContent = '[—]';
+  document.getElementById('createEmblemPreview').textContent = '🏰';
+  document.getElementById('btnSubmitCreate').disabled = false;
+  document.getElementById('btnSubmitCreate').innerHTML = '<i class="ra ra-castle-emblem"></i> Yaratish';
+
+  buildEmblemPicker();
+  openModal('modalCreate');
+}
+
+function buildEmblemPicker() {
+  const el = document.getElementById('emblemPicker');
+  el.innerHTML = EMBLEMS.map(e => `
+    <button type="button" class="emblem-opt ${e === selectedEmblem ? 'selected' : ''}"
+      onclick="selectEmblem('${e}',this)">${e}</button>
+  `).join('');
+}
+
+function selectEmblem(emoji, btn) {
+  selectedEmblem = emoji;
+  document.querySelectorAll('.emblem-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('createEmblemPreview').textContent = emoji;
+}
+
+function onNameInput() {
+  const v = document.getElementById('createName').value;
+  document.getElementById('nameCount').textContent = v.length;
+}
+
+function onTagInput() {
+  let v = document.getElementById('createTag').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  document.getElementById('createTag').value = v;
+  document.getElementById('tagPreview').textContent = v ? `[${v}]` : '[—]';
+}
+
+async function submitCreate() {
+  const name = document.getElementById('createName').value.trim();
+  const tag  = document.getElementById('createTag').value.trim().toUpperCase();
+  const desc = document.getElementById('createDesc').value.trim();
+
+  if (!name) {
+    toast('Klan nomini kiriting!', 'error');
+    document.getElementById('createName').focus();
+    return;
+  }
+  if (name.length < 2) {
+    toast('Klan nomi kamida 2 ta harf bo\'lishi kerak!', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmitCreate');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ra ra-hourglass"></i> Yaratilmoqda…';
+
+  try {
+    const payload = { name, emblem: selectedEmblem };
+    if (tag)  payload.tag         = tag;
+    if (desc) payload.description = desc;
+
+    const result = await api.createClan(payload);
+    toast(`🎉 "${result.name}" klani muvaffaqiyatli yaratildi!`, 'success');
+    closeModal('modalCreate');
+    setTimeout(() => window.location.href = 'clan.html', 1000);
+  } catch(e) {
+    toast(e.message || 'Klan yaratishda xato yuz berdi', 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ra ra-castle-emblem"></i> Yaratish';
+  }
+}
+
+/* ── MODAL HELPERS ── */
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.show').forEach(m => closeModal(m.id));
+  }
+});
+
+/* ── TOAST ── */
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const div = document.createElement('div');
+  div.className = `toast-item ${type}`;
+  div.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  el.appendChild(div);
+  setTimeout(() => div.remove(), 4000);
+}
+
+/* ── SIDEBAR MOBILE ── */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+/* ── UTIL ── */
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── START ── */
+init();
+</script>
+<script>
+(async function(){
+  if(typeof api==='undefined'||typeof Auth==='undefined'||!Auth.isLoggedIn())return;
+  try{const d=await api.msgUnread();const b=document.getElementById('msgBadge');if(b&&d?.unread>0){b.textContent=d.unread>9?'9+':d.unread;b.style.display='';}}catch(e){}
+})();
+</script>
+</body>
+</html>

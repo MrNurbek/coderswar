@@ -51,7 +51,7 @@
     @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
     .stat-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.2rem;position:relative;overflow:hidden;transition:border-color .2s}
     .stat-box:hover{border-color:var(--accent)}
-    .stat-box::after{content:attr(data-icon);position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.07}
+    .stat-box .stat-bg{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.07;pointer-events:none}
     .stat-box .lbl{font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem}
     .stat-box .val{font-size:1.6rem;font-weight:900;line-height:1;margin-bottom:.2rem}
     .stat-box .hint{font-size:.72rem;color:var(--muted)}
@@ -265,34 +265,37 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-logo">
-    <a href="dashboard.html">⚔️ Coders War</a>
-    <div class="sub">👨‍🏫 O'qituvchi Paneli</div>
+    <a href="dashboard.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a>
+    <div class="sub"><i class="ra ra-player-king"></i>‍🏫 O'qituvchi Paneli</div>
   </div>
   <nav class="sb-nav">
     <div class="nav-section">Asosiy</div>
-    <a class="nav-item active" href="#" onclick="showSection('dashboard',this)"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item active" href="#" onclick="showSection('dashboard',this)"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
 
     <div class="nav-section">O'quv Jarayoni</div>
-    <a class="nav-item" href="#" onclick="showSection('topics',this)"><span class="icon">📚</span> Mavzular</a>
-    <a class="nav-item" href="#" onclick="showSection('content',this)"><span class="icon">🎬</span> Kontent</a>
-    <a class="nav-item" href="#" onclick="showSection('tests',this)"><span class="icon">📝</span> Testlar</a>
-    <a class="nav-item" href="#" onclick="showSection('tasks',this)"><span class="icon">💻</span> Topshiriqlar</a>
+    <a class="nav-item" href="#" onclick="showSection('topics',this)"><span class="icon"><i class="ra ra-book"></i></span> Mavzular</a>
+    <a class="nav-item" href="#" onclick="showSection('content',this)"><span class="icon"><i class="ra ra-crystal-ball"></i></span> Kontent</a>
+    <a class="nav-item" href="#" onclick="showSection('tests',this)"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Testlar</a>
+    <a class="nav-item" href="#" onclick="showSection('tasks',this)"><span class="icon"><i class="ra ra-anvil"></i></span> Topshiriqlar</a>
 
     <div class="nav-section">Talabalar</div>
-    <a class="nav-item" href="#" onclick="showSection('students',this)"><span class="icon">👁</span> Monitoring</a>
-    <a class="nav-item" href="#" onclick="showSection('grading',this)"><span class="icon">✍️</span> Baholash</a>
+    <a class="nav-item" href="#" onclick="showSection('students',this)"><span class="icon"><i class="ra ra-awareness"></i></span> Monitoring</a>
+    <a class="nav-item" href="#" onclick="showSection('grading',this)"><span class="icon"><i class="ra ra-quill-ink"></i></span> Baholash</a>
 
     <div class="nav-section">Hisobot</div>
-    <a class="nav-item" href="#" onclick="showSection('submissions',this)"><span class="icon">⚡</span> Submissionlar</a>
+    <a class="nav-item" href="#" onclick="showSection('submissions',this)"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Submissionlar</a>
+
+    <div class="nav-section">Muloqot</div>
+    <a class="nav-item" href="#" onclick="showSection('messages',this)" id="navMessages"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none;margin-left:auto;background:#ff6584;color:#fff;font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:8px">0</span></a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
       <div class="av-t" data-user-init>?</div>
       <div>
         <div class="t-name" data-user-name>...</div>
-        <div class="t-role">👨‍🏫 O'qituvchi</div>
+        <div class="t-role"><i class="ra ra-player-king"></i>‍🏫 O'qituvchi</div>
       </div>
-      <button onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+      <button onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
@@ -301,7 +304,7 @@
 <div class="main">
   <div class="topbar">
     <div>
-      <h2 id="topbarTitle">📊 Dashboard</h2>
+      <h2 id="topbarTitle"><i class="ra ra-compass"></i> Dashboard</h2>
       <div class="bc" id="topbarBc">O'qituvchi boshqaruv paneli</div>
     </div>
     <div class="tb-right">
@@ -319,29 +322,29 @@
     <!-- ═══ DASHBOARD ═══ -->
     <div id="sec-dashboard" class="section active">
       <div class="stats-row">
-        <div class="stat-box" data-icon="🎓"><div class="lbl">Jami talabalar</div><div class="val" style="color:#a78bfa" id="stTotal">—</div><div class="hint" id="stTotalHint">Yuklanmoqda...</div></div>
-        <div class="stat-box" data-icon="📈"><div class="lbl">O'rtacha Academic</div><div class="val" style="color:#43e97b" id="stAcademic">—</div><div class="hint">/ 100 ball</div></div>
-        <div class="stat-box" data-icon="⚠️"><div class="lbl">Zaif talabalar</div><div class="val" style="color:#ff6584" id="stWeak">—</div><div class="hint">Academic &lt; 60</div></div>
-        <div class="stat-box" data-icon="💻"><div class="lbl">Submissionlar</div><div class="val" style="color:#ffd700" id="stSubs">—</div><div class="hint" id="stSubsHint">So'nggi topshiriqlar</div></div>
+        <div class="stat-box" ><i class="ra ra-helmet stat-bg" aria-hidden="true"></i><div class="lbl">Jami talabalar</div><div class="val" style="color:#a78bfa" id="stTotal">—</div><div class="hint" id="stTotalHint">Yuklanmoqda...</div></div>
+        <div class="stat-box" ><i class="ra ra-level-three-advanced stat-bg" aria-hidden="true"></i><div class="lbl">O'rtacha Academic</div><div class="val" style="color:#43e97b" id="stAcademic">—</div><div class="hint">/ 100 ball</div></div>
+        <div class="stat-box" ><i class="ra ra-broken-shield stat-bg" aria-hidden="true"></i><div class="lbl">Zaif talabalar</div><div class="val" style="color:#ff6584" id="stWeak">—</div><div class="hint">Academic &lt; 60</div></div>
+        <div class="stat-box" ><i class="ra ra-anvil stat-bg" aria-hidden="true"></i><div class="lbl">Submissionlar</div><div class="val" style="color:#ffd700" id="stSubs">—</div><div class="hint" id="stSubsHint">So'nggi topshiriqlar</div></div>
       </div>
       <div class="g3" style="margin-bottom:1.2rem">
         <div class="card">
-          <div class="card-hd"><span class="card-title">📈 Talabalar Rating dinamikasi</span><span class="card-meta">Top 3 · Rating ball</span></div>
+          <div class="card-hd"><span class="card-title"><i class="ra ra-level-three-advanced"></i> Talabalar Rating dinamikasi</span><span class="card-meta">Top 3 · Rating ball</span></div>
           <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
           <div id="chartLegend" style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem;font-size:.75rem"></div>
         </div>
         <div class="card">
-          <div class="card-hd"><span class="card-title">🎯 4 Mezon · O'rtacha</span></div>
+          <div class="card-hd"><span class="card-title"><i class="ra ra-archery-target"></i> 4 Mezon · O'rtacha</span></div>
           <div class="crit-bars" id="critBars"><div style="color:var(--muted);font-size:.82rem">Yuklanmoqda...</div></div>
         </div>
       </div>
       <div class="g2">
         <div class="card">
-          <div class="card-hd"><span class="card-title">⚠️ Diqqat talab talabalar</span><span class="card-meta" id="weakLbl">Academic &lt; 60</span></div>
+          <div class="card-hd"><span class="card-title"><i class="ra ra-broken-shield"></i> Diqqat talab talabalar</span><span class="card-meta" id="weakLbl">Academic &lt; 60</span></div>
           <div class="sc-list" id="weakStudents"><div style="color:var(--muted);font-size:.82rem">Yuklanmoqda...</div></div>
         </div>
         <div class="card">
-          <div class="card-hd"><span class="card-title">🌟 Yetakchi talabalar</span><span class="card-meta">Top 5</span></div>
+          <div class="card-hd"><span class="card-title"><i class="ra ra-crown"></i> Yetakchi talabalar</span><span class="card-meta">Top 5</span></div>
           <div class="sc-list" id="topStudents"><div style="color:var(--muted);font-size:.82rem">Yuklanmoqda...</div></div>
         </div>
       </div>
@@ -350,16 +353,16 @@
     <!-- ═══ MAVZULAR ═══ -->
     <div id="sec-topics" class="section">
       <div class="mod-tabs" id="modTabs">
-        <div class="mod-tab active" onclick="selectModule(1,this)">📗 1-Semestr (1–15)</div>
-        <div class="mod-tab" onclick="selectModule(2,this)">📘 2-Semestr (16–30)</div>
-        <div class="mod-tab" onclick="selectModule(3,this)">📙 3-Semestr (31–45)</div>
+        <div class="mod-tab active" onclick="selectModule(1,this)"><i class="ra ra-book"></i> 1-Semestr (1–15)</div>
+        <div class="mod-tab" onclick="selectModule(2,this)"><i class="ra ra-book"></i> 2-Semestr (16–30)</div>
+        <div class="mod-tab" onclick="selectModule(3,this)"><i class="ra ra-book"></i> 3-Semestr (31–45)</div>
       </div>
       <div class="card">
         <div class="card-hd">
-          <span class="card-title" id="topicsCardTitle">📚 Mavzular ro'yxati</span>
+          <span class="card-title" id="topicsCardTitle"><i class="ra ra-book"></i> Mavzular ro'yxati</span>
           <div style="display:flex;gap:.5rem">
             <button class="btn btn-primary btn-sm" onclick="openTopicModal()">+ Yangi mavzu</button>
-            <button class="btn btn-outline btn-sm" onclick="saveAllTopicNames()">💾 Barchani saqlash</button>
+            <button class="btn btn-outline btn-sm" onclick="saveAllTopicNames()"><i class="ra ra-rune-stone"></i> Barchani saqlash</button>
           </div>
         </div>
         <div class="notice notice-info">
@@ -378,7 +381,7 @@
               </tr>
             </thead>
             <tbody id="topicsBody">
-              <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">⏳ Yuklanmoqda...</td></tr>
+              <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)"><i class="ra ra-hourglass"></i> Yuklanmoqda...</td></tr>
             </tbody>
           </table>
         </div>
@@ -399,7 +402,7 @@
         <div>
           <div id="contentEditorPlaceholder" class="card">
             <div class="empty-state">
-              <div class="es-icon">🎬</div>
+              <div class="es-icon"><i class="ra ra-crystal-ball"></i></div>
               <div class="es-text">Mavzuni tanlang — kontent tahrirlash uchun</div>
             </div>
           </div>
@@ -426,7 +429,7 @@
                 <input class="form-input" id="contentResources" placeholder='[{"title":"Havola nomi","url":"https://..."}]'/>
               </div>
               <div style="display:flex;align-items:center;gap:.8rem">
-                <button class="btn btn-primary" onclick="saveContent()">💾 Saqlash</button>
+                <button class="btn btn-primary" onclick="saveContent()"><i class="ra ra-rune-stone"></i> Saqlash</button>
                 <span class="status-msg" id="contentStatus"></span>
               </div>
             </div>
@@ -487,8 +490,8 @@
           <div class="form-col" style="max-width:180px">
             <label class="form-label">Turi</label>
             <select class="form-select" id="taskCatSel" onchange="loadTasks()">
-              <option value="exercise">💻 Mashq (10 ta)</option>
-              <option value="project">🏆 Loyiha (1 ta)</option>
+              <option value="exercise"><i class="ra ra-anvil"></i> Mashq (10 ta)</option>
+              <option value="project"><i class="ra ra-trophy"></i> Loyiha (1 ta)</option>
             </select>
           </div>
           <div style="align-self:flex-end">
@@ -517,7 +520,7 @@
     <div id="sec-students" class="section">
       <div class="card" style="margin-bottom:0;padding-bottom:.8rem">
         <div class="card-hd" style="margin-bottom:.8rem">
-          <span class="card-title">🎓 Barcha talabalar</span>
+          <span class="card-title"><i class="ra ra-helmet"></i> Barcha talabalar</span>
           <span class="card-meta" id="stuCountLabel">—</span>
         </div>
         <div class="stu-search">
@@ -532,76 +535,327 @@
 
     <!-- ═══ BAHOLASH ═══ -->
     <div id="sec-grading" class="section">
-      <div class="notice notice-info" style="margin-bottom:1.2rem">
-        <span>📋</span>
-        <div><strong>Baholash tizimi:</strong> FA·Loyiha (max 10 ball) + RE·Peer-review (max 10 ball) o'qituvchi tomonidan qo'lda kiritiladi. Qolgan barcha ball'lar avtomatik hisoblanadi.</div>
-      </div>
+
+      <!-- ① KUTAYOTGANLAR NAVBATI -->
       <div class="card">
-        <div class="card-hd"><span class="card-title">👤 Talaba va mavzu tanlash</span><span class="card-meta" id="gradeStudentLabel">—</span></div>
-        <div class="form-row">
-          <div class="form-col">
-            <label class="form-label">Talaba ID</label>
-            <input class="form-input" id="gradeStudentId" type="number" placeholder="123" style="width:130px" oninput="loadStudentForGrading()">
-          </div>
-          <div class="form-col">
-            <label class="form-label">Mavzu</label>
-            <select class="form-select" id="gradeScoreId" style="min-width:280px" onchange="onTopicSelect()">
-              <option value="">— Avval talaba ID kiriting —</option>
-            </select>
-          </div>
-          <span class="status-msg" id="gradeLoadStatus"></span>
-        </div>
-      </div>
-      <div class="g2">
-        <div class="card">
-          <div class="card-hd"><span class="card-title">💻 FA · Loyiha baholash</span><span class="card-meta">max 10 ball</span></div>
-          <div class="notice notice-info" style="font-size:.8rem"><span>Talaba loyiha yoki mini-loyiha topshirig'ini bajarishi. <strong style="color:#43e97b">Qolgan FA ball'lar (20/30) avtomatik.</strong></span></div>
-          <div id="faCurrentBox" style="display:none;margin-bottom:.8rem;padding:.6rem .8rem;background:rgba(255,255,255,0.03);border-radius:9px;font-size:.82rem">Joriy FA loyiha: <strong id="faCurrentVal" style="color:#43e97b">—</strong>/10</div>
-          <div class="form-row" style="align-items:flex-end">
-            <div class="form-col"><label class="form-label">Ball (0–10)</label><input class="form-input" id="faVal" type="number" min="0" max="10" value="10" style="width:80px"></div>
-            <button class="btn btn-green" onclick="giveFaBall()">✅ FA Baholash</button>
-            <span class="status-msg" id="faStatus"></span>
+        <div class="card-hd">
+          <span class="card-title">📋 Baholash kutayotganlar</span>
+          <div style="display:flex;align-items:center;gap:.6rem">
+            <span class="card-meta" id="pendingMeta">—</span>
+            <button class="btn btn-outline btn-sm" onclick="loadPendingGrades()" title="Yangilash">↻</button>
           </div>
         </div>
-        <div class="card">
-          <div class="card-hd"><span class="card-title">🔄 RE · Peer-review baholash</span><span class="card-meta">max 10 ball</span></div>
-          <div class="notice notice-warn" style="font-size:.8rem"><span>Boshqa talabaning kodiga asosli fikr bildirish sifati. <strong>Qolgan RE ball (10/20) o'z-o'zini baholash — avtomatik.</strong></span></div>
-          <div id="reCurrentBox" style="display:none;margin-bottom:.8rem;padding:.6rem .8rem;background:rgba(255,255,255,0.03);border-radius:9px;font-size:.82rem">Joriy RE peer: <strong id="reCurrentVal" style="color:#fb923c">—</strong>/10</div>
-          <div class="form-row" style="align-items:flex-end">
-            <div class="form-col"><label class="form-label">Ball (0–10)</label><input class="form-input" id="reVal" type="number" min="0" max="10" value="10" style="width:80px"></div>
-            <button class="btn btn-gold" onclick="giveReBall()">✅ RE Baholash</button>
-            <span class="status-msg" id="reStatus"></span>
+        <div style="display:flex;gap:.3rem;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.6rem">
+          <button class="btn btn-sm" id="tabProjects"
+            style="background:rgba(67,233,123,0.15);border:1px solid rgba(67,233,123,0.3);color:#43e97b"
+            onclick="switchPendingTab('projects')">
+            💻 Loyihalar <span id="projectBadge" style="background:#43e97b;color:#0d0d1a;border-radius:10px;padding:.05rem .4rem;font-size:.72rem;margin-left:.3rem">0</span>
+          </button>
+          <button class="btn btn-sm" id="tabPeers"
+            style="background:transparent;border:1px solid var(--border);color:var(--muted)"
+            onclick="switchPendingTab('peers')">
+            🔄 Peer-review <span id="peerBadge" style="background:var(--border);color:var(--text);border-radius:10px;padding:.05rem .4rem;font-size:.72rem;margin-left:.3rem">0</span>
+          </button>
+        </div>
+        <div id="pendingList" style="display:flex;flex-direction:column;gap:.7rem;min-height:60px">
+          <div style="color:var(--muted);font-size:.83rem;text-align:center;padding:1.2rem">⏳ Yuklanmoqda...</div>
+        </div>
+      </div>
+
+      <!-- ② ③ ④ — ikki ustunli layout: Talabalar paneli + Baholash formasi -->
+      <div class="g-split" style="align-items:start">
+
+        <!-- ═══ CHAP: Talabalar paneli ═══ -->
+        <div class="card" style="position:sticky;top:80px">
+          <div class="card-hd">
+            <span class="card-title">👥 Talabalar</span>
+            <span class="card-meta" id="spMeta">—</span>
+          </div>
+          <!-- Filter tugmalari -->
+          <div style="display:flex;gap:.3rem;margin-bottom:.75rem">
+            <button class="btn btn-sm" id="spTabAll" onclick="spSetFilter('all')"
+              style="flex:1;background:rgba(108,99,255,0.2);border:1px solid var(--accent);color:#a78bfa;font-size:.75rem">Hammasi</button>
+            <button class="btn btn-sm" id="spTabPend" onclick="spSetFilter('pending')"
+              style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.75rem">⏳ Kutayotgan</button>
+            <button class="btn btn-sm" id="spTabOther" onclick="spSetFilter('other')"
+              style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.75rem">⚪ Boshqa</button>
+          </div>
+          <!-- Qidiruv -->
+          <input class="form-input" id="spSearch" placeholder="🔍 Ism bo'yicha..." style="margin-bottom:.7rem;font-size:.82rem" oninput="renderStudentPanel()">
+          <!-- Ro'yxat -->
+          <div id="spList" style="display:flex;flex-direction:column;gap:.3rem;max-height:520px;overflow-y:auto">
+            <div style="text-align:center;color:var(--muted);padding:1.5rem;font-size:.82rem">⏳ Yuklanmoqda...</div>
           </div>
         </div>
-      </div>
-      <div class="card" id="gradeTableCard" style="display:none">
-        <div class="card-hd"><span class="card-title">📋 Talaba mavzulari · Baholash holati</span><span class="card-meta" id="gradeTableMeta"></span></div>
-        <div style="border:1px solid var(--border);border-radius:14px;overflow:hidden">
-          <div class="grade-thead"><div>#</div><div>Mavzu</div><div style="text-align:center;color:#60a5fa">MO/15</div><div style="text-align:center;color:#a78bfa">KO/35</div><div style="text-align:center;color:#43e97b">FA/30</div><div style="text-align:center;color:#fb923c">RE/20</div><div style="text-align:center">Jami</div></div>
-          <div id="gradeTableBody"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-hd"><span class="card-title">🤖 AI Talaba tahlili</span><span class="card-meta">GPT asosida</span></div>
-        <div class="form-row">
-          <div class="form-col"><label class="form-label">Talaba ID</label><input class="form-input" id="aiStudentId" type="number" placeholder="123" style="width:140px"></div>
-          <button class="btn btn-primary" onclick="loadAIReport()">🤖 Tahlil olish</button>
-          <span class="status-msg" id="aiStatus"></span>
-        </div>
-        <div class="ai-box" id="aiBox"></div>
-      </div>
-    </div>
+
+        <!-- ═══ O'NG: Baholash formasi ═══ -->
+        <div>
+
+          <!-- ② BAHOLASH FORMASI -->
+          <div class="card" id="gradingFormCard" style="margin-bottom:1.2rem">
+            <div class="card-hd">
+              <span class="card-title" id="gradingFormTitle">✍️ Baholash</span>
+              <span class="card-meta" id="gradeStudentLabel">← Chap paneldan talaba tanlang</span>
+            </div>
+            <!-- Yashirin talaba ID (ichki ishlatish uchun) -->
+            <input type="hidden" id="gradeStudentId">
+            <!-- Mavzu tanlash -->
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Mavzu</label>
+              <select class="form-select" id="gradeScoreId" onchange="onTopicSelect()">
+                <option value="">— Avval chap paneldan talaba tanlang —</option>
+              </select>
+              <span class="status-msg" id="gradeLoadStatus" style="font-size:.78rem;margin-top:.3rem;display:block"></span>
+            </div>
+            <!-- Kod / Peer-review preview -->
+            <div id="gradePreviewBox" style="display:none;margin-bottom:1rem">
+              <div id="gradeCodeWrap" style="display:none">
+                <div style="font-size:.78rem;color:var(--muted);margin-bottom:.4rem;font-weight:600">
+                  💻 Loyiha kodi — <span id="gradeCodeMeta"></span>
+                </div>
+                <pre id="gradeCodePre" style="background:#0d0d1a;border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;font-size:.78rem;color:#a78bfa;overflow-x:auto;max-height:260px;white-space:pre-wrap;word-break:break-all"></pre>
+              </div>
+              <div id="gradePeerWrap" style="display:none">
+                <div style="font-size:.78rem;color:var(--muted);margin-bottom:.4rem;font-weight:600">
+                  🔄 Peer-review — <span id="gradePeerMeta"></span>
+                </div>
+                <div id="gradePeerText" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;font-size:.83rem;line-height:1.55;max-height:200px;overflow-y:auto"></div>
+                <div id="gradePeerStars" style="margin-top:.5rem;font-size:.8rem;color:var(--muted)"></div>
+              </div>
+            </div>
+            <!-- Baholash panellari -->
+            <div class="g2">
+              <!-- FA · Loyiha -->
+              <div style="background:rgba(67,233,123,0.05);border:1px solid rgba(67,233,123,0.2);border-radius:14px;padding:1rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+                  <span style="font-weight:700;font-size:.9rem"><i class="ra ra-anvil"></i> FA · Loyiha</span>
+                  <span style="font-size:.74rem;color:var(--muted)">max 10 ball</span>
+                </div>
+                <div id="faCurrentBox" style="display:none;margin-bottom:.5rem;font-size:.8rem;color:#43e97b">
+                  Joriy ball: <strong id="faCurrentVal">—</strong>/10
+                </div>
+                <div style="font-size:.74rem;color:var(--muted);margin-bottom:.7rem">
+                  Loyiha / mini-loyiha uchun. Avtomatik FA (20/30) alohida hisoblanadi.
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                  <input class="form-input" id="faVal" type="number" min="0" max="10" value="10"
+                    style="width:70px;text-align:center;font-size:1.05rem;font-weight:700">
+                  <button class="btn btn-green" onclick="giveFaBall()">✅ Saqlash</button>
+                  <span class="status-msg" id="faStatus"></span>
+                </div>
+              </div>
+              <!-- RE · Peer-review -->
+              <div style="background:rgba(251,146,60,0.05);border:1px solid rgba(251,146,60,0.2);border-radius:14px;padding:1rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+                  <span style="font-weight:700;font-size:.9rem"><i class="ra ra-scroll-unfurled"></i> RE · Peer-review</span>
+                  <span style="font-size:.74rem;color:var(--muted)">max 10 ball</span>
+                </div>
+                <div id="reCurrentBox" style="display:none;margin-bottom:.5rem;font-size:.8rem;color:#fb923c">
+                  Joriy ball: <strong id="reCurrentVal">—</strong>/10
+                </div>
+                <div style="font-size:.74rem;color:var(--muted);margin-bottom:.7rem">
+                  Peer-review sifati uchun. Refleksiya jurnali (10/20) avtomatik.
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                  <input class="form-input" id="reVal" type="number" min="0" max="10" value="10"
+                    style="width:70px;text-align:center;font-size:1.05rem;font-weight:700">
+                  <button class="btn btn-gold" onclick="giveReBall()">✅ Saqlash</button>
+                  <span class="status-msg" id="reStatus"></span>
+                </div>
+              </div>
+            </div>
+          </div><!-- /gradingFormCard -->
+
+          <!-- ③ TALABA MAVZULARI JADVALI -->
+          <div class="card" id="gradeTableCard" style="display:none;margin-bottom:1.2rem">
+            <div class="card-hd">
+              <span class="card-title"><i class="ra ra-scroll"></i> Talaba mavzulari · Baholash holati</span>
+              <span class="card-meta" id="gradeTableMeta"></span>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:14px;overflow:hidden">
+              <div class="grade-thead">
+                <div>#</div><div>Mavzu</div>
+                <div style="text-align:center;color:#60a5fa">MO/15</div>
+                <div style="text-align:center;color:#a78bfa">KO/35</div>
+                <div style="text-align:center;color:#43e97b">FA/30</div>
+                <div style="text-align:center;color:#fb923c">RE/20</div>
+                <div style="text-align:center">Jami</div>
+              </div>
+              <div id="gradeTableBody"></div>
+            </div>
+          </div>
+
+          <!-- ④ AI TAHLIL -->
+          <div class="card">
+            <div class="card-hd">
+              <span class="card-title"><i class="ra ra-crystal-ball"></i> AI Talaba tahlili</span>
+              <span class="card-meta">GPT asosida</span>
+            </div>
+            <div class="form-row" style="align-items:center">
+              <div style="background:rgba(108,99,255,0.07);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:.85rem;min-width:180px">
+                <div style="font-size:.7rem;color:var(--muted);margin-bottom:.15rem;text-transform:uppercase;letter-spacing:.4px">Tanlangan talaba</div>
+                <div id="aiStudentDisplay" style="font-weight:600;color:#a78bfa">← Chap paneldan tanlang</div>
+              </div>
+              <button class="btn btn-primary" onclick="loadAIReport()">
+                <i class="ra ra-crystal-ball"></i> Tahlil olish
+              </button>
+              <span class="status-msg" id="aiStatus"></span>
+            </div>
+            <div class="ai-box" id="aiBox"></div>
+          </div>
+
+        </div><!-- /o'ng ustun -->
+      </div><!-- /g-split -->
+
+    </div><!-- /sec-grading -->
 
     <!-- ═══ SUBMISSIONLAR ═══ -->
     <div id="sec-submissions" class="section">
       <div class="g2">
         <div class="card">
-          <div class="card-hd"><span class="card-title">💻 So'nggi submissionlar</span><span class="card-meta" id="subTotalLabel">—</span></div>
+          <div class="card-hd"><span class="card-title"><i class="ra ra-anvil"></i> So'nggi submissionlar</span><span class="card-meta" id="subTotalLabel">—</span></div>
           <div class="sub-list" id="subList"><div style="color:var(--muted);font-size:.82rem">Yuklanmoqda...</div></div>
         </div>
         <div class="card">
-          <div class="card-hd"><span class="card-title">📊 Natijalar statistikasi</span></div>
+          <div class="card-hd"><span class="card-title"><i class="ra ra-compass"></i> Natijalar statistikasi</span></div>
           <div id="subStats" style="display:flex;flex-direction:column;gap:.9rem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MESSAGES SECTION ─── -->
+    <div id="sec-messages" class="section">
+      <style>
+        .msg-layout{display:grid;grid-template-columns:320px 1fr;gap:1.2rem;height:calc(100vh - 9rem)}
+        @media(max-width:900px){.msg-layout{grid-template-columns:1fr}}
+        .msg-panel{background:var(--card);border:1px solid var(--border);border-radius:18px;display:flex;flex-direction:column;overflow:hidden}
+        .msg-tabs{display:flex;border-bottom:1px solid var(--border)}
+        .msg-tab{flex:1;padding:.65rem;font-size:.8rem;font-weight:600;text-align:center;cursor:pointer;color:var(--muted);border:none;border-bottom:2px solid transparent;background:none;transition:all .2s}
+        .msg-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+        .msg-search-bar{padding:.6rem .9rem;border-bottom:1px solid var(--border);display:flex;gap:.5rem;align-items:center}
+        .msg-search-bar input{flex:1;background:none;border:none;color:var(--text);font-size:.82rem;outline:none}
+        .msg-search-bar input::placeholder{color:var(--muted)}
+        .msg-list{flex:1;overflow-y:auto;padding:.4rem}
+        .msg-item{padding:.75rem .85rem;border-radius:12px;cursor:pointer;border:1px solid transparent;margin-bottom:.25rem;transition:all .18s}
+        .msg-item:hover{background:rgba(108,99,255,0.07);border-color:rgba(108,99,255,0.15)}
+        .msg-item.active{background:rgba(108,99,255,0.14);border-color:rgba(108,99,255,0.3)}
+        .mi-r1{display:flex;align-items:center;gap:.45rem;margin-bottom:.2rem}
+        .mi-ava{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#43e97b,#38f9d7);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0}
+        .mi-name{font-size:.8rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .mi-time{font-size:.7rem;color:var(--muted);flex-shrink:0}
+        .mi-subj{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.15rem;font-weight:600}
+        .mi-prev{font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.65}
+        .mi-type{font-size:.62rem;font-weight:700;padding:.08rem .38rem;border-radius:5px}
+        .unread-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+        .msg-unread .mi-subj{color:var(--text);font-weight:700}
+        .msg-empty{text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:.83rem}
+        /* thread */
+        .thread-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--muted);gap:.6rem}
+        .thread-ph i{font-size:2.5rem;opacity:.25}
+        .thread-hd{padding:1rem 1.3rem;border-bottom:1px solid var(--border)}
+        .thread-subj{font-size:.95rem;font-weight:700;margin-bottom:.25rem}
+        .thread-meta{display:flex;flex-wrap:wrap;gap:.4rem;font-size:.75rem;color:var(--muted)}
+        .thread-body{flex:1;overflow-y:auto;padding:1rem 1.3rem;display:flex;flex-direction:column;gap:.9rem}
+        .bubble{display:flex;gap:.7rem}
+        .bub-ava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#43e97b,#38f9d7);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+        .bub-body{flex:1;min-width:0}
+        .bub-top{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.3rem}
+        .bub-name{font-size:.82rem;font-weight:700}
+        .bub-role{font-size:.68rem;color:var(--muted);background:rgba(255,255,255,0.06);padding:.05rem .35rem;border-radius:4px}
+        .bub-time{font-size:.68rem;color:var(--muted);margin-left:auto}
+        .bub-text{font-size:.84rem;line-height:1.65;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:.65rem .9rem}
+        .reply-area{padding:.9rem 1.3rem;border-top:1px solid var(--border)}
+        .reply-ta{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.84rem;padding:.65rem .9rem;resize:none;outline:none;min-height:70px;transition:border-color .2s;line-height:1.55}
+        .reply-ta:focus{border-color:var(--accent)}
+        .reply-actions{display:flex;justify-content:flex-end;margin-top:.5rem}
+        /* compose modal */
+        .cmp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+        .cmp-overlay.open{display:flex}
+        .cmp-modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:520px;padding:1.6rem;max-height:90vh;overflow-y:auto}
+        .cmp-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem}
+        .cmp-close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;border-radius:8px;padding:.2rem}
+        .cmp-close:hover{color:var(--red)}
+        .cmp-footer{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border)}
+        .type-complaint{background:rgba(255,101,132,.15);color:#ff8fab}
+        .type-question{background:rgba(108,99,255,.15);color:#a78bfa}
+        .type-advisory{background:rgba(67,233,123,.15);color:#43e97b}
+        .type-announcement{background:rgba(255,215,0,.12);color:#ffd700}
+        .type-general{background:rgba(255,255,255,.07);color:var(--muted)}
+      </style>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h3 style="font-size:.95rem;font-weight:700"><i class="ra ra-envelope" style="margin-right:.4rem"></i>Xabarlar</h3>
+        <button class="btn btn-primary" onclick="tOpenCompose()"><i class="ra ra-quill-ink"></i> Yangi xabar</button>
+      </div>
+
+      <div class="msg-layout">
+        <!-- Left list -->
+        <div class="msg-panel">
+          <div class="msg-tabs">
+            <button class="msg-tab active" id="tTabInbox" onclick="tSwitchTab('inbox',this)"><i class="ra ra-envelope"></i> Kiruvchi <span id="tInboxCnt"></span></button>
+            <button class="msg-tab" id="tTabSent" onclick="tSwitchTab('sent',this)"><i class="ra ra-quill-ink"></i> Yuborilgan</button>
+          </div>
+          <div class="msg-search-bar">
+            <i class="ra ra-gem" style="color:var(--muted);font-size:.85rem"></i>
+            <input type="text" id="tMsgSearch" placeholder="Qidirish..." oninput="tFilterMsgs()">
+          </div>
+          <div class="msg-list" id="tMsgList"><div class="msg-empty">Yuklanmoqda...</div></div>
+        </div>
+
+        <!-- Right thread -->
+        <div class="msg-panel" id="tThreadPanel">
+          <div class="thread-ph" id="tThreadPh">
+            <i class="ra ra-envelope"></i>
+            <span style="font-size:.85rem;opacity:.6">Xabarni tanlang</span>
+          </div>
+          <div id="tThreadView" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+            <div class="thread-hd">
+              <div class="thread-subj" id="tThreadSubj">—</div>
+              <div class="thread-meta" id="tThreadMeta"></div>
+            </div>
+            <div class="thread-body" id="tThreadBody"></div>
+            <div class="reply-area">
+              <textarea class="reply-ta" id="tReplyTa" placeholder="Javob yozing..." rows="3"></textarea>
+              <div class="reply-actions">
+                <button class="btn btn-primary btn-sm" onclick="tSendReply()" id="tReplyBtn"><i class="ra ra-quill-ink"></i> Yuborish</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compose modal -->
+      <div class="cmp-overlay" id="tCmpModal">
+        <div class="cmp-modal">
+          <div class="cmp-hd">
+            <span class="card-title"><i class="ra ra-quill-ink"></i> Yangi xabar</span>
+            <button class="cmp-close" onclick="tCloseCompose()">×</button>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Qabul qiluvchi *</label>
+            <select class="form-select" id="tCmpTo"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Xabar turi</label>
+            <select class="form-select" id="tCmpType">
+              <option value="general">Umumiy</option>
+              <option value="advisory">Tavsiya / Maslahat</option>
+              <option value="question">Savol</option>
+              <option value="announcement">E'lon</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sarlavha *</label>
+            <input class="form-input" type="text" id="tCmpSubj" placeholder="Xabar sarlavhasi...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Matn *</label>
+            <textarea class="form-input" id="tCmpBody" placeholder="Xabar mazmuni..."></textarea>
+          </div>
+          <div class="cmp-footer">
+            <button class="btn btn-outline" onclick="tCloseCompose()">Bekor</button>
+            <button class="btn btn-primary" onclick="tSendMsg()" id="tCmpBtn"><i class="ra ra-quill-ink"></i> Yuborish</button>
+          </div>
         </div>
       </div>
     </div>
@@ -613,7 +867,7 @@
 <div class="modal-overlay" id="questionModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('questionModal')">✕</button>
-    <div class="modal-title" id="qModalTitle">📝 Savol qo'shish</div>
+    <div class="modal-title" id="qModalTitle"><i class="ra ra-scroll-unfurled"></i> Savol qo'shish</div>
     <div class="modal-sub" id="qModalSub">Test savoli va 4 ta variant kiriting</div>
     <input type="hidden" id="qModalId">
     <input type="hidden" id="qModalTestId">
@@ -635,7 +889,7 @@
     <div style="display:flex;gap:.7rem;justify-content:flex-end;align-items:center">
       <span class="status-msg" id="qSaveStatus"></span>
       <button class="btn btn-outline" onclick="closeModal('questionModal')">Bekor</button>
-      <button class="btn btn-primary" onclick="saveQuestion()">💾 Saqlash</button>
+      <button class="btn btn-primary" onclick="saveQuestion()"><i class="ra ra-rune-stone"></i> Saqlash</button>
     </div>
   </div>
 </div>
@@ -644,7 +898,7 @@
 <div class="modal-overlay" id="taskModal">
   <div class="modal" style="max-width:680px">
     <button class="modal-close" onclick="closeModal('taskModal')">✕</button>
-    <div class="modal-title" id="tModalTitle">💻 Topshiriq qo'shish</div>
+    <div class="modal-title" id="tModalTitle"><i class="ra ra-anvil"></i> Topshiriq qo'shish</div>
     <div class="modal-sub">Topshiriq ma'lumotlarini kiriting</div>
     <input type="hidden" id="tModalId">
     <div class="form-group">
@@ -668,6 +922,15 @@
       <textarea class="form-input" id="tTestCases" style="min-height:70px;font-family:monospace;font-size:.8rem" placeholder='[{"input":"10","expected_output":"55"}]'></textarea>
     </div>
     <div class="form-row">
+      <div class="form-col">
+        <label class="form-label">Topshiriq turi</label>
+        <select class="form-select" id="tTaskType">
+          <option value="algorithm">🧠 Algoritmik masala</option>
+          <option value="debug">🐛 Xatoni tuzatish</option>
+          <option value="refactor">♻️ Qayta ishlash</option>
+          <option value="mini_project">🚀 Mini-loyiha</option>
+        </select>
+      </div>
       <div class="form-col"><label class="form-label">Vaqt chegarasi (ms)</label><input class="form-input" id="tTimeLimit" type="number" value="2000" min="500"></div>
       <div class="form-col"><label class="form-label">Xotira chegarasi (MB)</label><input class="form-input" id="tMemLimit" type="number" value="256" min="64"></div>
       <div class="form-col"><label class="form-label">Max ball</label><input class="form-input" id="tMaxScore" type="number" value="2" min="1"></div>
@@ -675,7 +938,7 @@
     <div style="display:flex;gap:.7rem;justify-content:flex-end;align-items:center;margin-top:.5rem">
       <span class="status-msg" id="tSaveStatus"></span>
       <button class="btn btn-outline" onclick="closeModal('taskModal')">Bekor</button>
-      <button class="btn btn-primary" onclick="saveTask()">💾 Saqlash</button>
+      <button class="btn btn-primary" onclick="saveTask()"><i class="ra ra-rune-stone"></i> Saqlash</button>
     </div>
   </div>
 </div>
@@ -684,29 +947,51 @@
 <div class="modal-overlay" id="topicModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('topicModal')">✕</button>
-    <div class="modal-title" id="topicModalTitle">📚 Yangi mavzu qo'shish</div>
+    <div class="modal-title" id="topicModalTitle"><i class="ra ra-book"></i> Yangi mavzu qo'shish</div>
     <div class="modal-sub">Modul ichiga yangi mavzu qo'shing</div>
     <input type="hidden" id="topicModalId">
-    <div class="form-group"><label class="form-label">Mavzu nomi</label><input class="form-input" id="topicModalName" placeholder="Mavzu nomini kiriting"></div>
-    <div class="form-group"><label class="form-label">Tavsif</label><textarea class="form-input" id="topicModalDesc" style="min-height:70px" placeholder="Mavzu haqida qisqacha..."></textarea></div>
+
+    <div class="form-group">
+      <label class="form-label">Mavzu nomi <span style="color:var(--red)">*</span></label>
+      <input class="form-input" id="topicModalName" placeholder="Masalan: O'zgaruvchilar va ma'lumot turlari">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tavsif</label>
+      <textarea class="form-input" id="topicModalDesc" style="min-height:70px" placeholder="Mavzu haqida qisqacha..."></textarea>
+    </div>
+
     <div class="form-row">
       <div class="form-col">
-        <label class="form-label">Modul</label>
-        <select class="form-select" id="topicModalModule">
-          <option value="1">1-Semestr</option><option value="2">2-Semestr</option><option value="3">3-Semestr</option>
+        <label class="form-label">Modul <span style="color:var(--red)">*</span></label>
+        <select class="form-select" id="topicModalModule" onchange="recalcTopicNumber()">
+          <!-- API dan dinamik to'ldiriladi -->
+          <option value="">Yuklanmoqda…</option>
         </select>
+      </div>
+      <div class="form-col">
+        <label class="form-label">Mavzu № <span style="color:var(--red)">*</span></label>
+        <input class="form-input" type="number" id="topicModalNumber" min="1" max="999"
+               placeholder="Raqam" style="text-align:center;font-weight:700;font-size:1rem">
       </div>
       <div class="form-col">
         <label class="form-label">Qiyinlik</label>
         <select class="form-select" id="topicModalDiff">
-          <option value="easy">Oson</option><option value="medium">O'rta</option><option value="hard">Qiyin</option>
+          <option value="easy">Oson</option>
+          <option value="medium">O'rta</option>
+          <option value="hard">Qiyin</option>
         </select>
       </div>
     </div>
+
+    <div style="font-size:.74rem;color:var(--muted);margin-bottom:.8rem;padding:.6rem .8rem;background:rgba(255,255,255,0.03);border-radius:8px;border-left:2px solid var(--accent)">
+      ℹ️ Mavzu № — modul ichidagi tartib raqami. Yangi qo'shishda keyingi bo'sh raqam avtomatik to'ldiriladi.
+    </div>
+
     <div style="display:flex;gap:.7rem;justify-content:flex-end;align-items:center;margin-top:.5rem">
       <span class="status-msg" id="topicModalStatus"></span>
       <button class="btn btn-outline" onclick="closeModal('topicModal')">Bekor</button>
-      <button class="btn btn-primary" onclick="saveTopic()">💾 Saqlash</button>
+      <button class="btn btn-primary" onclick="saveTopic()"><i class="ra ra-rune-stone"></i> Saqlash</button>
     </div>
   </div>
 </div>
@@ -729,6 +1014,9 @@
 let ALL_STUDENTS = [];
 let ALL_SUBS     = [];
 let ALL_TOPICS   = [];
+let ALL_MODULES  = [];
+let _gradeScores  = []; // Grading bo'limi uchun yuklangan TopicScore'lar
+let _gradeTimer   = null;
 let _curModule   = 1;
 let _contentTopicId   = null;
 let _contentLevel     = 'beginner';
@@ -752,6 +1040,7 @@ const SECTION_META = {
   students:    {title:'👁 Monitoring',           bc:'Talabalar • Umumiy monitoring'},
   grading:     {title:'✍️ Baholash',            bc:'Talabalar • FA / RE baholash'},
   submissions: {title:'⚡ Submissionlar',       bc:'Hisobot • Kod topshiriqlari'},
+  messages:    {title:'✉ Xabarlar',            bc:'Muloqot • Kiruvchi / Chiquvchi'},
 };
 
 function showSection(id, el) {
@@ -769,7 +1058,9 @@ function showSection(id, el) {
   if (id === 'tests')       initTestsSection();
   if (id === 'tasks')       initTasksSection();
   if (id === 'students')    renderStudentsTable(ALL_STUDENTS);
+  if (id === 'grading')     initGradingSection();
   if (id === 'submissions') loadSubmissions();
+  if (id === 'messages')    tLoadMsgs();
 }
 
 // ── Helpers ─────────────────────────────────────────────────
@@ -820,9 +1111,18 @@ async function initDashboard() {
     renderWeakTop(ALL_STUDENTS);
     renderLineChart(ALL_STUDENTS);
     renderStudentsTable(ALL_STUDENTS);
-    // pre-load topics for selectors
-    await loadAllTopics();
+    // pre-load modules and topics for selectors
+    await Promise.all([loadAllModules(), loadAllTopics()]);
   } catch(e) { console.error('Dashboard init:', e); }
+}
+
+// ── Load all modules ─────────────────────────────────────────
+async function loadAllModules() {
+  if (ALL_MODULES.length) return;
+  try {
+    const res = await api.get('/courses/modules/');
+    ALL_MODULES = res?.results || (Array.isArray(res) ? res : []);
+  } catch(e) { console.error('Modules load:', e); }
 }
 
 // ── Load all topics ──────────────────────────────────────────
@@ -933,7 +1233,8 @@ function renderStudentsTable(students) {
     const cls=ac<60?'danger':ac>=85?'top':'';
     const chipCls=ac<60?'chip-bad':ac>=65?'chip-ok':'chip-warn';
     const chipTxt=ac<60?'Zaif':ac>=65?'Yaxshi':"O'rta";
-    return `<div class="stu-row ${cls}"><div class="stu-num">${i+1}</div><div class="stu-info"><div class="stu-av">${initials(nm)}</div><div><div class="stu-name">${nm}</div><div class="stu-grp">${s.user?.username||''}</div></div></div><div class="cell-c" style="color:var(--accent)">⭐${rt}</div><div class="cell-c" style="color:${acColor(ac)}">${ac}</div><div class="cell-c" style="color:var(--muted)">${ct}/45</div><div><span class="chip ${chipCls}">${chipTxt}</span></div></div>`;
+    const uid=s.user?.id||'';
+    return `<div class="stu-row ${cls}"><div class="stu-num">${i+1}</div><div class="stu-info"><div class="stu-av">${initials(nm)}</div><div><div class="stu-name">${nm}</div><div class="stu-grp">${s.user?.username||''}</div></div></div><div class="cell-c" style="color:var(--accent)">⭐${rt}</div><div class="cell-c" style="color:${acColor(ac)}">${ac}</div><div class="cell-c" style="color:var(--muted)">${ct}/45</div><div style="display:flex;gap:.4rem;align-items:center"><span class="chip ${chipCls}">${chipTxt}</span>${uid?`<button class="action-btn" title="Baholash" onclick="goToGrading(${uid})" style="font-size:.7rem;padding:.15rem .35rem">✍️</button>`:''}</div></div>`;
   }).join('');
 }
 function filterStudents(){
@@ -1002,23 +1303,41 @@ function renderTopicsTable() {
   const diff = {easy:'diff-easy',medium:'diff-medium',hard:'diff-hard'};
   const diffL = {easy:'Oson',medium:"O'rta",hard:'Qiyin'};
   body.innerHTML = topics.map(t => {
-    const d=t.difficulty||'easy';
+    const d = t.difficulty || 'easy';
+
+    // K · T · To nuqtalar — API dan kelgan haqiqiy ma'lumotlar
+    const hasContent = (t.content_count || 0) > 0;
+    const hasTests   = (t.test_count    || 0) > 0;
+    const tc         = t.task_count || {};
+    const hasTasks   = (tc.exercise || 0) > 0 || (tc.project || 0) > 0;
+
+    // K·T·To tooltip matni
+    const kTip = hasContent
+      ? `Kontent: ${t.content_count}/3 daraja`
+      : 'Kontent: kiritilmagan';
+    const tTip = hasTests
+      ? `Test: ${t.test_count}/3 daraja`
+      : 'Test: kiritilmagan';
+    const toTip = hasTasks
+      ? `Topshiriq: ${tc.exercise||0} ta mashq, ${tc.project||0} ta loyiha`
+      : 'Topshiriq: kiritilmagan';
+
     return `<tr>
       <td style="color:var(--muted);font-size:.8rem">${t.number||t.order||'—'}</td>
-      <td><input class="inline-input" data-id="${t.id}" value="${t.title||''}" onchange="markTopicChanged(this)"></td>
+      <td><input class="inline-input" data-id="${t.id}" value="${(t.title||'').replace(/"/g,'&quot;')}" onchange="markTopicChanged(this)"></td>
       <td><span class="diff-badge ${diff[d]||''}">${diffL[d]||d}</span></td>
       <td>
-        <div class="status-dots" title="Kontent · Test · Topshiriqlar">
-          <div class="sdot ${t.has_content?'ok':''}" title="Kontent"></div>
-          <div class="sdot ${t.has_tests?'ok':''}" title="Testlar"></div>
-          <div class="sdot ${t.has_tasks?'ok':''}" title="Topshiriqlar"></div>
+        <div class="status-dots">
+          <div class="sdot ${hasContent?'ok':''}" title="${kTip}"></div>
+          <div class="sdot ${hasTests  ?'ok':''}" title="${tTip}"></div>
+          <div class="sdot ${hasTasks  ?'ok':''}" title="${toTip}"></div>
         </div>
       </td>
       <td>
         <div class="action-btns">
-          <button class="action-btn" title="Kontent" onclick="goToContent(${t.id})">🎬</button>
-          <button class="action-btn" title="Testlar" onclick="goToTests(${t.id})">📝</button>
-          <button class="action-btn" title="Topshiriqlar" onclick="goToTasks(${t.id})">💻</button>
+          <button class="action-btn" title="${kTip}" onclick="goToContent(${t.id})">🎬</button>
+          <button class="action-btn" title="${tTip}" onclick="goToTests(${t.id})">📝</button>
+          <button class="action-btn" title="${toTip}" onclick="goToTasks(${t.id})">💻</button>
         </div>
       </td>
     </tr>`;
@@ -1047,48 +1366,135 @@ async function saveAllTopicNames() {
   alert(`${saved} ta mavzu saqlandi${errors?', '+errors+' ta xato':''}.`);
 }
 
-function openTopicModal(id=null) {
-  document.getElementById('topicModalId').value = id||'';
-  document.getElementById('topicModalTitle').textContent = id ? '📚 Mavzuni tahrirlash':'📚 Yangi mavzu qo\'shish';
-  document.getElementById('topicModalName').value='';
-  document.getElementById('topicModalDesc').value='';
-  document.getElementById('topicModalModule').value=String(_curModule);
-  document.getElementById('topicModalDiff').value='easy';
-  if (id) {
-    const t=ALL_TOPICS.find(t=>t.id===id);
-    if(t){ document.getElementById('topicModalName').value=t.title||''; document.getElementById('topicModalDesc').value=t.description||''; document.getElementById('topicModalDiff').value=t.difficulty||'easy'; }
+async function openTopicModal(id=null) {
+  document.getElementById('topicModalId').value   = id || '';
+  document.getElementById('topicModalTitle').innerHTML =
+    id ? '<i class="ra ra-book"></i> Mavzuni tahrirlash'
+       : '<i class="ra ra-book"></i> Yangi mavzu qo\'shish';
+  document.getElementById('topicModalName').value = '';
+  document.getElementById('topicModalDesc').value = '';
+  document.getElementById('topicModalDiff').value = 'easy';
+  document.getElementById('topicModalStatus').textContent = '';
+
+  // ── Modullarni dinamik to'ldirish (ALL_MODULES API dan) ──
+  const modSel = document.getElementById('topicModalModule');
+  if (!ALL_MODULES.length) await loadAllModules();
+
+  if (ALL_MODULES.length) {
+    modSel.innerHTML = ALL_MODULES
+      .slice().sort((a, b) => a.number - b.number)
+      .map(m =>
+        `<option value="${m.id}" ${m.number === _curModule ? 'selected' : ''}>` +
+        `${m.number}-Semestr</option>`
+      ).join('');
+  } else {
+    // API dan modullar kelmasa — foydalanuvchiga xabar beramiz
+    modSel.innerHTML = '<option value="">Modullar yuklanmadi</option>';
   }
+
+  if (id) {
+    // Tahrirlash rejimi — mavjud qiymatlarni ko'rsatamiz
+    const t = ALL_TOPICS.find(t => t.id === id);
+    if (t) {
+      document.getElementById('topicModalName').value   = t.title       || '';
+      document.getElementById('topicModalDesc').value   = t.description || '';
+      document.getElementById('topicModalDiff').value   = t.difficulty  || 'easy';
+      document.getElementById('topicModalNumber').value = t.number      || '';
+      if (t.module) modSel.value = String(t.module);
+    }
+  } else {
+    // Yangi qo'shish — keyingi mavzu raqamini avtomatik hisoblash
+    recalcTopicNumber();
+  }
+
   openModal('topicModal');
 }
 
+// Tanlangan modul bo'yicha keyingi mavzu raqamini hisoblash
+function recalcTopicNumber() {
+  if (document.getElementById('topicModalId').value) return; // tahrirlashda o'zgartirmaymiz
+  const moduleId = document.getElementById('topicModalModule').value;
+  const modTops  = ALL_TOPICS.filter(t => String(t.module) === String(moduleId));
+  const nextNum  = modTops.length > 0
+    ? Math.max(...modTops.map(t => t.number || 0)) + 1
+    : 1;
+  document.getElementById('topicModalNumber').value = nextNum;
+}
+
 async function saveTopic() {
-  const id=document.getElementById('topicModalId').value;
-  const name=document.getElementById('topicModalName').value.trim();
-  const desc=document.getElementById('topicModalDesc').value.trim();
-  const mod=document.getElementById('topicModalModule').value;
-  const diff=document.getElementById('topicModalDiff').value;
-  if (!name) { showStatus('topicModalStatus','Mavzu nomi bo\'sh!','err'); return; }
-  showStatus('topicModalStatus','Saqlanmoqda...','');
+  const id      = document.getElementById('topicModalId').value;
+  const name    = document.getElementById('topicModalName').value.trim();
+  const desc    = document.getElementById('topicModalDesc').value.trim();
+  const modId   = document.getElementById('topicModalModule').value;
+  const diff    = document.getElementById('topicModalDiff').value;
+  const numVal  = document.getElementById('topicModalNumber').value;
+
+  // Validatsiya
+  if (!name) {
+    showStatus('topicModalStatus', 'Mavzu nomi bo\'sh!', 'err'); return;
+  }
+  if (!numVal || isNaN(Number(numVal)) || Number(numVal) < 1) {
+    showStatus('topicModalStatus', 'Mavzu raqamini to\'g\'ri kiriting!', 'err'); return;
+  }
+  if (!modId) {
+    showStatus('topicModalStatus', 'Modul tanlanmagan!', 'err'); return;
+  }
+
+  showStatus('topicModalStatus', 'Saqlanmoqda...', '');
+
   try {
-    const data={title:name,description:desc,difficulty:diff,module:Number(mod)};
+    const data = {
+      title:       name,
+      description: desc,
+      difficulty:  diff,
+      module:      Number(modId),   // ← haqiqiy modul ID (FK)
+      number:      Number(numVal),  // ← majburiy tartib raqami
+    };
+
     if (id) {
-      await api.patch(`/courses/topics/${id}/`,data);
-      const t=ALL_TOPICS.find(t=>String(t.id)===id);
-      if(t) Object.assign(t,data);
+      // Tahrirlash — PATCH (faqat yuborilgan maydonlar yangilanadi)
+      const updated = await api.patch(`/courses/topics/${id}/`, data);
+      const t = ALL_TOPICS.find(t => String(t.id) === String(id));
+      if (t) Object.assign(t, data, {
+        module_number: updated?.module_number ?? t.module_number,
+        module_title:  updated?.module_title  ?? t.module_title,
+      });
+      showStatus('topicModalStatus', '✅ Saqlandi!', 'ok');
+      setTimeout(() => closeModal('topicModal'), 800);
     } else {
-      const res=await api.post('/courses/topics/',data);
-      if(res?.id) ALL_TOPICS.push(res);
+      // Yangi mavzu qo'shish — POST
+      const res = await api.post('/courses/topics/', data);
+      if (res?.id) {
+        ALL_TOPICS.push(res);
+        showStatus('topicModalStatus', `✅ Mavzu #${res.number} yaratildi!`, 'ok');
+        // Yangi topic qaysi semestrda bo'lsa, o'sha tab ga o'tamiz
+        const newModNum = res.module_number || Number(data.module);
+        if (newModNum && newModNum !== _curModule) {
+          const tabs = document.querySelectorAll('.mod-tab');
+          tabs.forEach((tab, i) => {
+            if (i + 1 === newModNum) selectModule(newModNum, tab);
+          });
+        }
+        setTimeout(() => closeModal('topicModal'), 900);
+      }
     }
-    closeModal('topicModal');
     renderTopicsTable();
     populateTopicSelectors();
     buildContentTopicList();
-  } catch(e){ showStatus('topicModalStatus','Xatolik: '+(e.message||''),'err'); }
+  } catch(e) {
+    showStatus('topicModalStatus', 'Xatolik: ' + (e.message || 'Serverga ulanib bo\'lmadi'), 'err');
+  }
 }
 
 function goToContent(topicId){ _contentTopicId=topicId; showSection('content',document.querySelector('[onclick*="content"]')); }
 function goToTests(topicId){ document.getElementById('testTopicSel').value=topicId; showSection('tests',document.querySelector('[onclick*="tests"]')); loadTestQuestions(); }
 function goToTasks(topicId){ document.getElementById('taskTopicSel').value=topicId; showSection('tasks',document.querySelector('[onclick*="tasks"]')); loadTasks(); }
+function goToGrading(userId){
+  showSection('grading', document.querySelector('[onclick*="grading"]'));
+  const s = ALL_STUDENTS.find(u => String(u.id||u.user?.id) === String(userId));
+  const name = s?.full_name || s?.username || `Talaba #${userId}`;
+  selectStudent(userId, name);
+}
 
 function applyModuleFilter() {
   const v=document.getElementById('semFilter').value;
@@ -1117,7 +1523,7 @@ function renderContentTopicList(topics) {
       <span class="tp-num">${t.number||t.order||'?'}</span>
       <span class="tp-name">${t.title||'Mavzu'}</span>
       <div class="tp-dots">
-        <div class="tp-dot ${t.has_content?'ok':''}"></div>
+        <div class="tp-dot ${(t.content_count||0)>0?'ok':''}" title="${(t.content_count||0)>0?t.content_count+'/3 daraja':'Kontent yo\'q'}"></div>
       </div>
     </div>`).join('');
 }
@@ -1185,7 +1591,7 @@ async function saveContent() {
     }
     showStatus('contentStatus','✅ Saqlandi!','ok');
     const t=ALL_TOPICS.find(t=>t.id===_contentTopicId);
-    if(t) t.has_content=true;
+    if(t) t.content_count = Math.max((t.content_count||0), 1); // kamida 1 ta daraja kiritildi
     renderContentTopicList(ALL_TOPICS);
     setTimeout(()=>showStatus('contentStatus','',''),2500);
   } catch(e){ showStatus('contentStatus','Xato: '+(e.message||''),'err'); }
@@ -1207,7 +1613,7 @@ async function loadTestQuestions() {
   const info=document.getElementById('testInfo');
   if (!topicId) { wrap.innerHTML='<div class="empty-state"><div class="es-icon">📝</div><div class="es-text">Mavzu tanlang</div></div>'; return; }
   if(info) info.textContent='Yuklanmoqda...';
-  wrap.innerHTML='<div style="color:var(--muted);padding:1rem">⏳ Yuklanmoqda...</div>';
+  wrap.innerHTML='<div style="color:var(--muted);padding:1rem"><i class="ra ra-hourglass"></i> Yuklanmoqda...</div>';
   try {
     const res=await api.get(`/courses/topics/${topicId}/tests/`);
     const tests=Array.isArray(res)?res:(res?.results||[]);
@@ -1231,9 +1637,9 @@ function renderQuestions(questions) {
     return `<div class="q-card">
       <div class="q-hd"><div class="q-num">${i+1}</div><div class="q-text">${q.question||q.text||''}</div></div>
       <div class="q-opts">${opts.map((o,oi)=>`<div class="q-opt ${oi===q.correct_answer?'correct':'wrong'}"><strong>${letters[oi]}.</strong> ${o}</div>`).join('')}</div>
-      ${q.explanation?`<div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;padding:.4rem .6rem;background:rgba(255,255,255,0.03);border-radius:7px">💡 ${q.explanation}</div>`:''}
+      ${q.explanation?`<div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;padding:.4rem .6rem;background:rgba(255,255,255,0.03);border-radius:7px"><i class="ra ra-lit-candelabra"></i> ${q.explanation}</div>`:''}
       <div class="q-actions">
-        <button class="btn btn-outline btn-sm" onclick='openQuestionModal(${JSON.stringify(q)})'>✏️ Tahrirlash</button>
+        <button class="btn btn-outline btn-sm" onclick='openQuestionModal(${JSON.stringify(q)})'><i class="ra ra-quill-ink"></i> Tahrirlash</button>
         <button class="btn btn-danger btn-sm" onclick="deleteQuestion(${q.id})">🗑️</button>
       </div>
     </div>`;
@@ -1279,9 +1685,11 @@ async function saveQuestion() {
       _testId=newTest.id;
     }
     // Batch save all questions
-    await api.testSetQuestions(_testTopicId, _testId, _currentQuestions.map(q=>({
+    const savedTest = await api.testSetQuestions(_testTopicId, _testId, _currentQuestions.map(q=>({
       question:q.question, options:q.options, correct_answer:q.correct_answer, explanation:q.explanation||''
     })));
+    // Haqiqiy DB ID'larini olish uchun savollarni yangilash
+    if (savedTest?.questions) _currentQuestions = [...savedTest.questions];
     closeModal('questionModal');
     const info=document.getElementById('testInfo');
     if(info) info.textContent=`Test ID:${_testId} · ${_currentQuestions.length}/10 savol`;
@@ -1293,9 +1701,12 @@ async function deleteQuestion(qId) {
   if (!confirm('Bu savolni o\'chirishni tasdiqlaysizmi?')) return;
   _currentQuestions=_currentQuestions.filter(q=>String(q.id)!==String(qId));
   try {
-    if (_testId) await api.testSetQuestions(_testTopicId, _testId, _currentQuestions.map(q=>({
-      question:q.question, options:q.options, correct_answer:q.correct_answer, explanation:q.explanation||''
-    })));
+    if (_testId) {
+      const savedTest = await api.testSetQuestions(_testTopicId, _testId, _currentQuestions.map(q=>({
+        question:q.question, options:q.options, correct_answer:q.correct_answer, explanation:q.explanation||''
+      })));
+      if (savedTest?.questions) _currentQuestions = [...savedTest.questions];
+    }
     renderQuestions(_currentQuestions);
     const info=document.getElementById('testInfo');
     if(info) info.textContent=`Test ID:${_testId} · ${_currentQuestions.length}/10 savol`;
@@ -1353,9 +1764,9 @@ function openTaskEditor(task) {
   wrap.innerHTML=`
     <div class="card" style="margin-bottom:0">
       <div class="card-hd">
-        <span class="card-title">✏️ ${task.title||'Topshiriq'}</span>
+        <span class="card-title"><i class="ra ra-quill-ink"></i> ${task.title||'Topshiriq'}</span>
         <div style="display:flex;gap:.5rem">
-          <button class="btn btn-primary btn-sm" onclick='openTaskModal(${JSON.stringify(task).replace(/"/g,"'")})'>✏️ Tahrirlash</button>
+          <button class="btn btn-primary btn-sm" onclick='openTaskModal(${JSON.stringify(task).replace(/"/g,"'")})'><i class="ra ra-quill-ink"></i> Tahrirlash</button>
           <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">🗑️</button>
         </div>
       </div>
@@ -1376,6 +1787,7 @@ function openTaskModal(task) {
   document.getElementById('tTimeLimit').value=task?.time_limit_ms||2000;
   document.getElementById('tMemLimit').value=task?.memory_limit_mb||256;
   document.getElementById('tMaxScore').value=task?.max_score||2;
+  document.getElementById('tTaskType').value=task?.task_type||'algorithm';
   showStatus('tSaveStatus','','');
   openModal('taskModal');
 }
@@ -1395,7 +1807,8 @@ async function saveTask() {
   if(tcRaw) try{test_cases=JSON.parse(tcRaw);}catch{showStatus('tSaveStatus','Test cases JSON xato!','err');return;}
   if(!_taskTopicId){ showStatus('tSaveStatus','Avval mavzu tanlang','err'); return; }
   showStatus('tSaveStatus','Saqlanmoqda...','');
-  const data={title,description:desc,starter_code,expected_output,test_cases,time_limit_ms,memory_limit_mb,max_score,topic:_taskTopicId,level:_taskLevelVal,task_category:_taskCatVal};
+  const task_type=document.getElementById('tTaskType').value||'algorithm';
+  const data={title,description:desc,starter_code,expected_output,test_cases,time_limit_ms,memory_limit_mb,max_score,task_type,topic:_taskTopicId,level:_taskLevelVal,task_category:_taskCatVal};
   try {
     if(id){ await api.taskUpdate(id, data); }
     else  { await api.taskCreate(data); }
@@ -1417,109 +1830,670 @@ async function deleteTask(taskId) {
 // ═══════════════════════════════════════════════════════════
 // BAHOLASH SECTION  (grading)
 // ═══════════════════════════════════════════════════════════
-async function loadStudentForGrading() {
-  const sid=document.getElementById('gradeStudentId').value.trim();
-  const lbl=document.getElementById('gradeStudentLabel');
-  const sel=document.getElementById('gradeScoreId');
-  const status=document.getElementById('gradeLoadStatus');
-  if (!sid||sid.length<1){if(lbl)lbl.textContent='—';if(sel)sel.innerHTML='<option>— Avval talaba ID kiriting —</option>';return;}
-  if(status)status.textContent='Yuklanmoqda...';
-  try {
-    const scores=await api.get(`/courses/scores/?student=${sid}&page_size=50`);
-    const list=scores?.results||(Array.isArray(scores)?scores:[]);
-    if(lbl) lbl.textContent=list.length?`${list.length} ta mavzu topildi`:'Mavzular topilmadi';
-    if(sel){
-      sel.innerHTML='<option value="">— Mavzu tanlang —</option>';
-      list.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=`${s.topic_title||'Mavzu #'+s.topic} · ${s.total_score||0}/100`;sel.appendChild(o);});
-    }
-    if(status)status.textContent='';
-    renderGradeTable(list);
-  } catch(e){ if(status)status.textContent='Xato: '+(e.message||''); }
+
+// ── Pending state ─────────────────────────────────────────
+let _pendingData    = { projects: [], peer_reviews: [] };
+let _activePendTab  = 'projects';
+let _previewItem    = null;
+let _spFilter       = 'all';  // talabalar paneli filtri
+
+// ── Bo'limga kirish ───────────────────────────────────────
+function initGradingSection() {
+  renderStudentPanel(); // darhol ALL_STUDENTS bilan ko'rsatish
+  loadPendingGrades();  // pending data keyin yuklanib, panel yangilanadi
 }
 
-function onTopicSelect() {
-  const sel=document.getElementById('gradeScoreId');
-  const id=sel.value;
-  const faBox=document.getElementById('faCurrentBox');
-  const reBox=document.getElementById('reCurrentBox');
-  if(!id){if(faBox)faBox.style.display='none';if(reBox)reBox.style.display='none';return;}
-  const opt=sel.options[sel.selectedIndex];
-  const scores=opt?.dataset;
-  if(faBox){faBox.style.display='block';document.getElementById('faCurrentVal').textContent=scores?.fa||'—';}
-  if(reBox){reBox.style.display='block';document.getElementById('reCurrentVal').textContent=scores?.re||'—';}
+// ── Talabalar paneli filtri ───────────────────────────────
+function spSetFilter(f) {
+  _spFilter = f;
+  const configs = {
+    all:     { id: 'spTabAll',   bg: 'rgba(108,99,255,0.2)', border: 'var(--accent)',          color: '#a78bfa' },
+    pending: { id: 'spTabPend',  bg: 'rgba(255,215,0,0.12)', border: 'rgba(255,215,0,0.4)',    color: '#ffd700' },
+    other:   { id: 'spTabOther', bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.15)', color: 'var(--text)' },
+  };
+  ['all','pending','other'].forEach(key => {
+    const btn = document.getElementById(configs[key].id);
+    if (!btn) return;
+    const isActive = key === f;
+    btn.style.background   = isActive ? configs[key].bg     : 'transparent';
+    btn.style.borderColor  = isActive ? configs[key].border : 'var(--border)';
+    btn.style.color        = isActive ? configs[key].color  : 'var(--muted)';
+  });
+  renderStudentPanel();
 }
 
-async function giveFaBall() {
-  const sid=document.getElementById('gradeStudentId').value;
-  const scid=document.getElementById('gradeScoreId').value;
-  const val=document.getElementById('faVal').value;
-  if(!sid||!scid){showStatus('faStatus','Talaba va mavzuni tanlang','err');return;}
-  showStatus('faStatus','Saqlanmoqda...','');
-  try {
-    await api.giveFaProjectScore(scid, Number(val));
-    showStatus('faStatus','✅ Saqlandi!','ok');
-    setTimeout(()=>showStatus('faStatus','',''),2500);
-    loadStudentForGrading();
-  } catch(e){showStatus('faStatus','Xato: '+(e.message||''),'err');}
-}
+// ── Talabalar panelini render qilish ─────────────────────
+function renderStudentPanel() {
+  const list = document.getElementById('spList');
+  const meta = document.getElementById('spMeta');
+  if (!list) return;
 
-async function giveReBall() {
-  const sid=document.getElementById('gradeStudentId').value;
-  const scid=document.getElementById('gradeScoreId').value;
-  const val=document.getElementById('reVal').value;
-  if(!sid||!scid){showStatus('reStatus','Talaba va mavzuni tanlang','err');return;}
-  showStatus('reStatus','Saqlanmoqda...','');
-  try {
-    await api.giveRePeerScore(scid, Number(val));
-    showStatus('reStatus','✅ Saqlandi!','ok');
-    setTimeout(()=>showStatus('reStatus','',''),2500);
-    loadStudentForGrading();
-  } catch(e){showStatus('reStatus','Xato: '+(e.message||''),'err');}
-}
+  const pendingProjIds = new Set(_pendingData.projects.map(p => String(p.student_id)));
+  const pendingPeerIds = new Set(_pendingData.peer_reviews.map(p => String(p.student_id)));
+  const pendingIds     = new Set([...pendingProjIds, ...pendingPeerIds]);
 
-function renderGradeTable(scores) {
-  const card=document.getElementById('gradeTableCard');
-  const body=document.getElementById('gradeTableBody');
-  const meta=document.getElementById('gradeTableMeta');
-  if(!card||!body||!scores?.length){if(card)card.style.display='none';return;}
-  card.style.display='block';
-  const sid=document.getElementById('gradeStudentId').value;
-  if(meta) meta.textContent=`Talaba #${sid} · ${scores.length} ta mavzu`;
-  body.innerHTML=scores.map((s,i)=>{
-    const fa=s.fa_score||0,faP=s.fa_project_score??'—';
-    const re=s.re_score||0,reP=s.re_peer_score??'—';
-    const warn=faP==='—'||reP==='—';
-    return `<div class="grade-row" ${warn?'style="background:rgba(255,215,0,0.03)"':''}>
-      <div style="color:var(--muted);font-size:.78rem">${i+1}</div>
-      <div style="font-size:.82rem">${s.topic_title||'Mavzu #'+s.topic}${warn?' <span style="color:#ffd700;font-size:.7rem">⚠️</span>':''}</div>
-      <div style="text-align:center;color:#60a5fa;font-weight:700">${s.mo_score||0}</div>
-      <div style="text-align:center;color:#a78bfa;font-weight:700">${s.ko_score||0}</div>
-      <div style="text-align:center;color:#43e97b;font-weight:700">${fa} <span style="color:var(--muted);font-size:.72rem">(L:${faP})</span></div>
-      <div style="text-align:center;color:#fb923c;font-weight:700">${re} <span style="color:var(--muted);font-size:.72rem">(P:${reP})</span></div>
-      <div style="text-align:center;font-weight:700;color:${(s.total_score||0)>=80?'#43e97b':(s.total_score||0)>=60?'#60a5fa':'#ff6584'}">${s.total_score||0}</div>
+  const q = (document.getElementById('spSearch')?.value || '').toLowerCase().trim();
+  const selectedId = String(document.getElementById('gradeStudentId')?.value || '');
+
+  let students = ALL_STUDENTS.filter(s => {
+    const uid = String(s.id || s.user?.id || '');
+    if (!uid) return false;
+    if (_spFilter === 'pending') return pendingIds.has(uid);
+    if (_spFilter === 'other')   return !pendingIds.has(uid);
+    return true;
+  });
+
+  if (q) {
+    students = students.filter(s =>
+      (s.full_name || s.username || '').toLowerCase().includes(q)
+    );
+  }
+
+  // Kutayotganlar yuqorida
+  students.sort((a, b) => {
+    const aId = String(a.id || a.user?.id || '');
+    const bId = String(b.id || b.user?.id || '');
+    return (pendingIds.has(bId) ? 1 : 0) - (pendingIds.has(aId) ? 1 : 0);
+  });
+
+  if (meta) meta.textContent = `${students.length} ta`;
+
+  if (!students.length) {
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:1.5rem;font-size:.82rem">
+      ${_spFilter === 'pending' ? '✅ Kutayotgan topshiriq yo\'q' : 'Talabalar topilmadi'}
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = students.map(s => {
+    const uid  = String(s.id || s.user?.id || '');
+    const name = s.full_name || s.username || "Noma'lum";
+    const ini  = name.split(' ').filter(Boolean).map(w => w[0] || '').join('').slice(0,2).toUpperCase() || '?';
+    const hasProjPend = pendingProjIds.has(uid);
+    const hasPeerPend = pendingPeerIds.has(uid);
+    const isActive = uid === selectedId;
+
+    const badges = [];
+    if (hasProjPend) badges.push(`<span style="background:rgba(67,233,123,0.15);color:#43e97b;font-size:.65rem;padding:.08rem .35rem;border-radius:5px;font-weight:700;white-space:nowrap">💻 Loyiha</span>`);
+    if (hasPeerPend) badges.push(`<span style="background:rgba(251,146,60,0.12);color:#fb923c;font-size:.65rem;padding:.08rem .35rem;border-radius:5px;font-weight:700;white-space:nowrap">🔄 Peer</span>`);
+
+    const borderColor = isActive ? 'var(--accent)' : (hasProjPend || hasPeerPend) ? 'rgba(255,215,0,0.25)' : 'rgba(255,255,255,0.06)';
+    const bg          = isActive ? 'rgba(108,99,255,0.14)' : 'rgba(255,255,255,0.02)';
+    const leftBorder  = hasProjPend || hasPeerPend ? '3px solid #ffd700' : '3px solid transparent';
+
+    return `<div class="sp-item" data-uid="${uid}"
+      onclick="selectStudent(${uid}, '${name.replace(/'/g, "\\'")}')"
+      style="display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:10px;cursor:pointer;border:1px solid ${borderColor};border-left:${leftBorder};background:${bg};transition:all .2s">
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">${ini}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.82rem;font-weight:${isActive?'700':'600'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isActive?'#e8eaf6':'var(--text)'}">${name}</div>
+        <div style="display:flex;gap:.3rem;margin-top:.15rem;flex-wrap:wrap">
+          ${badges.length ? badges.join('') : '<span style="color:var(--muted);font-size:.7rem">Hali topshirilmagan</span>'}
+        </div>
+      </div>
+      ${isActive ? '<span style="color:#a78bfa;font-size:.85rem;flex-shrink:0">✏️</span>' : ''}
     </div>`;
   }).join('');
 }
 
-async function loadAIReport() {
-  const sid=document.getElementById('aiStudentId').value;
-  const box=document.getElementById('aiBox');
-  if(!sid){showStatus('aiStatus','Talaba ID kiriting','err');return;}
-  showStatus('aiStatus','AI tahlil qilmoqda...','');
-  if(box){box.style.display='block';box.textContent='⏳ Yuklanmoqda...';}
+// ── Talabani paneldan tanlash ─────────────────────────────
+async function selectStudent(uid, name) {
+  const hiddenInput = document.getElementById('gradeStudentId');
+  if (hiddenInput) hiddenInput.value = uid;
+
+  // Panel highlight yangilash (to'liq re-render qilib, border-left altın chiziqni saqlaymiz)
+  renderStudentPanel();
+
+  // Sarlavha yangilash
+  const lbl = document.getElementById('gradeStudentLabel');
+  const ttl = document.getElementById('gradingFormTitle');
+  if (lbl) lbl.textContent = name;
+  if (ttl) ttl.textContent = `✍️ ${name}`;
+
+  // AI tahlil displey yangilash
+  const aiDisp = document.getElementById('aiStudentDisplay');
+  if (aiDisp) aiDisp.textContent = name;
+
+  // Scorelerini yuklash
+  await loadStudentForGrading();
+
+  // Baholash formasiga scroll
+  document.getElementById('gradingFormCard')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Kutayotganlar navbatini yuklash ───────────────────────
+async function loadPendingGrades() {
+  const list = document.getElementById('pendingList');
+  const meta = document.getElementById('pendingMeta');
+  if (list) list.innerHTML = '<div style="color:var(--muted);font-size:.83rem;text-align:center;padding:1.2rem">⏳ Yuklanmoqda...</div>';
   try {
-    const res=await api.aiReport(Number(sid), null);
-    if(box){box.textContent=res?.analysis||res?.result||JSON.stringify(res,null,2);}
-    showStatus('aiStatus','','');
-  } catch(e){
-    if(box){box.textContent='AI tahlil mavjud emas yoki xato: '+(e.message||'');}
-    showStatus('aiStatus','','');
+    const data = await api.pendingGrades();
+    _pendingData = data || { projects: [], peer_reviews: [] };
+    const pCount = _pendingData.projects.length;
+    const rCount = _pendingData.peer_reviews.length;
+    const total  = pCount + rCount;
+    if (meta) meta.textContent = total ? `${total} ta kutayotgan` : 'Hamma baholangan ✓';
+    document.getElementById('projectBadge').textContent = pCount;
+    document.getElementById('peerBadge').textContent    = rCount;
+    renderPendingList();
+    renderStudentPanel(); // pending ma'lumotlar bilan panelni yangilash
+  } catch(e) {
+    if (list) list.innerHTML = `<div style="color:#ff6584;font-size:.83rem;padding:.8rem">Xato: ${e.message || 'Yuklanmadi'}</div>`;
+  }
+}
+
+// ── Tab almashtirish ──────────────────────────────────────
+function switchPendingTab(tab) {
+  _activePendTab = tab;
+  const btnP = document.getElementById('tabProjects');
+  const btnR = document.getElementById('tabPeers');
+  if (tab === 'projects') {
+    btnP.style.background = 'rgba(67,233,123,0.15)';
+    btnP.style.borderColor = 'rgba(67,233,123,0.3)';
+    btnP.style.color = '#43e97b';
+    btnR.style.background = 'transparent';
+    btnR.style.borderColor = 'var(--border)';
+    btnR.style.color = 'var(--muted)';
+  } else {
+    btnR.style.background = 'rgba(251,146,60,0.15)';
+    btnR.style.borderColor = 'rgba(251,146,60,0.3)';
+    btnR.style.color = '#fb923c';
+    btnP.style.background = 'transparent';
+    btnP.style.borderColor = 'var(--border)';
+    btnP.style.color = 'var(--muted)';
+  }
+  renderPendingList();
+}
+
+// ── Pending kartalarni render qilish ──────────────────────
+function renderPendingList() {
+  const list = document.getElementById('pendingList');
+  if (!list) return;
+  const items = _activePendTab === 'projects'
+    ? _pendingData.projects
+    : _pendingData.peer_reviews;
+
+  if (!items.length) {
+    list.innerHTML = `<div style="color:var(--muted);font-size:.83rem;text-align:center;padding:1.5rem">
+      ${_activePendTab === 'projects' ? '✅ Baholashni kutayotgan loyiha yo\'q' : '✅ Baholashni kutayotgan peer-review yo\'q'}
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = items.map((item, i) => {
+    const isProj = item.type === 'project';
+    const timeAgo = relTime(isProj ? item.submitted_at : item.created_at);
+    const color   = isProj ? '#43e97b' : '#fb923c';
+    const icon    = isProj ? '💻' : '🔄';
+    const detail  = isProj
+      ? `<span style="color:var(--muted);font-size:.75rem">${item.task_title} · ${item.task_level}</span>`
+      : `<span style="color:var(--muted);font-size:.75rem">${item.reviewee_name} ni baholagan · ⭐ ${item.star_rating}/5</span>`;
+
+    return `<div style="display:flex;align-items:center;gap:.8rem;padding:.7rem .9rem;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px;border-left:3px solid ${color}">
+      <div style="font-size:1.2rem">${icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          ${item.student_name}
+          <span style="color:var(--muted);font-weight:400;font-size:.78rem"> · T${item.topic_number}: ${item.topic_title}</span>
+        </div>
+        <div style="margin-top:.2rem;display:flex;gap:.7rem;align-items:center">
+          ${detail}
+          <span style="color:var(--muted);font-size:.73rem">📅 ${timeAgo}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:.4rem;flex-shrink:0">
+        <button class="btn btn-sm" style="background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:#a78bfa;font-size:.75rem"
+          onclick="previewPendingItem(${i})">👁 Ko'rish</button>
+        <button class="btn btn-sm btn-primary" style="font-size:.75rem"
+          onclick="startGradeFromPending(${i})">✍️ Baholash</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Kod/review preview ────────────────────────────────────
+function previewPendingItem(idx) {
+  const items = _activePendTab === 'projects' ? _pendingData.projects : _pendingData.peer_reviews;
+  const item  = items[idx];
+  if (!item) return;
+  _previewItem = item;
+
+  const box      = document.getElementById('gradePreviewBox');
+  const codeWrap = document.getElementById('gradeCodeWrap');
+  const peerWrap = document.getElementById('gradePeerWrap');
+
+  box.style.display  = 'block';
+  if (item.type === 'project') {
+    codeWrap.style.display = 'block';
+    peerWrap.style.display = 'none';
+    document.getElementById('gradeCodeMeta').textContent =
+      `${item.student_name} · ${item.task_title} (${item.task_level})`;
+    document.getElementById('gradeCodePre').textContent = item.code || '// Kod yuklanmadi';
+  } else {
+    codeWrap.style.display = 'none';
+    peerWrap.style.display = 'block';
+    document.getElementById('gradePeerMeta').textContent =
+      `${item.student_name} → ${item.reviewee_name} ni baholagan`;
+    document.getElementById('gradePeerText').textContent = item.comment || '(Izoh yo\'q)';
+    const stars = '⭐'.repeat(item.star_rating || 0);
+    document.getElementById('gradePeerStars').textContent =
+      `${stars} ${item.star_rating}/5 · Peer ball: ${item.peer_total || '—'}/90`;
+  }
+}
+
+// ── Pending item'dan baholash formasiga o'tish ────────────
+async function startGradeFromPending(idx) {
+  const items = _activePendTab === 'projects' ? _pendingData.projects : _pendingData.peer_reviews;
+  const item  = items[idx];
+  if (!item) return;
+
+  // Preview ni ham ko'rsat
+  previewPendingItem(idx);
+
+  // Talabani panelda ham tanlash (sarlavha, highlight, AI)
+  const studentName = item.student_name || `Talaba #${item.student_id}`;
+  const lbl  = document.getElementById('gradeStudentLabel');
+  const ttl  = document.getElementById('gradingFormTitle');
+  const aiD  = document.getElementById('aiStudentDisplay');
+  if (lbl) lbl.textContent = studentName;
+  if (ttl) ttl.textContent = `✍️ ${studentName}`;
+  if (aiD) aiD.textContent = studentName;
+
+  // Yashirin Student ID va score ID ni o'rnat
+  document.getElementById('gradeStudentId').value = item.student_id;
+
+  // Panel highlight yangilash (to'liq re-render)
+  renderStudentPanel();
+
+  // Avval shu student ning barcha scorelari yuklansin
+  await loadStudentForGrading();
+
+  // Keyin topicScoreId ni tanla
+  const sel = document.getElementById('gradeScoreId');
+  if (sel) {
+    sel.value = String(item.topic_score_id);
+    onTopicSelect();
+  }
+
+  // Baholash formasiga scroll
+  document.getElementById('gradingFormCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Talaba ID bo'yicha mavzularni yuklash ─────────────────
+function debounceGrading() {
+  clearTimeout(_gradeTimer);
+  _gradeTimer = setTimeout(loadStudentForGrading, 500);
+}
+
+async function loadStudentForGrading() {
+  const sid    = document.getElementById('gradeStudentId').value.trim();
+  const sel    = document.getElementById('gradeScoreId');
+  const stEl   = document.getElementById('gradeLoadStatus');
+  if (!sid) {
+    if (sel) sel.innerHTML = '<option value="">— Avval chap paneldan talaba tanlang —</option>';
+    _gradeScores = [];
+    return;
+  }
+  if (stEl) stEl.textContent = 'Yuklanmoqda...';
+  try {
+    const res  = await api.get(`/courses/scores/?student=${sid}&page_size=50`);
+    const list = res?.results || (Array.isArray(res) ? res : []);
+    _gradeScores = list;
+    if (stEl) stEl.textContent = list.length ? `${list.length} ta mavzu yuklandi` : 'Mavzular topilmadi';
+    if (sel) {
+      sel.innerHTML = '<option value="">— Mavzu tanlang —</option>';
+      list.forEach(s => {
+        const o = document.createElement('option');
+        o.value = s.id;
+        const needsGrade = (!s.fa_project_score && s.fa_project_score !== 0) ||
+                           (!s.re_peer_score   && s.re_peer_score   !== 0)  ||
+                            s.fa_project_score === 0 || s.re_peer_score === 0;
+        o.textContent = `${s.topic_number ? 'T'+s.topic_number+': ' : ''}${s.topic_title || 'Mavzu #'+s.topic}`
+          + ` · ${s.total_score || 0}/100`
+          + ` (FA·L:${s.fa_project_score ?? '—'} RE·P:${s.re_peer_score ?? '—'})`;
+        if (needsGrade) o.style.color = '#ffd700';
+        sel.appendChild(o);
+      });
+    }
+    if (stEl) stEl.textContent = '';
+    renderGradeTable(list);
+    onTopicSelect();
+  } catch(e) {
+    if (stEl) stEl.textContent = 'Xato: ' + (e.message || '');
+  }
+}
+
+// ── Mavzu tanlanganida joriy balllarni ko'rsatish ─────────
+function onTopicSelect() {
+  const id    = document.getElementById('gradeScoreId').value;
+  const faBox = document.getElementById('faCurrentBox');
+  const reBox = document.getElementById('reCurrentBox');
+  const pvBox = document.getElementById('gradePreviewBox');
+
+  if (!id) {
+    faBox.style.display = 'none';
+    reBox.style.display = 'none';
+    // Agar preview pending item uchun ochilmagan bo'lsa — yopamiz
+    if (!_previewItem) pvBox.style.display = 'none';
+    return;
+  }
+
+  const score = _gradeScores.find(s => String(s.id) === String(id));
+  faBox.style.display = 'block';
+  reBox.style.display = 'block';
+  document.getElementById('faCurrentVal').textContent = score?.fa_project_score ?? '—';
+  document.getElementById('reCurrentVal').textContent = score?.re_peer_score    ?? '—';
+}
+
+// ── FA Loyiha ball berish ─────────────────────────────────
+async function giveFaBall() {
+  const sid  = document.getElementById('gradeStudentId').value;
+  const scid = document.getElementById('gradeScoreId').value;
+  const val  = document.getElementById('faVal').value;
+  if (!sid || !scid) { showStatus('faStatus', 'Talaba va mavzuni tanlang', 'err'); return; }
+  showStatus('faStatus', 'Saqlanmoqda...', '');
+  try {
+    await api.giveFaProjectScore(scid, Number(val));
+    showStatus('faStatus', '✅ Saqlandi!', 'ok');
+    setTimeout(() => showStatus('faStatus', '', ''), 2500);
+    _previewItem = null; // preview tozalash
+    await loadStudentForGrading();
+    loadPendingGrades(); // navbatni yangilash
+  } catch(e) { showStatus('faStatus', 'Xato: ' + (e.message || ''), 'err'); }
+}
+
+// ── RE Peer-review ball berish ────────────────────────────
+async function giveReBall() {
+  const sid  = document.getElementById('gradeStudentId').value;
+  const scid = document.getElementById('gradeScoreId').value;
+  const val  = document.getElementById('reVal').value;
+  if (!sid || !scid) { showStatus('reStatus', 'Talaba va mavzuni tanlang', 'err'); return; }
+  showStatus('reStatus', 'Saqlanmoqda...', '');
+  try {
+    await api.giveRePeerScore(scid, Number(val));
+    showStatus('reStatus', '✅ Saqlandi!', 'ok');
+    setTimeout(() => showStatus('reStatus', '', ''), 2500);
+    _previewItem = null;
+    await loadStudentForGrading();
+    loadPendingGrades();
+  } catch(e) { showStatus('reStatus', 'Xato: ' + (e.message || ''), 'err'); }
+}
+
+// ── Jadval ───────────────────────────────────────────────
+function renderGradeTable(scores) {
+  const card = document.getElementById('gradeTableCard');
+  const body = document.getElementById('gradeTableBody');
+  const meta = document.getElementById('gradeTableMeta');
+  if (!card || !body || !scores?.length) { if (card) card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const sid = document.getElementById('gradeStudentId').value;
+  if (meta) meta.textContent = `Talaba #${sid} · ${scores.length} ta mavzu`;
+  body.innerHTML = scores.map((s, i) => {
+    const fa   = s.fa_score || 0;
+    const faP  = s.fa_project_score ?? '—';
+    const re   = s.re_score || 0;
+    const reP  = s.re_peer_score ?? '—';
+    const warn = faP === 0 || reP === 0;
+    const faTotal = fa + (Number(faP) || 0);
+    const reTotal = re + (Number(reP) || 0);
+    return `<div class="grade-row" ${warn ? 'style="background:rgba(255,215,0,0.025)"' : ''}>
+      <div style="color:var(--muted);font-size:.78rem">${i + 1}</div>
+      <div style="font-size:.82rem;cursor:pointer" onclick="startGradeByScore('${sid}','${s.id}')">
+        ${s.topic_number ? '<span style="color:var(--muted);font-size:.73rem">T'+s.topic_number+' </span>' : ''}${s.topic_title || 'Mavzu #'+s.topic}
+        ${warn ? ' <span style="color:#ffd700;font-size:.7rem" title="Baholanmagan">⚠️</span>' : ''}
+      </div>
+      <div style="text-align:center;color:#60a5fa;font-weight:700">${s.mo_score || 0}</div>
+      <div style="text-align:center;color:#a78bfa;font-weight:700">${s.ko_score || 0}</div>
+      <div style="text-align:center;color:#43e97b;font-weight:700">${faTotal}
+        <span style="color:var(--muted);font-size:.7rem">(L:${faP})</span></div>
+      <div style="text-align:center;color:#fb923c;font-weight:700">${reTotal}
+        <span style="color:var(--muted);font-size:.7rem">(P:${reP})</span></div>
+      <div style="text-align:center;font-weight:700;color:${s.total_score >= 80 ? '#43e97b' : s.total_score >= 60 ? '#60a5fa' : '#ff6584'}">${s.total_score || 0}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Jadvaldan to'g'ridan baholash ─────────────────────────
+function startGradeByScore(sid, scoreId) {
+  document.getElementById('gradeStudentId').value = sid;
+  const sel = document.getElementById('gradeScoreId');
+  if (sel && scoreId) {
+    sel.value = String(scoreId);
+    onTopicSelect();
+  }
+  document.getElementById('gradingFormCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── AI Tahlil ─────────────────────────────────────────────
+async function loadAIReport() {
+  const sid = document.getElementById('gradeStudentId').value;
+  const box = document.getElementById('aiBox');
+  if (!sid) { showStatus('aiStatus', 'Avval chap paneldan talaba tanlang', 'err'); return; }
+  showStatus('aiStatus', 'AI tahlil qilmoqda...', '');
+  if (box) { box.style.display = 'block'; box.textContent = '⏳ Yuklanmoqda...'; }
+  try {
+    const res = await api.aiReport(Number(sid), null);
+    if (box) box.textContent = res?.report || res?.analysis || res?.result || JSON.stringify(res, null, 2);
+    showStatus('aiStatus', '', '');
+  } catch(e) {
+    if (box) box.textContent = 'AI tahlil mavjud emas yoki xato: ' + (e.message || '');
+    showStatus('aiStatus', '', '');
   }
 }
 
 // ── START ───────────────────────────────────────────────────
 initDashboard();
+
+// ── TOAST ────────────────────────────────────────────────────
+let _toastTimer;
+function showToast(msg, type='success') {
+  let t = document.getElementById('_toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_toast';
+    t.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:#141c35;border:1px solid rgba(108,99,255,.3);border-radius:10px;padding:.6rem 1.2rem;font-size:.84rem;font-weight:600;z-index:999;transition:transform .3s;pointer-events:none';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.borderColor = type==='error' ? 'rgba(255,101,132,.4)' : 'rgba(67,233,123,.4)';
+  t.style.color = type==='error' ? '#ff8fab' : '#43e97b';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)'; }, 3000);
+}
+
+// ── MESSAGES (teacher) ──────────────────────────────────────
+const T_TYPE_LABELS = {complaint:'Shikoyat',question:'Savol',advisory:'Tavsiya',announcement:"E'lon",general:'Umumiy'};
+let tMsgTab = 'inbox', tMsgCurId = null, tAllMsgs = [], tRecipients = [], tMyId = null;
+
+async function tLoadMsgs() {
+  tMyId = tMyId || (await api.me().catch(()=>null))?.id;
+  await tLoadRecipients();
+  await tFetchMsgs();
+  tUpdateUnread();
+}
+
+async function tFetchMsgs() {
+  const list = document.getElementById('tMsgList');
+  list.innerHTML = '<div class="msg-empty">Yuklanmoqda...</div>';
+  try {
+    tAllMsgs = tMsgTab === 'inbox' ? (await api.msgInbox()||[]) : (await api.msgSent()||[]);
+    tRenderList(tAllMsgs);
+    if (tMsgTab === 'inbox') {
+      const u = tAllMsgs.filter(m=>!m.is_read).length;
+      document.getElementById('tInboxCnt').textContent = u ? `(${u})` : '';
+    }
+  } catch { list.innerHTML = '<div class="msg-empty">Xatolik yuz berdi</div>'; }
+}
+
+async function tLoadRecipients() {
+  if (tRecipients.length) return;
+  try {
+    tRecipients = await api.msgRecipients() || [];
+    const sel = document.getElementById('tCmpTo');
+    sel.innerHTML = '<option value="">Tanlang...</option>';
+    const grp = {student:[], admin:[], superadmin:[]};
+    tRecipients.forEach(r => { if(grp[r.role]) grp[r.role].push(r); else grp['admin'].push(r); });
+    [['student','Talabalar'],['admin','Adminlar'],['superadmin','Superadminlar']].forEach(([role, lbl]) => {
+      if (!grp[role]?.length) return;
+      const g = document.createElement('optgroup'); g.label = lbl;
+      grp[role].forEach(r => { const o=document.createElement('option'); o.value=r.id; o.textContent=r.full_name||(r.email||r.id); g.appendChild(o); });
+      sel.appendChild(g);
+    });
+  } catch {}
+}
+
+function tRenderList(msgs) {
+  const list = document.getElementById('tMsgList');
+  if (!msgs.length) { list.innerHTML = '<div class="msg-empty">Xabarlar yo\'q</div>'; return; }
+  list.innerHTML = '';
+  msgs.forEach(m => {
+    const other = tMsgTab==='inbox' ? m.sender : m.recipient;
+    const div = document.createElement('div');
+    div.className = 'msg-item' + (m.id===tMsgCurId?' active':'') + (!m.is_read&&tMsgTab==='inbox'?' msg-unread':'');
+    div.dataset.id = m.id;
+    div.onclick = () => tOpenThread(m.id);
+    const ini = tInitials(other?.full_name||'?');
+    div.innerHTML = `
+      <div class="mi-r1">
+        <div class="mi-ava">${ini}</div>
+        <span class="mi-name">${tEsc(other?.full_name||'—')}</span>
+        <span class="mi-time">${tTimeAgo(m.created_at)}</span>
+        ${!m.is_read&&tMsgTab==='inbox'?'<span class="unread-dot"></span>':''}
+      </div>
+      <div class="mi-subj">${tEsc(m.subject)}</div>
+      <div style="display:flex;gap:.3rem;align-items:center;margin-top:.15rem">
+        <span class="mi-type type-${m.msg_type||'general'}">${T_TYPE_LABELS[m.msg_type]||'Umumiy'}</span>
+        ${m.reply_count?`<span style="font-size:.7rem;color:var(--muted)">${m.reply_count} javob</span>`:''}
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+async function tOpenThread(id) {
+  tMsgCurId = id;
+  document.querySelectorAll('#tMsgList .msg-item').forEach(el => {
+    el.classList.toggle('active', +el.dataset.id===id);
+    if (+el.dataset.id===id) el.classList.remove('msg-unread','unread-dot');
+  });
+  document.getElementById('tThreadPh').style.display = 'none';
+  const tv = document.getElementById('tThreadView'); tv.style.display = 'flex';
+  const body = document.getElementById('tThreadBody');
+  body.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted)">Yuklanmoqda...</div>';
+  try {
+    const data = await api.msgDetail(id);
+    tRenderThread(data);
+    // mark read locally
+    const loc = tAllMsgs.find(m=>m.id===id);
+    if (loc && !loc.is_read && tMsgTab==='inbox') { loc.is_read=true; tUpdateUnread(); }
+  } catch { body.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted)">Xatolik</div>'; }
+}
+
+function tRenderThread(data) {
+  document.getElementById('tThreadSubj').textContent = data.subject;
+  const tc = `type-${data.msg_type}`;
+  document.getElementById('tThreadMeta').innerHTML =
+    `<span class="mi-type ${tc}">${T_TYPE_LABELS[data.msg_type]||data.msg_type}</span>
+     <span>${tEsc(data.sender?.full_name||'—')} → ${tEsc(data.recipient?.full_name||'—')}</span>
+     <span>${tFmtDate(data.created_at)}</span>
+     ${data.topic_title?`<span style="color:#a78bfa"><i class="ra ra-book"></i> ${tEsc(data.topic_title)}</span>`:''}`;
+  const body = document.getElementById('tThreadBody');
+  body.innerHTML = '';
+  const roleMap = {student:'Talaba',teacher:"O'qituvchi",admin:'Admin',superadmin:'Superadmin'};
+  [data, ...(data.replies||[])].forEach(msg => {
+    const ini = tInitials(msg.sender?.full_name||'?');
+    const b = document.createElement('div'); b.className = 'bubble';
+    b.innerHTML = `
+      <div class="bub-ava">${ini}</div>
+      <div class="bub-body">
+        <div class="bub-top">
+          <span class="bub-name">${tEsc(msg.sender?.full_name||'—')}</span>
+          <span class="bub-role">${roleMap[msg.sender?.role]||''}</span>
+          <span class="bub-time">${tFmtDate(msg.created_at)}</span>
+        </div>
+        <div class="bub-text">${tEsc(msg.body).replace(/\n/g,'<br>')}</div>
+      </div>`;
+    body.appendChild(b);
+  });
+  body.scrollTop = body.scrollHeight;
+  const canReply = data.sender?.id===tMyId || data.recipient?.id===tMyId;
+  document.getElementById('tReplyTa').closest('.reply-area').style.display = canReply ? '' : 'none';
+}
+
+async function tSendReply() {
+  if (!tMsgCurId) return;
+  const text = document.getElementById('tReplyTa').value.trim();
+  if (!text) { showToast('Javob matnini yozing', 'error'); return; }
+  const btn = document.getElementById('tReplyBtn'); btn.disabled = true;
+  try {
+    await api.msgReply(tMsgCurId, {body:text});
+    document.getElementById('tReplyTa').value = '';
+    await tOpenThread(tMsgCurId);
+    showToast('Javob yuborildi', 'success');
+  } catch(e) { showToast(e.message||'Xatolik', 'error'); }
+  finally { btn.disabled = false; }
+}
+
+function tSwitchTab(tab, el) {
+  tMsgTab = tab; tMsgCurId = null;
+  document.querySelectorAll('.msg-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tMsgSearch').value = '';
+  document.getElementById('tThreadPh').style.display = '';
+  document.getElementById('tThreadView').style.display = 'none';
+  tFetchMsgs();
+}
+
+function tFilterMsgs() {
+  const q = document.getElementById('tMsgSearch').value.toLowerCase();
+  tRenderList(q ? tAllMsgs.filter(m =>
+    m.subject.toLowerCase().includes(q) ||
+    (m.sender?.full_name||'').toLowerCase().includes(q) ||
+    (m.recipient?.full_name||'').toLowerCase().includes(q)
+  ) : tAllMsgs);
+}
+
+function tOpenCompose() { document.getElementById('tCmpModal').classList.add('open'); }
+function tCloseCompose() { document.getElementById('tCmpModal').classList.remove('open'); }
+
+async function tSendMsg() {
+  const to  = document.getElementById('tCmpTo').value;
+  const sub = document.getElementById('tCmpSubj').value.trim();
+  const body= document.getElementById('tCmpBody').value.trim();
+  const typ = document.getElementById('tCmpType').value;
+  if (!to)  { showToast('Qabul qiluvchini tanlang','error'); return; }
+  if (!sub) { showToast('Sarlavha kiriting','error'); return; }
+  if (!body){ showToast('Matn kiriting','error'); return; }
+  const btn = document.getElementById('tCmpBtn'); btn.disabled = true;
+  try {
+    await api.msgSend({recipient:+to, subject:sub, body, msg_type:typ});
+    tCloseCompose();
+    document.getElementById('tCmpSubj').value='';
+    document.getElementById('tCmpBody').value='';
+    showToast('Xabar yuborildi!','success');
+    if (tMsgTab==='sent') await tFetchMsgs();
+  } catch(e) { showToast(e.message||'Xatolik','error'); }
+  finally { btn.disabled = false; }
+}
+
+async function tUpdateUnread() {
+  try {
+    const d = await api.msgUnread();
+    const b = document.getElementById('msgBadge');
+    if (b && d?.unread>0) { b.textContent=d.unread>9?'9+':d.unread; b.style.display=''; }
+    else if (b) b.style.display='none';
+  } catch {}
+}
+
+// Helpers
+function tInitials(n){const p=(n||'?').split(' ').filter(Boolean);return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():(p[0]?.[0]||'?').toUpperCase();}
+function tEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function tTimeAgo(iso){if(!iso)return'';const d=Math.floor((Date.now()-new Date(iso).getTime())/60000);if(d<1)return'Hozirgina';if(d<60)return d+'d oldin';const h=Math.floor(d/60);if(h<24)return h+'s oldin';return Math.floor(h/24)+' kun oldin';}
+function tFmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleString('uz-UZ',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
+document.getElementById('tCmpModal').addEventListener('click',e=>{if(e.target===document.getElementById('tCmpModal'))tCloseCompose();});
+// Load unread on init
+tUpdateUnread();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

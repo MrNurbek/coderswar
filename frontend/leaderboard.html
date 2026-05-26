@@ -106,33 +106,35 @@
 <body>
 <div id="page-bg" style="position:fixed;inset:0;background:url('static/img/leaderboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
 <aside class="sidebar">
-  <div class="sb-logo"><a href="index.html">⚔️ Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
+  <div class="sb-logo"><a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
   <nav class="sb-nav">
     <div class="nav-section">O'quv</div>
-    <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
-    <a class="nav-item" href="mainquest.html"><span class="icon">📚</span> Darslar</a>
-    <a class="nav-item" href="sidequest.html"><span class="icon">💻</span> Amaliyot</a>
-    <a class="nav-item" href="trajectory.html"><span class="icon">📈</span> Trayektoriya</a>
-    <a class="nav-item" href="peer-review.html"><span class="icon">🔍</span> Peer Review</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon"><i class="ra ra-compass"></i></span> Dashboard</a>
+    <a class="nav-item" href="mainquest.html"><span class="icon"><i class="ra ra-book"></i></span> Darslar</a>
+    <a class="nav-item" href="sidequest.html"><span class="icon"><i class="ra ra-anvil"></i></span> Amaliyot</a>
+    <a class="nav-item" href="trajectory.html"><span class="icon"><i class="ra ra-level-three-advanced"></i></span> Trayektoriya</a>
+    <a class="nav-item" href="peer-review.html"><span class="icon"><i class="ra ra-scroll-unfurled"></i></span> Peer Review</a>
+    <a class="nav-item" href="messages.html"><span class="icon"><i class="ra ra-envelope"></i></span> Xabarlar <span class="badge" id="msgBadge" style="display:none">0</span></a>
     <div class="nav-section">Jamoa</div>
-    <a class="nav-item" href="clan.html"><span class="icon">🏰</span> Klan</a>
-    <a class="nav-item" href="duel.html"><span class="icon">⚡</span> Duel</a>
-    <a class="nav-item active" href="leaderboard.html"><span class="icon">🏆</span> Reyting</a>
+    <a class="nav-item" href="clan.html"><span class="icon"><i class="ra ra-castle-emblem"></i></span> Mening Klanim</a>
+    <a class="nav-item" href="clan-leaderboard.html"><span class="icon"><i class="ra ra-trophy"></i></span> Klanlar Reytingi</a>
+    <a class="nav-item" href="duel.html"><span class="icon"><i class="ra ra-crossed-swords"></i></span> Duel</a>
+    <a class="nav-item active" href="leaderboard.html"><span class="icon"><i class="ra ra-player"></i></span> Talabalar Reytingi</a>
     <div class="nav-section">Shaxsiy</div>
-    <a class="nav-item" href="profile.html"><span class="icon">👤</span> Profil</a>
+    <a class="nav-item" href="profile.html"><span class="icon"><i class="ra ra-knight-helmet"></i></span> Profil</a>
   </nav>
   <div class="sb-bottom">
     <div class="sb-user">
       <div class="av" data-user-init>?</div>
       <div class="info"><div class="name" data-user-name>...</div><div class="role" data-user-role>Student</div></div>
-      <button class="logout-btn" onclick="Auth.logout()" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem" title="Chiqish">⏻</button>
+      <button class="logout-btn" onclick="Auth.logout()" title="Chiqish"><i class="ra ra-cancel" style="font-size:.85rem"></i></button>
     </div>
   </div>
 </aside>
 
 <div class="main">
   <div class="topbar">
-    <div><h2>🏆 Global Reyting</h2><div class="bc">Dashboard › Reyting · 248 talaba</div></div>
+    <div><h2><i class="ra ra-trophy"></i> Global Reyting</h2><div class="bc">Dashboard › Reyting · 248 talaba</div></div>
     <div style="display:flex;align-items:center;gap:.8rem">
       <div style="font-size:.82rem;color:var(--muted)">Yangilandi: 2 daqiqa avval</div>
     </div>
@@ -141,7 +143,7 @@
   <div class="content">
     <!-- PODIUM -->
     <div class="podium-wrap">
-      <div class="podium-title">🏆 Top 3 — Bu hafta</div>
+      <div class="podium-title"><i class="ra ra-trophy"></i> Top 3 — Bu hafta</div>
       <div class="podium" id="podiumEl"></div>
     </div>
 
@@ -153,7 +155,7 @@
       </div>
       <div class="user-av" id="myRankAv" style="width:44px;height:44px;background:linear-gradient(135deg,#6c63ff,#ff6584);border-color:var(--accent);font-size:1.1rem">?</div>
       <div class="mr-info">
-        <div class="mr-name" id="myRankName">— <span style="font-size:.8rem">⚔️</span></div>
+        <div class="mr-name" id="myRankName">— <span style="font-size:.8rem"><i class="ra ra-crossed-swords"></i></span></div>
         <div class="mr-meta" id="myRankMeta">—</div>
       </div>
       <div class="mr-score">
@@ -170,12 +172,12 @@
     <div class="filter-row">
       <div class="filter-tabs">
         <div class="ftab active" onclick="filterBy('global',this)">🌍 Umumiy</div>
-        <div class="ftab" onclick="filterBy('group',this)">👥 Guruh</div>
+        <div class="ftab" onclick="filterBy('group',this)"><i class="ra ra-player"></i> Guruh</div>
         <div class="ftab" onclick="filterBy('faculty',this)">🏫 Yo'nalish</div>
-        <div class="ftab" onclick="filterBy('week',this)">📅 Bu hafta</div>
-        <div class="ftab" onclick="filterBy('month',this)">📅 Bu oy</div>
+        <div class="ftab" onclick="filterBy('week',this)"><i class="ra ra-hourglass"></i> Bu hafta</div>
+        <div class="ftab" onclick="filterBy('month',this)"><i class="ra ra-hourglass"></i> Bu oy</div>
       </div>
-      <div class="search-lb">🔍 <input type="text" placeholder="Talaba qidirish..." oninput="searchTable(this.value)"/></div>
+      <div class="search-lb"><i class="ra ra-scroll-unfurled"></i> <input type="text" placeholder="Talaba qidirish..." oninput="searchTable(this.value)"/></div>
     </div>
 
     <!-- TABLE -->
@@ -196,7 +198,16 @@ if (!Auth.requireAuth()) throw 0;
 
 const LEVEL_NAMES  = ['Recruit','Warden','Knight','Hero','Legend','Lord','Deity','Titan'];
 const LEVEL_COLORS = ['#94a3b8','#43e97b','#4299e1','#a78bfa','#ffa500','#ff6584','#f07167','#ffd700'];
-const LEVEL_ICONS  = ['🛡️','🗡️','⚔️','🦅','🔥','👑','🔮','⚡'];
+const LEVEL_ICONS  = [
+  '<img src="static/img/rank-recruit.png" style="width:32px;height:32px;object-fit:contain">',
+  '<img src="static/img/rank-warden.png"  style="width:32px;height:32px;object-fit:contain">',
+  '<img src="static/img/rank-knight.png"  style="width:32px;height:32px;object-fit:contain">',
+  '<img src="static/img/rank-hero.png"    style="width:32px;height:32px;object-fit:contain">',
+  '<img src="static/img/rank-legend.png"  style="width:32px;height:32px;object-fit:contain">',
+  '<img src="static/img/rank-lord.png"    style="width:32px;height:32px;object-fit:contain">',
+  '<img src="static/img/rank-deity.png"   style="width:32px;height:32px;object-fit:contain">',
+  '<img src="static/img/rank-titan.png"   style="width:32px;height:32px;object-fit:contain">',
+];
 
 let allData = [];
 let myId    = null;
@@ -297,7 +308,7 @@ async function initLeaderboard() {
 
   // Leaderboard data
   try {
-    document.getElementById('lbBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">⏳ Yuklanmoqda...</div>';
+    document.getElementById('lbBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)"><i class="ra ra-hourglass"></i> Yuklanmoqda...</div>';
     const res = await api.leaderboard();
     const raw = Array.isArray(res) ? res : (res.results || []);
     allData = raw.map((entry, i) => _mapEntry(entry, i+1, myId));
@@ -321,6 +332,12 @@ async function initLeaderboard() {
 
 initLeaderboard();
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
+<script>
+(async function(){
+  if(typeof api==='undefined'||typeof Auth==='undefined'||!Auth.isLoggedIn())return;
+  try{const d=await api.msgUnread();const b=document.getElementById('msgBadge');if(b&&d?.unread>0){b.textContent=d.unread>9?'9+':d.unread;b.style.display='';}}catch(e){}
+})();
+</script>
 </body>
 </html>

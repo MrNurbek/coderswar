@@ -43,14 +43,41 @@ Working directory: `backend/`
 
 ### Scoring System (100 ball/mavzu)
 
+4 ta mezon — jami 100 ball (bir mavzu uchun):
+
 ```
-MO (10) = O'qituvchi beradi (motivatsion)
-KO (20) = Daraja testlari: Boshlang'ich:5 + O'rta:7 + Yuqori:8
-FA (30) = Topshiriqlar:    Boshlang'ich:8 + O'rta:10 + Yuqori:12
-AD (15) = Kontent o'qish:  har daraja +5 (video+matn ikkalasi tugaganda)
-KR (15) = Loyihalar:       Boshlang'ich:4 + O'rta:5 + Yuqori:6
-RE (10) = Peer Review + ReflectionJournal
+MO (15) = Motivatsion — hammasi avtomatik:
+            +5   Login streak / mavzu bo'yicha faollik
+            +3   Kontent o'qish: video+matn (har daraja +1, jami 3 daraja)
+            +3   Topshiriqlarni muddatda bajarish
+            +4   Bonus: duel, qo'shimcha mashqlar
+
+KO (35) = Kognitiv — hammasi avtomatik:
+            +10  Boshlang'ich daraja testi (10 savol, ≥7 to'g'ri o'tish)
+            +10  O'rta daraja testi
+            +10  Yuqori daraja testi
+            +5   O'sish bonusi (barcha 3 daraja tugatilganda qo'shimcha)
+
+FA (30) = Faoliyatli — ikki qism:
+            Avtomatik (+20): Side Quest mashqlari
+              Boshlang'ich 10 topshiriq → max 6 ball
+              O'rta        10 topshiriq → max 7 ball
+              Yuqori       10 topshiriq → max 7 ball
+              (har bir passed exercise +1, jami cap 20)
+            O'qituvchi (+10): 3 ta loyihani baholash (fa_project_score, 0–10)
+
+RE (20) = Refleksiv-baholovchi — ikki qism:
+            Avtomatik (+10): refleksiya jurnali yozilganda (bir marta)
+            O'qituvchi (+10): peer-review sifatini baholash (re_peer_score, 0–10)
 ```
+
+`TopicScore` dagi field'lar:
+- `mo_score` (max 15) — avtomatik
+- `ko_score` (max 35) — avtomatik (test o'tish + growth bonus)
+- `fa_score` (max 20) — avtomatik (exercise submissions)
+- `fa_project_score` (max 10) — o'qituvchi beradi
+- `re_score` (max 10) — avtomatik (refleksiya jurnali)
+- `re_peer_score` (max 10) — o'qituvchi beradi
 
 `TopicScore.save()` avtomatik `total_score` hisoblaydi va `StudentProfile.recalculate()` chaqiradi.
 

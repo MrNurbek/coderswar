@@ -1,15 +1,17 @@
 from datetime import date, timedelta
-from django.db.models import Count
+from django.db import models
+from django.db.models import Count, Q
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 
-from .models import PeerReview, Notification, ActivityLog
+from .models import PeerReview, Notification, ActivityLog, Message
 from .serializers import (
     PeerReviewSerializer, PeerReviewCreateSerializer,
     NotificationSerializer, ActivityLogSerializer, StreakSerializer,
+    MessageSerializer, MessageCreateSerializer, MessageReplySerializer, RecipientSerializer,
 )
 
 
@@ -249,14 +251,22 @@ class LogActivityView(APIView):
         last = profile.last_active
         if last == today:
             return  # Bugun allaqachon qayd etilgan
-        elif last == today - timedelta(days=1):
+
+        streak_grew = False
+        if last == today - timedelta(days=1):
             profile.current_streak += 1
+            streak_grew = True
         else:
             profile.current_streak = 1  # Streak uzildi
+            streak_grew = True
 
         profile.max_streak  = max(profile.max_streak, profile.current_streak)
         profile.last_active = today
         profile.save(update_fields=['current_streak', 'max_streak', 'last_active'])
+
+        # Streak oshsa — faol mavzuga +1 MO ball (max 5 jami)
+        if streak_grew:
+            self._award_streak_mo(user)
 
         # Badge tekshiruvi — streak_days shartlari
         try:
@@ -264,3 +274,223 @@ class LogActivityView(APIView):
             check_and_award_badges(user)
         except Exception:
             pass
+
+    @staticmethod
+    def _award_streak_mo(user):
+        """
+        Login streaki oshganda eng so'nggi faol mavzuga +1 MO ball berish.
+        MO_LOGIN_MAX = 5 — bir mavzu uchun jami maksimal.
+        """
+        from apps.courses.models import TopicScore, Topic
+        try:
+            # Eng so'nggi yangilangan, tugatilmagan mavzuni topish
+            ts = (
+                TopicScore.objects
+                .filter(student=user, mo_score__lt=Topic.MAX_MO)
+                .order_by('-updated_at')
+                .first()
+            )
+            if not ts:
+                return
+
+            # MO_LOGIN_MAX = 5 — login qismi uchun chegara
+            login_mo_given = max(0, ts.mo_score - Topic.MO_CONTENT_MAX)
+            if login_mo_given >= Topic.MO_LOGIN_MAX:
+                return
+
+            ts.mo_score = min(Topic.MAX_MO, ts.mo_score + 1)
+            ts.save(update_fields=['mo_score'])
+
+            # Bildiruv (faqat streak ≥ 3 dan boshlab — kamroq shovqin)
+            try:
+                profile = user.student_profile
+                if profile.current_streak >= 3:
+                    Notification.objects.create(
+                        user=user,
+                        title=f'{profile.current_streak} kunlik streak! 🔥',
+                        message=(
+                            f'Ketma-ket {profile.current_streak} kun faolsiz. '
+                            f'"{ts.topic.title}" mavzusiga +1 MO ball qo\'shildi!'
+                        ),
+                        notif_type='system',
+                    )
+            except Exception:
+                pass
+
+        except Exception:
+            pass
+
+
+# ─── Message ─────────────────────────────────────────────────────────────────
+
+class MessageInboxView(generics.ListAPIView):
+    """Kiruvchi xabarlar (qabul qilingan)."""
+    serializer_class   = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class   = None
+
+    def get_queryset(self):
+        qs = Message.objects.filter(
+            recipient=self.request.user, parent__isnull=True
+        ).select_related('sender', 'recipient', 'related_topic')
+        msg_type = self.request.query_params.get('msg_type')
+        if msg_type:
+            qs = qs.filter(msg_type=msg_type)
+        return qs
+
+
+class MessageSentView(generics.ListAPIView):
+    """Chiquvchi xabarlar (yuborilgan)."""
+    serializer_class   = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class   = None
+
+    def get_queryset(self):
+        return Message.objects.filter(
+            sender=self.request.user, parent__isnull=True
+        ).select_related('sender', 'recipient', 'related_topic')
+
+
+class MessageDetailView(generics.RetrieveAPIView):
+    """Xabar va javoblari."""
+    serializer_class   = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Message.objects.filter(
+            Q(sender=user) | Q(recipient=user)
+        ).select_related('sender', 'recipient', 'related_topic')
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.recipient == request.user and not instance.is_read:
+            instance.is_read = True
+            instance.save(update_fields=['is_read'])
+        replies = instance.replies.select_related('sender', 'recipient').all()
+        data = self.get_serializer(instance).data
+        data['replies'] = MessageSerializer(replies, many=True).data
+        return Response(data)
+
+
+class MessageCreateView(generics.CreateAPIView):
+    """Yangi xabar yuborish."""
+    serializer_class   = MessageCreateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        msg = serializer.save(sender=self.request.user)
+        self._notify(msg)
+
+    def _notify(self, msg):
+        type_labels = {
+            'complaint':    'Shikoyat',
+            'question':     'Savol',
+            'advisory':     'Tavsiya',
+            'announcement': "E'lon",
+            'general':      'Xabar',
+        }
+        label = type_labels.get(msg.msg_type, 'Xabar')
+        Notification.objects.create(
+            user=msg.recipient,
+            title=f'Yangi {label}: {msg.subject[:60]}',
+            message=(
+                f'{msg.sender.get_full_name()} sizga xabar yubordi. '
+                f'Mavzu: {msg.subject[:80]}'
+            ),
+            notif_type=Notification.NotifType.SYSTEM,
+            link='/messages.html',
+        )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(MessageSerializer(serializer.instance).data, status=status.HTTP_201_CREATED)
+
+
+class MessageReplyView(generics.CreateAPIView):
+    """Xabarga javob yozish."""
+    serializer_class   = MessageReplySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        parent = generics.get_object_or_404(Message, pk=self.kwargs['pk'])
+        user   = self.request.user
+        if parent.sender != user and parent.recipient != user:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Bu xabarga javob yubora olmaysiz.')
+        reply_to = parent.sender if parent.sender != user else parent.recipient
+        msg = serializer.save(
+            sender=user,
+            recipient=reply_to,
+            parent=parent,
+            subject=f'Re: {parent.subject}',
+        )
+        Notification.objects.create(
+            user=reply_to,
+            title=f'Xabarga javob: {parent.subject[:60]}',
+            message=f'{user.get_full_name()} xabarga javob yozdi.',
+            notif_type=Notification.NotifType.SYSTEM,
+            link='/messages.html',
+        )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(MessageSerializer(serializer.instance).data, status=status.HTTP_201_CREATED)
+
+
+class MessageReadView(APIView):
+    """Xabarni o'qilgan deb belgilash."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, pk):
+        try:
+            msg = Message.objects.get(pk=pk, recipient=request.user)
+        except Message.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        msg.is_read = True
+        msg.save(update_fields=['is_read'])
+        return Response({'ok': True})
+
+
+class MessageUnreadCountView(APIView):
+    """O'qilmagan xabarlar soni."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        count = Message.objects.filter(recipient=request.user, is_read=False).count()
+        return Response({'unread': count})
+
+
+class MessageRecipientsView(APIView):
+    """Xabar yuborish mumkin bo'lgan qabul qiluvchilar ro'yxati."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        from apps.users.models import User, GroupMembership
+        user = request.user
+        R    = User.Role
+
+        if user.role in (R.ADMIN, R.SUPERADMIN):
+            qs = User.objects.exclude(pk=user.pk).filter(is_active=True)
+        elif user.role == R.TEACHER:
+            student_ids = GroupMembership.objects.filter(
+                group__teacher=user
+            ).values_list('student_id', flat=True)
+            qs = User.objects.filter(is_active=True).filter(
+                Q(id__in=student_ids) |
+                Q(role__in=[R.ADMIN, R.SUPERADMIN])
+            ).exclude(pk=user.pk)
+        else:
+            teacher_ids = GroupMembership.objects.filter(
+                student=user
+            ).values_list('group__teacher_id', flat=True)
+            qs = User.objects.filter(is_active=True).filter(
+                Q(id__in=teacher_ids) |
+                Q(role__in=[R.ADMIN, R.SUPERADMIN])
+            ).exclude(pk=user.pk)
+
+        return Response(RecipientSerializer(qs, many=True).data)

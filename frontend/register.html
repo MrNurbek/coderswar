@@ -73,9 +73,9 @@
   </div>
 
   <div class="steps" id="stepsBar">
-    <div class="step active" id="s1"><span class="step-n">📝</span>Ma'lumotlar</div>
-    <div class="step" id="s2"><span class="step-n">🔐</span>Xavfsizlik</div>
-    <div class="step" id="s3"><span class="step-n">📧</span>Tasdiqlash</div>
+    <div class="step active" id="s1"><span class="step-n"><i class="ra ra-scroll-unfurled"></i></span>Ma'lumotlar</div>
+    <div class="step" id="s2"><span class="step-n"><i class="ra ra-key"></i></span>Xavfsizlik</div>
+    <div class="step" id="s3"><span class="step-n"><i class="ra ra-scroll"></i></span>Tasdiqlash</div>
   </div>
 
   <div class="card">
@@ -104,7 +104,12 @@
           <option>Toshkent Davlat Texnika Universiteti</option>
           <option>Samarqand Davlat Universiteti</option>
           <option>Buxoro Davlat Universiteti</option>
-          <option>Fergʼona Politexnika Instituti</option>
+          <option>Farg'ona Davlat Universiteti</option>
+          <option>Farg'ona Politexnika Instituti</option>
+          <option>Guliston Davlat Universiteti</option>
+          <option>Termiz Davlat Universiteti</option>
+          <option>Namangan Davlat Universiteti</option>
+          <option>Andijon Davlat Universiteti</option>
           <option>Boshqa</option>
         </select>
       </div>
@@ -185,7 +190,7 @@
     <!-- Page 3: email verify -->
     <div class="page" id="pg3">
       <div class="verify-box">
-        <div class="icon">📬</div>
+        <div class="icon"><i class="ra ra-scroll"></i></div>
         <h3>Emailingizni tasdiqlang</h3>
         <p>Quyidagi emailga 6 xonali kod yuborildi:<br><strong id="sentTo" style="color:#a78bfa"></strong></p>
         <div class="otp-row">
@@ -306,7 +311,7 @@ async function verifyOTP() {
   try {
     await api.verifyOtp({ email: regEmail, code });
     // Tasdiqlandi — loginga yo'naltirish
-    window.location.href = '/login.html?verified=1';
+    window.location.href = 'login.html?verified=1';
   } catch (err) {
     otps.forEach(o => { o.style.borderColor = '#ff6584'; o.value = ''; });
     otps[0].focus();
@@ -327,6 +332,6 @@ async function resendCode() {
   }
 }
 </script>
-<script src="static/js/medieval-icons.js"></script>
+<script src="/static/frontend/js/medieval-icons.js"></script>
 </body>
 </html>

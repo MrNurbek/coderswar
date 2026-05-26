@@ -83,21 +83,26 @@ else:
     }
 
 # ── CACHE / REDIS ─────────────────────────────────────────────
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://localhost:6379/0'),
-    }
-}
+_use_redis = config('USE_REDIS', default=False, cast=bool)
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [config('REDIS_URL', default='redis://localhost:6379/0')],
+if _use_redis:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': config('REDIS_URL', default='redis://localhost:6379/0'),
+        }
+    }
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [config('REDIS_URL', default='redis://localhost:6379/0')],
+            },
         },
-    },
-}
+    }
+else:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}}
+    CHANNEL_LAYERS = {'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}}
 
 # ── AUTH ──────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
@@ -134,26 +139,21 @@ SIMPLE_JWT = {
 # ── CORS ──────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:3000,http://127.0.0.1:5500'
+    default='http://localhost:3000,http://127.0.0.1:5500,http://127.0.0.1:8080,http://localhost:8080'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
 
 # ── EMAIL ─────────────────────────────────────────────────────
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = config(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.smtp.EmailBackend'
+)
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
-# ── CELERY ────────────────────────────────────────────────────
-CELERY_BROKER_URL         = config('REDIS_URL', default='redis://localhost:6379/0')
-CELERY_RESULT_BACKEND     = config('REDIS_URL', default='redis://localhost:6379/0')
-CELERY_ACCEPT_CONTENT     = ['json']
-CELERY_TASK_SERIALIZER    = 'json'
-CELERY_RESULT_SERIALIZER  = 'json'
-CELERY_TIMEZONE           = 'Asia/Tashkent'
-CELERY_TASK_TRACK_STARTED = True
 
 # ── DEFAULT FROM EMAIL ───────────────────────────────────────
 DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='noreply@coderswar.uz')
@@ -175,3 +175,32 @@ TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ── PRODUCTION SECURITY ───────────────────────────────────
+if not DEBUG:
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER   = True
+    SESSION_COOKIE_SECURE        = True
+    CSRF_COOKIE_SECURE           = True
+    X_FRAME_OPTIONS              = 'DENY'
+    # Nginx HTTPS'ni handle qiladi — Django redirect kerak emas
+    SECURE_SSL_REDIRECT          = False
+    SECURE_PROXY_SSL_HEADER      = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ── LOGGING ───────────────────────────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {'format': '[{levelname}] {asctime} {module}: {message}', 'style': '{'},
+        'simple':  {'format': '[{levelname}] {message}', 'style': '{'},
+    },
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler', 'formatter': 'verbose'},
+    },
+    'root': {'handlers': ['console'], 'level': 'INFO'},
+    'loggers': {
+        'django':          {'handlers': ['console'], 'level': 'WARNING', 'propagate': False},
+        'apps':            {'handlers': ['console'], 'level': 'INFO',    'propagate': False},
+    },
+}

@@ -84,7 +84,7 @@ class LevelTestSerializer(serializers.ModelSerializer):
             'id', 'topic', 'level', 'title', 'pass_score',
             'question_count', 'ko_reward', 'is_active', 'is_locked', 'questions',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'topic')
 
     def get_question_count(self, obj):
         return obj.questions.count()
@@ -153,6 +153,7 @@ class TopicSerializer(serializers.ModelSerializer):
     module_title  = serializers.CharField(source='module.title', read_only=True)
     test_count    = serializers.SerializerMethodField()
     task_count    = serializers.SerializerMethodField()
+    content_count = serializers.SerializerMethodField()
     my_score      = serializers.SerializerMethodField()
 
     class Meta:
@@ -161,7 +162,7 @@ class TopicSerializer(serializers.ModelSerializer):
             'id', 'number', 'title', 'description', 'difficulty',
             'module', 'module_number', 'module_title',
             'is_active', 'order', 'created_at',
-            'test_count', 'task_count', 'my_score',
+            'test_count', 'task_count', 'content_count', 'my_score',
         )
         read_only_fields = ('id', 'created_at')
 
@@ -173,6 +174,10 @@ class TopicSerializer(serializers.ModelSerializer):
             'exercise': obj.tasks.filter(task_category='exercise', is_active=True).count(),
             'project':  obj.tasks.filter(task_category='project',  is_active=True).count(),
         }
+
+    def get_content_count(self, obj):
+        """Nechta daraja uchun kontent kiritilgan (0–3)."""
+        return obj.level_contents.count()
 
     def get_my_score(self, obj):
         request = self.context.get('request')

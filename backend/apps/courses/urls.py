@@ -9,7 +9,7 @@ from .views import (
     TopicScoreViewSet,
     TaskViewSet, SubmissionViewSet,
     DiagnosticTestView, ReflectionJournalViewSet,
-    AITeacherReportView,
+    AITeacherReportView, PendingGradesView,
 )
 
 # ── Asosiy router ──────────────────────────────────────────────────────────
@@ -26,9 +26,10 @@ topics_router.register('contents', TopicLevelContentViewSet, basename='topic-con
 topics_router.register('tests',    LevelTestViewSet,         basename='topic-test')
 
 urlpatterns = [
-    path('modules/',    ModuleListView.as_view(),     name='module_list'),
-    path('diagnostic/', DiagnosticTestView.as_view(), name='diagnostic'),
-    path('ai-report/',  AITeacherReportView.as_view(), name='ai_report'),
+    path('modules/',        ModuleListView.as_view(),      name='module_list'),
+    path('diagnostic/',     DiagnosticTestView.as_view(),  name='diagnostic'),
+    path('ai-report/',      AITeacherReportView.as_view(), name='ai_report'),
+    path('pending-grades/', PendingGradesView.as_view(),   name='pending_grades'),
 
     # Talaba daraja progressi
     path('topics/<int:topic_pk>/my-progress/', StudentLevelProgressView.as_view(), name='level_progress'),

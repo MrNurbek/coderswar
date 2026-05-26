@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PeerReview, Notification, ActivityLog
+from .models import PeerReview, Notification, ActivityLog, Message
 
 
 @admin.register(PeerReview)
@@ -37,3 +37,13 @@ class ActivityLogAdmin(admin.ModelAdmin):
     search_fields = ('user__username',)
     readonly_fields = ('created_at',)
     ordering      = ('-date', '-created_at')
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display   = ('sender', 'recipient', 'subject', 'msg_type', 'is_read', 'created_at')
+    list_filter    = ('msg_type', 'is_read')
+    search_fields  = ('sender__username', 'recipient__username', 'subject')
+    readonly_fields = ('created_at',)
+    list_editable  = ('is_read',)
+    raw_id_fields  = ('sender', 'recipient', 'related_topic', 'parent')

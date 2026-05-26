@@ -1,0 +1,54 @@
+# Claude Code (AI assistant local data)
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Django
+*.log
+*.pot
+*.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# Environment
+.env
+.env.production
+backend/.env
+backend/.env.production
+
+# Docker — SSL sertifikatlar (kalit fayllar gitda bo'lmasligi kerak)
+backend/nginx/ssl/*.pem
+backend/nginx/ssl/*.crt
+backend/nginx/ssl/*.key
+!backend/nginx/ssl/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Node (agar frontend qo'shilsa)
+node_modules/
