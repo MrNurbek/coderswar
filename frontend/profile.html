@@ -125,7 +125,7 @@
   </style>
 </head>
 <body>
-<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/profile.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<div id="page-bg" style="position:fixed;inset:0;background:url('/static/frontend/img/profile.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
 <aside class="sidebar">
   <div class="sb-logo"><a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
   <nav class="sb-nav">
@@ -254,14 +254,14 @@ const CHAR_DATA = {
   ladyknight: {avatar:'<i class="ra ra-crown"></i>', name:'Ayol Ritsar',   en:'Lady Knight',weapons:['<i class="ra ra-sword"></i> Qilich','<i class="ra ra-shield"></i> Qalqon','<i class="ra ra-castle-emblem"></i> Zirh','💍 Uzuk']},
 };
 const LEVEL_META = {
-  recruit: {icon:'<img src="static/img/rank-recruit.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Recruit'},
-  warden:  {icon:'<img src="static/img/rank-warden.png"  style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Warden'},
-  knight:  {icon:'<img src="static/img/rank-knight.png"  style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Knight'},
-  hero:    {icon:'<img src="static/img/rank-hero.png"    style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Hero'},
-  legend:  {icon:'<img src="static/img/rank-legend.png"  style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Legend'},
-  lord:    {icon:'<img src="static/img/rank-lord.png"    style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Lord'},
-  deity:   {icon:'<img src="static/img/rank-deity.png"   style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Imperator'},
-  titan:   {icon:'<img src="static/img/rank-titan.png"   style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Titan'},
+  recruit: {icon:'<img src="/static/frontend/img/rank-recruit.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Recruit'},
+  warden:  {icon:'<img src="/static/frontend/img/rank-warden.png"  style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Warden'},
+  knight:  {icon:'<img src="/static/frontend/img/rank-knight.png"  style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Knight'},
+  hero:    {icon:'<img src="/static/frontend/img/rank-hero.png"    style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Hero'},
+  legend:  {icon:'<img src="/static/frontend/img/rank-legend.png"  style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Legend'},
+  lord:    {icon:'<img src="/static/frontend/img/rank-lord.png"    style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Lord'},
+  deity:   {icon:'<img src="/static/frontend/img/rank-deity.png"   style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Imperator'},
+  titan:   {icon:'<img src="/static/frontend/img/rank-titan.png"   style="width:18px;height:18px;object-fit:contain;vertical-align:middle">', name:'Titan'},
 };
 function _relDate(iso) {
   if (!iso) return '';
@@ -294,10 +294,10 @@ async function initProfile() {
 
     // phChar — tanlangan personaj avatari
     const ch = CHAR_DATA[sp.character] || CHAR_DATA.warrior;
-    document.getElementById('phChar').textContent = ch.avatar;
+    document.getElementById('phChar').innerHTML = ch.avatar;
 
     // Personaj nomi + qurollar bloki
-    document.getElementById('phCharAva').textContent   = ch.avatar;
+    document.getElementById('phCharAva').innerHTML   = ch.avatar;
     document.getElementById('phCharName').textContent  = `${ch.name} · ${ch.en}`;
     document.getElementById('phCharWeapons').innerHTML =
       ch.weapons.map(w => `<span class="w-chip">${w}</span>`).join('');

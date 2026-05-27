@@ -756,14 +756,19 @@
         .thread-subj{font-size:.95rem;font-weight:700;margin-bottom:.25rem}
         .thread-meta{display:flex;flex-wrap:wrap;gap:.4rem;font-size:.75rem;color:var(--muted)}
         .thread-body{flex:1;overflow-y:auto;padding:1rem 1.3rem;display:flex;flex-direction:column;gap:.9rem}
-        .bubble{display:flex;gap:.7rem}
+        .bubble{display:flex;gap:.7rem;margin-bottom:.2rem;align-items:flex-end}
+        .bubble.mine{flex-direction:row-reverse}
         .bub-ava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#43e97b,#38f9d7);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
-        .bub-body{flex:1;min-width:0}
+        .bubble.mine .bub-ava{background:linear-gradient(135deg,#a78bfa,#6c63ff)}
+        .bub-body{max-width:72%;min-width:0}
+        .bubble.mine .bub-body{align-items:flex-end;display:flex;flex-direction:column}
         .bub-top{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.3rem}
+        .bubble.mine .bub-top{flex-direction:row-reverse}
         .bub-name{font-size:.82rem;font-weight:700}
         .bub-role{font-size:.68rem;color:var(--muted);background:rgba(255,255,255,0.06);padding:.05rem .35rem;border-radius:4px}
-        .bub-time{font-size:.68rem;color:var(--muted);margin-left:auto}
-        .bub-text{font-size:.84rem;line-height:1.65;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:.65rem .9rem}
+        .bub-time{font-size:.68rem;color:var(--muted)}
+        .bub-text{font-size:.84rem;line-height:1.65;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);border-radius:4px 14px 14px 14px;padding:.65rem .9rem;word-break:break-word}
+        .bubble.mine .bub-text{background:rgba(108,99,255,.28);border-color:rgba(108,99,255,.45);border-radius:14px 4px 14px 14px}
         .reply-area{padding:.9rem 1.3rem;border-top:1px solid var(--border)}
         .reply-ta{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.84rem;padding:.65rem .9rem;resize:none;outline:none;min-height:70px;transition:border-color .2s;line-height:1.55}
         .reply-ta:focus{border-color:var(--accent)}
@@ -1201,7 +1206,7 @@ function renderLineChart(students) {
   if (legend) legend.innerHTML='';
   top3.forEach((s,si) => {
     const rating = s.rating_score||0;
-    const pts = Array.from({length:weeks},(_,i)=>Math.max(0,rating-Math.round((weeks-1-i)*rating/weeks*0.15+Math.random()*30)));
+    const pts = Array.from({length:weeks},(_,i)=>Math.max(0,Math.round(rating*i/(weeks-1))));
     pts[pts.length-1]=rating;
     const maxR = Math.max(...top3.map(s=>s.rating_score||0),1);
     const line = pts.map((v,i)=>({x:pad.l+iW*i/(weeks-1),y:pad.t+iH*(1-v/maxR)}));
@@ -1376,7 +1381,7 @@ async function openTopicModal(id=null) {
   document.getElementById('topicModalDiff').value = 'easy';
   document.getElementById('topicModalStatus').textContent = '';
 
-  // ── Modullarni dinamik to'ldirish (ALL_MODULES API dan) ──
+  // ── Modullarni dinamik to'ldirish ──
   const modSel = document.getElementById('topicModalModule');
   if (!ALL_MODULES.length) await loadAllModules();
 
@@ -1387,8 +1392,27 @@ async function openTopicModal(id=null) {
         `<option value="${m.id}" ${m.number === _curModule ? 'selected' : ''}>` +
         `${m.number}-Semestr</option>`
       ).join('');
+  } else if (ALL_TOPICS.length) {
+    // Modullar API si ishlamasa — mavjud topiclardan modul ro'yxatini chiqaramiz
+    const modMap = {};
+    ALL_TOPICS.forEach(t => {
+      const mid = t.module;
+      const mnum = Number(t.module_number || t.module_num || 0);
+      if (mid && mnum && !modMap[mid]) modMap[mid] = mnum;
+    });
+    const derived = Object.entries(modMap)
+      .map(([id, num]) => ({id, number: num}))
+      .sort((a, b) => a.number - b.number);
+    if (derived.length) {
+      modSel.innerHTML = derived.map(m =>
+        `<option value="${m.id}" ${m.number === _curModule ? 'selected' : ''}>` +
+        `${m.number}-Semestr</option>`
+      ).join('');
+      ALL_MODULES = derived; // keyingi ochilishlarda qayta hisoblashdan qochish
+    } else {
+      modSel.innerHTML = '<option value="">Modullar topilmadi</option>';
+    }
   } else {
-    // API dan modullar kelmasa — foydalanuvchiga xabar beramiz
     modSel.innerHTML = '<option value="">Modullar yuklanmadi</option>';
   }
 
@@ -2400,14 +2424,17 @@ function tRenderThread(data) {
   const body = document.getElementById('tThreadBody');
   body.innerHTML = '';
   const roleMap = {student:'Talaba',teacher:"O'qituvchi",admin:'Admin',superadmin:'Superadmin'};
-  [data, ...(data.replies||[])].forEach(msg => {
+  const msgs = [data, ...(data.replies||[])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  msgs.forEach(msg => {
+    const isMine = tMyId && msg.sender?.id === tMyId;
     const ini = tInitials(msg.sender?.full_name||'?');
-    const b = document.createElement('div'); b.className = 'bubble';
+    const b = document.createElement('div');
+    b.className = 'bubble' + (isMine ? ' mine' : '');
     b.innerHTML = `
       <div class="bub-ava">${ini}</div>
       <div class="bub-body">
         <div class="bub-top">
-          <span class="bub-name">${tEsc(msg.sender?.full_name||'—')}</span>
+          ${!isMine ? `<span class="bub-name">${tEsc(msg.sender?.full_name||'—')}</span>` : ''}
           <span class="bub-role">${roleMap[msg.sender?.role]||''}</span>
           <span class="bub-time">${tFmtDate(msg.created_at)}</span>
         </div>

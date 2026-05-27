@@ -194,6 +194,12 @@
     .detail-leader-info .role{font-size:.75rem;color:var(--gold)}
     .join-confirm-text{font-size:.88rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.6;padding:.9rem;background:rgba(108,99,255,0.07);border-radius:10px;border-left:3px solid var(--accent)}
 
+    /* ── SEMESTER LOCK BANNER ── */
+    .sem-lock-banner{background:linear-gradient(135deg,rgba(255,101,132,.1),rgba(255,215,0,.06));border:1px solid rgba(255,101,132,.3);border-radius:20px;padding:1.4rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.2rem}
+    .sem-lock-icon{font-size:2.2rem;flex-shrink:0}
+    .sem-lock-info h4{font-size:.95rem;font-weight:700;margin-bottom:.25rem;color:#ff6584}
+    .sem-lock-info p{font-size:.82rem;color:var(--muted);line-height:1.6}
+
     /* ── TOAST ── */
     #toast{position:fixed;bottom:2rem;right:2rem;z-index:300;display:flex;flex-direction:column;gap:.6rem}
     .toast-item{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:.8rem 1.2rem;font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideIn .3s ease;min-width:240px}
@@ -225,7 +231,7 @@
   </style>
 </head>
 <body>
-<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/dashboard.png') center/cover no-repeat;opacity:.28;z-index:-1;pointer-events:none;"></div>
+<div id="page-bg" style="position:fixed;inset:0;background:url('/static/frontend/img/dashboard.png') center/cover no-repeat;opacity:.28;z-index:-1;pointer-events:none;"></div>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 <button class="mob-toggle" onclick="toggleSidebar()"><i class="ra ra-plain-dagger"></i></button>
 
@@ -314,6 +320,16 @@
         <button class="btn btn-outline" onclick="document.getElementById('searchInput').focus()">
           <i class="ra ra-compass"></i> Klanlarga ko'z tashlash
         </button>
+      </div>
+    </div>
+
+    <!-- ── SEMESTER LOCK BANNER (year 1 only) ── -->
+    <div class="sem-lock-banner" id="semLockBanner" style="display:none">
+      <div class="sem-lock-icon">🔒</div>
+      <div class="sem-lock-info">
+        <h4>Klan tizimi — 2-kursdan boshlanadi</h4>
+        <p>Klanlarga qo'shilish va klan yaratish imkoniyati faqat 2-kurs va undan yuqori
+           talabalar uchun mavjud. Hozircha klanlar reytingini ko'rishingiz mumkin.</p>
       </div>
     </div>
 
@@ -464,6 +480,11 @@
       Siz allaqachon boshqa klanga a'zosiz. Boshqa klanga qo'shilish uchun avval joriy klangizdan chiqing.
     </div>
 
+    <!-- Year-1 lock message -->
+    <div class="join-confirm-text" id="detailLockMsg" style="display:none;border-left-color:#ff6584;color:var(--muted)">
+      🔒 Klanlarga qo'shilish imkoniyati faqat 2-kurs va undan yuqori talabalar uchun. Birinchi kursni muvaffaqiyatli tugatganingizdan so'ng klan tizimiga kirish ochiladi.
+    </div>
+
     <!-- Actions -->
     <div class="form-actions" style="padding-top:0;border-top:none">
       <button class="btn btn-outline" onclick="closeModal('modalDetail')">Yopish</button>
@@ -495,32 +516,43 @@ const EMBLEMS = [
   '🧩','🛸','🗡️','⚗️','🦄','🐲','🔱','🌋','🏔️','🧲',
 ];
 
-let allClans    = [];
+let allClans      = [];
 let filteredClans = [];
-let userClanId  = null;
-let selectedClanId = null;
-let selectedEmblem = '🏰';
-let currentSort = 'rating';
-let searchQ     = '';
+let userClanId    = null;
+let userGroupYear = null;
+let selectedClanId= null;
+let selectedEmblem= '🏰';
+let currentSort   = 'rating';
+let searchQ       = '';
 
 /* ── INIT ── */
 Auth.requireLogin();
 Auth.fillUserUI();
 
+// Semester from cached user profile
+const _meClLb = Auth.getUser();
+userGroupYear = _meClLb?.student_profile?.group_year ?? null;
+
 async function init() {
   try {
-    // Parallel: leaderboard + me (for clan membership context)
     const [lb] = await Promise.all([
       api.clanLeaderboard().catch(() => []),
     ]);
     allClans = Array.isArray(lb) ? lb : (lb?.results || []);
 
-    // Find user's current clan from my_role field
     const myClan = allClans.find(c => c.my_role !== null);
     userClanId = myClan?.id || null;
 
     renderBanner(myClan);
     applyFilter();
+
+    // Auto-open create modal if redirected from clan.html offer
+    if (userGroupYear !== 1 && !userClanId) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('create') === '1') {
+        setTimeout(() => openCreateModal(), 400);
+      }
+    }
 
   } catch(e) {
     toast('Ma\'lumot yuklashda xato: ' + e.message, 'error');
@@ -539,14 +571,17 @@ async function reload() {
 
 /* ── BANNER ── */
 function renderBanner(myClan) {
-  const inc  = document.getElementById('bannerInClan');
-  const noc  = document.getElementById('bannerNoClan');
-  const cBtn = document.getElementById('btnCreate');
+  const inc      = document.getElementById('bannerInClan');
+  const noc      = document.getElementById('bannerNoClan');
+  const cBtn     = document.getElementById('btnCreate');
+  const lockBnr  = document.getElementById('semLockBanner');
+  const isYear1  = userGroupYear === 1;
 
   if (myClan) {
-    inc.style.display = 'flex';
-    noc.style.display = 'none';
+    inc.style.display  = 'flex';
+    noc.style.display  = 'none';
     cBtn.style.display = 'none';
+    if(lockBnr) lockBnr.style.display = 'none';
 
     document.getElementById('bannerEmblem').textContent  = myClan.emblem || '🏰';
     document.getElementById('bannerName').textContent    = myClan.name;
@@ -555,15 +590,30 @@ function renderBanner(myClan) {
     document.getElementById('bannerLeader').textContent  =
       myClan.leader?.full_name || myClan.leader?.username || '—';
 
-    const roleEl = document.getElementById('bannerRole');
+    const roleEl  = document.getElementById('bannerRole');
     const roleMap = { leader: 'Lider', officer: 'Ofitser', member: 'A\'zo' };
     const roleCls = { leader: 'role-leader', officer: 'role-officer', member: 'role-member' };
-    roleEl.textContent  = roleMap[myClan.my_role] || 'A\'zo';
-    roleEl.className    = 'banner-role ' + (roleCls[myClan.my_role] || 'role-member');
+    roleEl.textContent = roleMap[myClan.my_role] || 'A\'zo';
+    roleEl.className   = 'banner-role ' + (roleCls[myClan.my_role] || 'role-member');
+  } else if (isYear1) {
+    inc.style.display  = 'none';
+    noc.style.display  = 'none';
+    cBtn.style.display = 'none';
+    if(lockBnr) lockBnr.style.display = 'flex';
   } else {
-    inc.style.display = 'none';
-    noc.style.display = 'flex';
+    inc.style.display  = 'none';
+    noc.style.display  = 'flex';
     cBtn.style.display = '';
+    if(lockBnr) lockBnr.style.display = 'none';
+    // Update no-clan banner button text to "Ariza topshirish" (browse and apply)
+    const nocBtns = document.querySelector('.banner-noclan-btns');
+    if (nocBtns) nocBtns.innerHTML = `
+      <button class="btn btn-primary" onclick="openCreateModal()">
+        <i class="ra ra-castle-emblem"></i> Yangi klan yaratish
+      </button>
+      <button class="btn btn-outline" onclick="document.getElementById('searchInput').focus()">
+        <i class="ra ra-compass"></i> Klanlarga ariza topshirish
+      </button>`;
   }
 }
 
@@ -656,9 +706,9 @@ function renderTable(list) {
       actionBtn = `<a href="clan.html" class="btn btn-sm btn-primary" onclick="event.stopPropagation()">
         <i class="ra ra-castle-emblem"></i> Klanim
       </a>`;
-    } else if (!inAClan) {
-      actionBtn = `<button class="btn btn-sm btn-green" onclick="event.stopPropagation();quickJoin(${clan.id},'${escHtml(clan.name)}')">
-        <i class="ra ra-player-teleport"></i> Qo'shilish
+    } else if (!inAClan && userGroupYear !== 1) {
+      actionBtn = `<button class="btn btn-sm btn-green" onclick="event.stopPropagation();openDetailModal(${clan.id})">
+        <i class="ra ra-scroll-unfurled"></i> Ariza
       </button>`;
     } else {
       actionBtn = `<button class="btn btn-sm btn-outline" onclick="event.stopPropagation();openDetailModal(${clan.id})">
@@ -754,34 +804,49 @@ function openDetailModal(clanId) {
 
   const isMe    = clan.my_role !== null;
   const inAClan = userClanId !== null;
+  const canApply= !isMe && !inAClan && userGroupYear !== 1;
+  const isYear1 = userGroupYear === 1;
 
-  // Show/hide buttons and messages
-  document.getElementById('detailMyClanBtn').style.display  = isMe ? '' : 'none';
-  document.getElementById('detailJoinBtn').style.display    = (!isMe && !inAClan) ? '' : 'none';
-  document.getElementById('detailJoinText').style.display   = (!isMe && !inAClan) ? '' : 'none';
+  document.getElementById('detailMyClanBtn').style.display   = isMe ? '' : 'none';
+  document.getElementById('detailJoinBtn').style.display     = canApply ? '' : 'none';
+  document.getElementById('detailJoinText').style.display    = canApply ? '' : 'none';
   document.getElementById('detailAlreadyText').style.display = (!isMe && inAClan) ? '' : 'none';
+
+  // Update join button label to "Ariza topshirish"
+  const joinBtn = document.getElementById('detailJoinBtn');
+  if (joinBtn) {
+    joinBtn.innerHTML = '<i class="ra ra-scroll-unfurled"></i> Ariza topshirish';
+    joinBtn.onclick   = confirmApply;
+  }
+  // Show year-1 lock message
+  const lockMsgEl = document.getElementById('detailLockMsg');
+  if (lockMsgEl) lockMsgEl.style.display = (isYear1 && !isMe) ? '' : 'none';
+
+  // Update modal join text for apply flow
+  const joinTextEl = document.getElementById('detailJoinText');
+  if (joinTextEl && canApply) {
+    joinTextEl.textContent = 'Ushbu klanga a\'zolik arizasi topshirasizmi? Klan lideri arizangizni ko\'rib chiqib, qabul qiladi yoki rad etadi.';
+  }
 
   openModal('modalDetail');
 }
 
-async function confirmJoin() {
+async function confirmApply() {
   if (!selectedClanId) return;
   const clan = allClans.find(c => c.id === selectedClanId);
   const btn  = document.getElementById('detailJoinBtn');
 
-  btn.disabled   = true;
-  btn.innerHTML  = '<i class="ra ra-hourglass"></i> Qo\'shilmoqda…';
+  btn.disabled  = true;
+  btn.innerHTML = '<i class="ra ra-hourglass"></i> Yuborilmoqda…';
 
   try {
-    await api.joinClan(selectedClanId);
-    toast(`🎉 ${clan?.name || 'Klan'}ga muvaffaqiyatli qo\'shildingiz!`, 'success');
+    await api.applyClan(selectedClanId);
+    toast(`📋 "${clan?.name || 'Klan'}"ga ariza topshirildi! Lider ko\'rib chiqadi.`, 'success');
     closeModal('modalDetail');
-    // Reload to reflect new membership
-    setTimeout(reload, 800);
   } catch(e) {
     toast(e.message || 'Xato yuz berdi', 'error');
     btn.disabled  = false;
-    btn.innerHTML = '<i class="ra ra-player-teleport"></i> Klanga qo\'shilish';
+    btn.innerHTML = '<i class="ra ra-scroll-unfurled"></i> Ariza topshirish';
   }
 }
 

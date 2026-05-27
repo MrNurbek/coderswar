@@ -59,6 +59,8 @@
     .stat-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
     .stat-box:hover{border-color:var(--accent);transform:translateY(-2px)}
     .stat-box .stat-bg{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.08;pointer-events:none}
+    .stat-level-bg{position:absolute;right:-6px;bottom:-6px;width:96px;height:96px;object-fit:contain;opacity:.22;pointer-events:none;transition:opacity .3s;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
+    .stat-box:hover .stat-level-bg{opacity:.38}
     .stat-box .label{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.4rem}
     .stat-box .value{font-size:1.6rem;font-weight:900;line-height:1;margin-bottom:.2rem}
     .stat-box .sub{font-size:.75rem;color:var(--muted)}
@@ -173,7 +175,7 @@
   </style>
 </head>
 <body>
-<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/trajectory.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<div id="page-bg" style="position:fixed;inset:0;background:url('/static/frontend/img/trajectory.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -248,13 +250,15 @@
         <div class="sub" id="stTopicsPct">0% bajarildi</div>
         <div class="trend-up" id="stStreak"><i class="ra ra-fire"></i> — kun streak</div>
       </div>
-      <div class="stat-box" ><i class="ra ra-fire stat-bg" aria-hidden="true"></i>
+      <div class="stat-box" >
+        <img class="stat-level-bg" id="stLevelIcon" src="" alt="" aria-hidden="true" style="display:none">
         <div class="label">Joriy daraja</div>
         <div class="value" id="stLevel" style="color:#ff6584">—</div>
         <div class="sub" id="stLevelRange">—</div>
         <div class="trend-up" id="stLevelNext">—</div>
       </div>
-      <div class="stat-box" ><i class="ra ra-archery-target stat-bg" aria-hidden="true"></i>
+      <div class="stat-box" >
+        <img class="stat-level-bg" id="predLevelIcon" src="" alt="" aria-hidden="true" style="display:none">
         <div class="label">Prognoz: Yakuniy</div>
         <div class="value" id="predLevelStat" style="color:#60a5fa">—</div>
         <div class="sub">Semestr oxirida</div>
@@ -459,8 +463,10 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><span class="card-title">🕐 Eng faol vaqt</span></div>
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem" id="activeTimeGrid"></div>
+            <div class="card-header"><span class="card-title">📅 Haftalik faollik</span></div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem" id="activeTimeGrid">
+              <div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--muted);font-size:.82rem"><i class="ra ra-hourglass"></i> Yuklanmoqda…</div>
+            </div>
           </div>
         </div>
       </div>
@@ -546,32 +552,47 @@
 <script>
 if (!Auth.requireAuth()) throw 0;
 
-// ── Eng faol vaqt grid (static visual, no API) ────────────────
-(function(){
-  const g=document.getElementById('activeTimeGrid');
-  if(!g)return;
-  g.innerHTML=[['Ertalab','06-09','☀️',30],["Kun o'rtasi",'12-15','🌤️',55],['Kechqurun','18-21','🌙',85],['Tun','21-00','⭐',45]]
-    .map(([l,t,e,p])=>`<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:.6rem;text-align:center">
-      <div style="font-size:1.2rem;margin-bottom:.2rem">${e}</div>
-      <div style="font-size:.7rem;font-weight:600">${l}</div>
-      <div style="font-size:.68rem;color:var(--muted)">${t}</div>
-      <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;margin:.4rem 0">
-        <div style="width:20px;background:linear-gradient(0deg,#6c63ff,#a78bfa);border-radius:3px 3px 0 0;height:${p}%"></div>
+// ── Haftalik faollik grid (real data from heatmap) ────────────
+function renderActiveTimeGrid(heatmapData) {
+  const g = document.getElementById('activeTimeGrid');
+  if (!g) return;
+  const keys = Object.keys(heatmapData || {});
+  if (!keys.length) {
+    g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--muted);font-size:.82rem">Hali faollik ma\'lumoti yo\'q</div>';
+    return;
+  }
+  const DAY_NAMES = ['Yak','Du','Se','Ch','Pa','Ju','Sh'];
+  const DAY_EMOJI = ['🌟','💪','⚡','🔥','🎯','🚀','🌙'];
+  const counts = new Array(7).fill(0);
+  keys.forEach(dateStr => {
+    const dow = new Date(dateStr).getDay(); // 0=Sunday
+    counts[dow] += heatmapData[dateStr] || 0;
+  });
+  const maxC = Math.max(1, ...counts);
+  g.innerHTML = counts.map((c, i) => {
+    const pct = Math.round(c / maxC * 100);
+    const isTop = c === Math.max(...counts) && c > 0;
+    return `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:.5rem .3rem;text-align:center${isTop ? ';border:1px solid rgba(108,99,255,0.3)' : ''}">
+      <div style="font-size:1rem;margin-bottom:.15rem">${DAY_EMOJI[i]}</div>
+      <div style="font-size:.65rem;font-weight:700">${DAY_NAMES[i]}</div>
+      <div style="height:36px;display:flex;align-items:flex-end;justify-content:center;margin:.3rem 0">
+        <div style="width:16px;background:${isTop ? 'linear-gradient(0deg,#ffd700,#ff8c00)' : 'linear-gradient(0deg,#6c63ff,#a78bfa)'};border-radius:3px 3px 0 0;height:${Math.max(4,pct)}%"></div>
       </div>
-      <div style="font-size:.72rem;color:#a78bfa;font-weight:700">${p}%</div>
-    </div>`).join('');
-})();
+      <div style="font-size:.65rem;color:${isTop ? '#ffd700' : '#a78bfa'};font-weight:700">${c}</div>
+    </div>`;
+  }).join('');
+}
 
 // ── Level metadata ─────────────────────────────────────────────
 const LV_META = {
-  recruit: {icon:'<img src="static/img/rank-recruit.png" style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Recruit',   range:'0–300',    next:300},
-  warden:  {icon:'<img src="static/img/rank-warden.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Warden',    range:'301–750',   next:750},
-  knight:  {icon:'<img src="static/img/rank-knight.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Knight',    range:'751–1300',  next:1300},
-  hero:    {icon:'<img src="static/img/rank-hero.png"    style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Hero',      range:'1301–1900', next:1900},
-  legend:  {icon:'<img src="static/img/rank-legend.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Legend',    range:'1901–2600', next:2600},
-  lord:    {icon:'<img src="static/img/rank-lord.png"    style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Lord',      range:'2601–3350', next:3350},
-  deity:   {icon:'<img src="static/img/rank-deity.png"   style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Imperator', range:'3351–4050', next:4050},
-  titan:   {icon:'<img src="static/img/rank-titan.png"   style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Titan',     range:'4051–4500', next:4500},
+  recruit: {icon:'<img src="/static/frontend/img/rank-recruit.png" style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Recruit',   range:'0–300',    next:300},
+  warden:  {icon:'<img src="/static/frontend/img/rank-warden.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Warden',    range:'301–750',   next:750},
+  knight:  {icon:'<img src="/static/frontend/img/rank-knight.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Knight',    range:'751–1300',  next:1300},
+  hero:    {icon:'<img src="/static/frontend/img/rank-hero.png"    style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Hero',      range:'1301–1900', next:1900},
+  legend:  {icon:'<img src="/static/frontend/img/rank-legend.png"  style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Legend',    range:'1901–2600', next:2600},
+  lord:    {icon:'<img src="/static/frontend/img/rank-lord.png"    style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Lord',      range:'2601–3350', next:3350},
+  deity:   {icon:'<img src="/static/frontend/img/rank-deity.png"   style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Imperator', range:'3351–4050', next:4050},
+  titan:   {icon:'<img src="/static/frontend/img/rank-titan.png"   style="width:20px;height:20px;object-fit:contain;vertical-align:middle">', name:'Titan',     range:'4051–4500', next:4500},
 };
 
 async function initTraj() {
@@ -596,6 +617,8 @@ async function initTraj() {
     document.getElementById('stLevel').innerHTML         = `${lv.icon} ${lv.name}`;
     document.getElementById('stLevelRange').textContent  = lv.range + ' oralig\'i';
     document.getElementById('stLevelNext').textContent   = toNext > 0 ? `${toNext} ball keyingisiga` : '🎉 Maksimal!';
+    const _lvIconEl = document.getElementById('stLevelIcon');
+    if (_lvIconEl) { _lvIconEl.src = `/static/frontend/img/rank-${lvKey}.png`; _lvIconEl.style.display = ''; }
 
     // ── Activity tab stats (from API) ──────────────────────────
     const elId = id => document.getElementById(id);
@@ -631,6 +654,8 @@ async function initTraj() {
     if(pe('predAcademic'))   pe('predAcademic').textContent   = curAcad > 0 ? `${Math.min(100,Math.round(curAcad*1.04))}–${Math.min(100,Math.round(curAcad*1.10))}` : '—';
     if(pe('predLevelStat'))  pe('predLevelStat').innerHTML    = `${predLvMeta.icon} ${predLvMeta.name}`;
     if(pe('predRatingStat')) pe('predRatingStat').textContent = `${predLow}–${predHigh} prognoz`;
+    const _predLvIconEl = pe('predLevelIcon');
+    if (_predLvIconEl) { _predLvIconEl.src = `/static/frontend/img/rank-${predLvKey}.png`; _predLvIconEl.style.display = ''; }
     const optVal  = Math.min(4500, rating + Math.round(weeklyRate * weeksLeft * 1.2));
     const pessVal = rating + Math.round(weeklyRate * weeksLeft * 0.3);
     if(pe('predOptText'))    pe('predOptText').innerHTML    = `Yakuniy: ${optVal}+ ball → <strong>${LV_META[getLvKey(optVal)]?.name||''}</strong> darajasiga yetish`;
@@ -640,6 +665,7 @@ async function initTraj() {
     drawForecastChart(rating);
     drawHeatmap(streakData?.activity_heatmap || {});
     drawWeeklyChart(streakData?.activity_heatmap || {});
+    renderActiveTimeGrid(streakData?.activity_heatmap || {});
 
     // Update topic table data if available
     if (Array.isArray(scores) && scores.length) {
@@ -691,7 +717,7 @@ async function initTraj() {
               ${i<LEVEL_ORDER2.length-1?'<div class="lt-line"></div>':''}
             </div>
             <div class="lt-content">
-              <div class="lt-level"><img src="static/img/rank-${key}.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px">${LEVEL_NAMES2[key]}</div>
+              <div class="lt-level"><img src="/static/frontend/img/rank-${key}.png" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px">${LEVEL_NAMES2[key]}</div>
               <div class="lt-range">${LEVEL_RANGES2[key]} ball</div>
               <span class="lt-status ${st==='done'?'st-done':st==='current'?'st-curr':'st-fut'}">${st==='done'?'✓ Tugallandi':st==='current'?'● Hozir siz bunda':'◯ Kelajak'}</span>
             </div>

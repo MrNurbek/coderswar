@@ -104,7 +104,7 @@
   </style>
 </head>
 <body>
-<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/leaderboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<div id="page-bg" style="position:fixed;inset:0;background:url('/static/frontend/img/leaderboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
 <aside class="sidebar">
   <div class="sb-logo"><a href="index.html"><i class="ra ra-crossed-swords" style="margin-right:.35rem"></i>Coders War</a><div class="sub">Algoritmik tillar va dasturlash</div></div>
   <nav class="sb-nav">
@@ -134,9 +134,9 @@
 
 <div class="main">
   <div class="topbar">
-    <div><h2><i class="ra ra-trophy"></i> Global Reyting</h2><div class="bc">Dashboard › Reyting · 248 talaba</div></div>
+    <div><h2><i class="ra ra-trophy"></i> Global Reyting</h2><div class="bc" id="topbarBc">Dashboard › Reyting · <span id="totalStudentsLabel">yuklanmoqda...</span></div></div>
     <div style="display:flex;align-items:center;gap:.8rem">
-      <div style="font-size:.82rem;color:var(--muted)">Yangilandi: 2 daqiqa avval</div>
+      <div style="font-size:.82rem;color:var(--muted)" id="lastUpdatedLabel">Yuklanmoqda...</div>
     </div>
   </div>
 
@@ -199,14 +199,14 @@ if (!Auth.requireAuth()) throw 0;
 const LEVEL_NAMES  = ['Recruit','Warden','Knight','Hero','Legend','Lord','Deity','Titan'];
 const LEVEL_COLORS = ['#94a3b8','#43e97b','#4299e1','#a78bfa','#ffa500','#ff6584','#f07167','#ffd700'];
 const LEVEL_ICONS  = [
-  '<img src="static/img/rank-recruit.png" style="width:32px;height:32px;object-fit:contain">',
-  '<img src="static/img/rank-warden.png"  style="width:32px;height:32px;object-fit:contain">',
-  '<img src="static/img/rank-knight.png"  style="width:32px;height:32px;object-fit:contain">',
-  '<img src="static/img/rank-hero.png"    style="width:32px;height:32px;object-fit:contain">',
-  '<img src="static/img/rank-legend.png"  style="width:32px;height:32px;object-fit:contain">',
-  '<img src="static/img/rank-lord.png"    style="width:32px;height:32px;object-fit:contain">',
-  '<img src="static/img/rank-deity.png"   style="width:32px;height:32px;object-fit:contain">',
-  '<img src="static/img/rank-titan.png"   style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-recruit.png" style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-warden.png"  style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-knight.png"  style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-hero.png"    style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-legend.png"  style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-lord.png"    style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-deity.png"   style="width:32px;height:32px;object-fit:contain">',
+  '<img src="/static/frontend/img/rank-titan.png"   style="width:32px;height:32px;object-fit:contain">',
 ];
 
 let allData = [];
@@ -323,8 +323,12 @@ async function initLeaderboard() {
     renderPodium(allData);
     renderTable(allData.slice(0, 30));
 
-    // Update topbar count
-    document.querySelector('.bc').textContent = `Dashboard › Reyting · ${allData.length} talaba`;
+    // Update topbar count (use total_count from API if available, else loaded count)
+    const totalCount = res?.total_count ?? allData.length;
+    document.getElementById('totalStudentsLabel').textContent = `${totalCount} talaba`;
+    const now = new Date();
+    document.getElementById('lastUpdatedLabel').textContent =
+      'Yangilandi: ' + now.toLocaleTimeString('uz-UZ', {hour:'2-digit', minute:'2-digit'});
   } catch(e) {
     document.getElementById('lbBody').innerHTML = `<div style="text-align:center;padding:2rem;color:#ff8fab">❌ Yuklab bo'lmadi: ${e.message}</div>`;
   }

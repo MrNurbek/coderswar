@@ -552,7 +552,7 @@ function renderThread(data) {
   const body = document.getElementById('threadBody');
   body.innerHTML = '';
 
-  [data, ...(data.replies || [])].forEach(msg => {
+  [data, ...(data.replies || [])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)).forEach(msg => {
     const isMe = msg.sender?.id === me?.id;
     const bubble = document.createElement('div');
     bubble.className = isMe ? 'msg-bubble own' : 'msg-bubble';

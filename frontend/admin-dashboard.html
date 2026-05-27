@@ -668,14 +668,19 @@
         .ath-subj{font-size:.9rem;font-weight:700;margin-bottom:.2rem}
         .ath-meta{display:flex;flex-wrap:wrap;gap:.35rem;font-size:.72rem;color:#8892b0}
         .ath-body{flex:1;overflow-y:auto;padding:.9rem 1.2rem;display:flex;flex-direction:column;gap:.8rem}
-        .abub{display:flex;gap:.6rem}
-        .abub-ava{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
-        .abub-body{flex:1;min-width:0}
-        .abub-top{display:flex;align-items:baseline;gap:.45rem;margin-bottom:.25rem}
-        .abub-name{font-size:.8rem;font-weight:700}
-        .abub-role{font-size:.65rem;color:#8892b0;background:rgba(255,255,255,.06);padding:.04rem .32rem;border-radius:4px}
-        .abub-time{font-size:.65rem;color:#8892b0;margin-left:auto}
-        .abub-text{font-size:.82rem;line-height:1.6;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:.6rem .85rem}
+        .abub{display:flex;gap:.6rem;margin-bottom:.2rem;align-items:flex-end}
+        .abub.mine{flex-direction:row-reverse}
+        .abub-ava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ff6584);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0}
+        .abub.mine .abub-ava{background:linear-gradient(135deg,#a78bfa,#6c63ff)}
+        .abub-body{max-width:72%;min-width:0}
+        .abub.mine .abub-body{align-items:flex-end;display:flex;flex-direction:column}
+        .abub-top{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.2rem}
+        .abub.mine .abub-top{flex-direction:row-reverse}
+        .abub-name{font-size:.75rem;font-weight:700}
+        .abub-role{font-size:.62rem;color:#8892b0;background:rgba(255,255,255,.06);padding:.02rem .28rem;border-radius:4px}
+        .abub-time{font-size:.62rem;color:#8892b0}
+        .abub-text{font-size:.83rem;line-height:1.6;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:4px 14px 14px 14px;padding:.55rem .85rem;word-break:break-word}
+        .abub.mine .abub-text{background:rgba(108,99,255,.28);border-color:rgba(108,99,255,.45);border-radius:14px 4px 14px 14px}
         .arep-area{padding:.8rem 1.2rem;border-top:1px solid rgba(108,99,255,.15)}
         .arep-ta{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(108,99,255,.2);border-radius:9px;color:#e8eaf6;font-family:inherit;font-size:.82rem;padding:.6rem .85rem;resize:none;outline:none;min-height:65px;transition:border-color .2s;line-height:1.55}
         .arep-ta:focus{border-color:#6c63ff}
@@ -874,6 +879,22 @@
     <div class="form-group"><label class="form-label">Rol</label>
       <select id="addRole" class="form-input"><option value="student">Talaba</option><option value="teacher">O'qituvchi</option><option value="admin">Admin</option></select>
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="form-group">
+        <label class="form-label">Parol</label>
+        <div style="position:relative">
+          <input id="addPassword" class="form-input" type="password" placeholder="kamida 8 belgi" style="padding-right:2.4rem"/>
+          <button type="button" onclick="togglePass('addPassword',this)" style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#fff;font-size:1rem;line-height:1;opacity:.8">&#128065;</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Parolni tasdiqlang</label>
+        <div style="position:relative">
+          <input id="addPassword2" class="form-input" type="password" placeholder="qayta kiriting" style="padding-right:2.4rem"/>
+          <button type="button" onclick="togglePass('addPassword2',this)" style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#fff;font-size:1rem;line-height:1;opacity:.8">&#128065;</button>
+        </div>
+      </div>
+    </div>
     <div id="addUserError" style="color:#ff6584;font-size:.8rem;min-height:1.2rem;margin-bottom:.3rem"></div>
     <div style="display:flex;gap:.7rem;justify-content:flex-end;margin-top:.5rem">
       <button class="btn btn-outline" onclick="closeModal('addUserModal')">Bekor</button>
@@ -989,7 +1010,7 @@ function _renderUsersBody(users) {
     const sdLabel = isBlocked ? 'Bloklangan' : 'Faol';
     const rating = u.rating_score ?? u.rating ?? '—';
     const levelKey = (u.level || '').toLowerCase();
-    const level = u.level ? `<img src="static/img/rank-${levelKey}.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px">${capFirst(u.level)}` : '—';
+    const level = u.level ? `<img src="/static/frontend/img/rank-${levelKey}.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px">${capFirst(u.level)}` : '—';
     body.innerHTML += `<tr>
       <td style="color:var(--muted);font-size:.75rem">#${u.id}</td>
       <td><div class="user-info">
@@ -1295,14 +1316,14 @@ function renderTopStudents(top5) {
   const posEmoji = ['🥇','🥈','🥉','4️⃣','5️⃣'];
   tsEl.innerHTML = '';
   top5.forEach((s,i) => {
-    const name = s.full_name || s.username || 'Noma\'lum';
+    const name = s.user?.full_name || s.user?.username || s.full_name || s.username || 'Noma\'lum';
     const initials = name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
     tsEl.innerHTML += `<div style="display:flex;align-items:center;gap:.7rem;padding:.45rem 0">
       <span style="font-size:.9rem;width:20px">${posEmoji[i]||'🔹'}</span>
       <div class="av-sm" style="background:${gradFor(name)}">${initials}</div>
       <div style="flex:1">
         <div style="font-size:.83rem;font-weight:600">${name}</div>
-        <div style="font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:3px"><img src="static/img/rank-${(s.level||'recruit').toLowerCase()}.png" style="width:14px;height:14px;object-fit:contain"> ${capFirst(s.level||'recruit')}</div>
+        <div style="font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:3px"><img src="/static/frontend/img/rank-${(s.level||'recruit').toLowerCase()}.png" style="width:14px;height:14px;object-fit:contain"> ${capFirst(s.level||'recruit')}</div>
       </div>
       <span style="font-size:.83rem;font-weight:700;color:#a78bfa">${s.rating_score||0}</span>
     </div>`;
@@ -1316,9 +1337,11 @@ async function initOverview() {
     const lb = await api.leaderboard();
     const students = lb?.results || (Array.isArray(lb) ? lb : []);
 
-    const totalStudents = students.length;
-    const avgAcademic = totalStudents
-      ? (students.reduce((s,u)=>s+(u.academic_score||0),0)/totalStudents).toFixed(1)
+    // Use total_count from API (actual DB count), fallback to loaded count
+    const totalStudents = lb?.total_count ?? students.length;
+    // avgAcademic is calculated over loaded students only (up to 100)
+    const avgAcademic = students.length
+      ? (students.reduce((s,u)=>s+(u.academic_score||0),0)/students.length).toFixed(1)
       : '—';
     const sorted = [...students].sort((a,b)=>(b.rating_score||0)-(a.rating_score||0));
     const topRating = sorted[0]?.rating_score || '—';
@@ -1336,7 +1359,7 @@ async function initOverview() {
     const ss = document.getElementById('statStudents');
     if (ss) ss.textContent = totalStudents;
     const ssub = document.getElementById('statStudentsSub');
-    if (ssub) ssub.textContent = `Liderborddagi talabalar`;
+    if (ssub) ssub.textContent = `Ro'yxatdagi barcha talabalar`;
     const sa = document.getElementById('statAvgAcademic');
     if (sa) sa.textContent = avgAcademic;
     const satRisk = document.getElementById('statAtRisk');
@@ -1442,44 +1465,75 @@ function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')}));
 
 // ── CANVAS CHARTS ─────────────────────────────────────────────
-// Activity chart
-(function(){
+// Activity chart — real data from API
+function drawActivityChart(subs, users, labels) {
   const c=document.getElementById('activityChart');
   if(!c)return;
   const ctx=c.getContext('2d');
   c.width=c.offsetWidth*devicePixelRatio;c.height=c.offsetHeight*devicePixelRatio;
   ctx.scale(devicePixelRatio,devicePixelRatio);
   const W=c.offsetWidth/devicePixelRatio,H=c.offsetHeight/devicePixelRatio;
-  const subs=[820,1240,980,1560,1340,1890,2100,1780,2300,2050,2400,2200,2341];
-  const users=[45,68,52,84,72,95,110,88,120,102,115,108,87];
-  const labels=['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13'];
   const pad={l:50,r:20,t:20,b:30};
   const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
-  const maxS=2500,minS=0,maxU=130,minU=0;
-  // grid
+  const maxS=Math.max(10,...subs),maxU=Math.max(5,...users);
   ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
   for(let i=0;i<=4;i++){const y=pad.t+iH*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iW,y);ctx.stroke();}
-  // subs bars
   const bW=iW/labels.length*0.45;
   subs.forEach((v,i)=>{
-    const x=pad.l+(iW/(labels.length))*(i+0.1);
+    const x=pad.l+(iW/labels.length)*(i+0.1);
     const bH=iH*(v/maxS);
     const grad=ctx.createLinearGradient(0,pad.t+iH-bH,0,pad.t+iH);
     grad.addColorStop(0,'rgba(108,99,255,0.7)');grad.addColorStop(1,'rgba(108,99,255,0.15)');
     ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(x,pad.t+iH-bH,bW,bH,2);ctx.fill();
   });
-  // users line
-  const uPts=users.map((v,i)=>({x:pad.l+(iW/(labels.length))*(i+0.325),y:pad.t+iH*(1-(v-minU)/(maxU-minU))}));
+  const uPts=users.map((v,i)=>({x:pad.l+(iW/labels.length)*(i+0.325),y:pad.t+iH*(1-v/maxU)}));
   ctx.beginPath();ctx.strokeStyle='#43e97b';ctx.lineWidth=2;
   uPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
   uPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle='#43e97b';ctx.fill();});
-  // labels
   ctx.fillStyle='rgba(136,146,176,0.7)';ctx.font='10px Segoe UI';ctx.textAlign='center';
-  labels.forEach((l,i)=>ctx.fillText(l,pad.l+(iW/(labels.length))*(i+0.325),H-6));
-  // y axis
+  labels.forEach((l,i)=>ctx.fillText(l,pad.l+(iW/labels.length)*(i+0.325),H-6));
   ctx.textAlign='right';
   for(let i=0;i<=4;i++){ctx.fillText(Math.round(maxS*(1-i/4)),pad.l-5,pad.t+iH*i/4+4);}
-})();
+}
+
+async function initActivityChart() {
+  try {
+    const res = await api.get('/courses/submissions/?ordering=-submitted_at&page_size=200');
+    const submissions = res?.results || (Array.isArray(res) ? res : []);
+    // Build last 8 weeks buckets
+    const N = 8;
+    const now = new Date();
+    const bucketSubs  = new Array(N).fill(0);
+    const bucketUsers = Array.from({length:N}, () => new Set());
+    submissions.forEach(s => {
+      const d = new Date(s.submitted_at || s.created_at);
+      if (isNaN(d)) return;
+      const diffDays = Math.floor((now - d) / 86400000);
+      const wk = Math.floor(diffDays / 7);
+      if (wk >= 0 && wk < N) {
+        bucketSubs[N - 1 - wk]++;
+        if (s.user || s.student) bucketUsers[N - 1 - wk].add(s.user || s.student);
+      }
+    });
+    const labels = Array.from({length:N}, (_,i) => {
+      const d = new Date(now);
+      d.setDate(d.getDate() - (N - 1 - i) * 7);
+      return `${d.getDate()}/${d.getMonth()+1}`;
+    });
+    drawActivityChart(bucketSubs, bucketUsers.map(s => s.size), labels);
+  } catch(e) {
+    // Fallback: draw empty chart with zeros
+    const N = 8;
+    const now = new Date();
+    const labels = Array.from({length:N}, (_,i) => {
+      const d = new Date(now);
+      d.setDate(d.getDate() - (N - 1 - i) * 7);
+      return `${d.getDate()}/${d.getMonth()+1}`;
+    });
+    drawActivityChart(new Array(N).fill(0), new Array(N).fill(0), labels);
+  }
+}
+initActivityChart();
 
 // Pie chart is now drawn dynamically by drawPieChart() inside initOverview()
 
@@ -1795,7 +1849,7 @@ async function renderAnalytics() {
         const pct = Math.round(cnt/total*100);
         const col = levelColors[lv]||'#8892b0';
         ldEl.innerHTML += `<div style="display:flex;align-items:center;gap:.6rem;font-size:.8rem">
-          <img src="static/img/rank-${lv}.png" style="width:18px;height:18px;object-fit:contain">
+          <img src="/static/frontend/img/rank-${lv}.png" style="width:18px;height:18px;object-fit:contain">
           <span style="min-width:58px;font-weight:600;color:${col}">${capFirst(lv)}</span>
           <div style="flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden">
             <div style="width:${pct}%;height:100%;background:${col};border-radius:3px"></div>
@@ -1811,7 +1865,7 @@ async function renderAnalytics() {
       tbody.innerHTML = '';
       const posColors = ['#ffd700','#c0c0c0','#cd7f32'];
       sorted.slice(0,10).forEach((s,i) => {
-        const name = s.full_name || s.username || "Noma'lum";
+        const name = s.user?.full_name || s.user?.username || s.full_name || s.username || "Noma'lum";
         const inits = name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
         tbody.innerHTML += `<tr>
           <td style="font-weight:700;color:${posColors[i]||'var(--muted)'}">${i+1}</td>
@@ -1819,7 +1873,7 @@ async function renderAnalytics() {
             <div class="av-sm" style="background:${gradFor(name)}">${inits}</div>
             <div class="user-name">${name}</div>
           </div></td>
-          <td><img src="static/img/rank-${(s.level||'recruit').toLowerCase()}.png" style="width:16px;height:16px;vertical-align:middle;margin-right:3px">${capFirst(s.level||'recruit')}</td>
+          <td><img src="/static/frontend/img/rank-${(s.level||'recruit').toLowerCase()}.png" style="width:16px;height:16px;vertical-align:middle;margin-right:3px">${capFirst(s.level||'recruit')}</td>
           <td style="font-weight:700;color:#a78bfa">${s.rating_score||0}</td>
           <td style="font-weight:700;color:#60a5fa">${s.academic_score||0}</td>
         </tr>`;
@@ -1934,21 +1988,23 @@ async function renderStudents() {
       return;
     }
     students.forEach((s,i) => {
-      const name = s.full_name || s.username || "Noma'lum";
+      const u = s.user || s;
+      const name = u.full_name || u.username || "Noma'lum";
       const inits = name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
       const level = (s.level||'recruit').toLowerCase();
-      const isActive = s.is_active !== false;
+      const isActive = u.is_active !== false;
+      const uid = u.id || s.id;
       tbody.innerHTML += `<tr>
         <td style="font-weight:700;color:var(--muted)">${i+1}</td>
         <td><div class="user-info">
           <div class="av-sm" style="background:${gradFor(name)}">${inits}</div>
-          <div><div class="user-name">${name}</div><div class="user-meta">${s.email||s.username||'—'}</div></div>
+          <div><div class="user-name">${name}</div><div class="user-meta">${u.email||u.username||'—'}</div></div>
         </div></td>
-        <td><img src="static/img/rank-${level}.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px">${capFirst(level)}</td>
+        <td><img src="/static/frontend/img/rank-${level}.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px">${capFirst(level)}</td>
         <td style="font-weight:700;color:#a78bfa">${s.rating_score||0}</td>
         <td style="font-weight:700;color:#60a5fa">${s.academic_score||0}</td>
         <td><div class="action-btns">
-          <button class="action-btn danger" onclick="toggleBlock(${s.id},'${isActive?'active':'suspended'}',this)" title="${isActive?'Bloklash':'Blokdan chiqarish'}">
+          <button class="action-btn danger" onclick="toggleBlock(${uid},'${isActive?'active':'suspended'}',this)" title="${isActive?'Bloklash':'Blokdan chiqarish'}">
             ${isActive?'🚫':'✅'}
           </button>
         </div></td>
@@ -2015,28 +2071,35 @@ async function addUser() {
   const lastName  = document.getElementById('addLastName')?.value?.trim();
   const email     = document.getElementById('addEmail')?.value?.trim();
   const role      = document.getElementById('addRole')?.value;
+  const password  = document.getElementById('addPassword')?.value || '';
+  const password2 = document.getElementById('addPassword2')?.value || '';
   const errEl     = document.getElementById('addUserError');
+  if(errEl) errEl.textContent = '';
   if (!firstName || !email) { if(errEl) errEl.textContent = 'Ism va email majburiy'; return; }
   if (!/\S+@\S+\.\S+/.test(email)) { if(errEl) errEl.textContent = "Email noto'g'ri formatda"; return; }
+  if (password.length < 8) { if(errEl) errEl.textContent = "Parol kamida 8 belgi bo'lishi kerak"; return; }
+  if (password !== password2) { if(errEl) errEl.textContent = "Parollar mos kelmadi"; return; }
   const btn = document.getElementById('addUserBtn');
   if(btn){btn.disabled=true;btn.textContent="Qo'shilmoqda...";}
-  if(errEl) errEl.textContent = '';
   try {
     await api.post('/auth/register/', {
       first_name: firstName,
       last_name:  lastName||'',
       email,
       username: email.split('@')[0] + Math.floor(Math.random()*9000+1000),
-      password: 'TempPass123!',
+      password,
+      password2,
       role,
     });
     closeModal('addUserModal');
-    ['addFirstName','addLastName','addEmail'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    ['addFirstName','addLastName','addEmail','addPassword','addPassword2'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.value='';
+    });
     ALL_USERS=[];
     teachersLoaded=false;
     studentsLoaded=false;
     renderUsersTable(true);
-    alert("✅ Foydalanuvchi qo'shildi!\nVaqtinchalik parol: TempPass123!\nFoydalanuvchi birinchi kirishda o'zgartirishi kerak.");
+    alert("✅ Foydalanuvchi muvaffaqiyatli qo'shildi!");
   } catch(e) {
     if(errEl) errEl.textContent = e.message||'Xatolik yuz berdi';
   } finally {
@@ -2143,12 +2206,16 @@ function aRenderThread(data){
      ${data.topic_title?`<span style="color:#a78bfa">${aEsc(data.topic_title)}</span>`:''}`;
   const body=document.getElementById('aThreadBody');body.innerHTML='';
   const roleMap={student:'Talaba',teacher:"O'qituvchi",admin:'Admin',superadmin:'Superadmin'};
-  [data,...(data.replies||[])].forEach(msg=>{
-    const b=document.createElement('div');b.className='abub';
+  const meId = Auth.getUser()?.id;
+  const msgs = [data,...(data.replies||[])].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  msgs.forEach(msg=>{
+    const isMine = meId && msg.sender?.id === meId;
+    const b=document.createElement('div');
+    b.className='abub'+(isMine?' mine':'');
     b.innerHTML=`<div class="abub-ava">${aIni(msg.sender?.full_name||'?')}</div>
       <div class="abub-body">
         <div class="abub-top">
-          <span class="abub-name">${aEsc(msg.sender?.full_name||'—')}</span>
+          ${!isMine?`<span class="abub-name">${aEsc(msg.sender?.full_name||'—')}</span>`:''}
           <span class="abub-role">${roleMap[msg.sender?.role]||''}</span>
           <span class="abub-time">${aFmt(msg.created_at)}</span>
         </div>

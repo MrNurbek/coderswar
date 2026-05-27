@@ -165,7 +165,7 @@
   </style>
 </head>
 <body>
-<div id="page-bg" style="position:fixed;inset:0;background:url('static/img/dashboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
+<div id="page-bg" style="position:fixed;inset:0;background:url('/static/frontend/img/dashboard.png') center/cover no-repeat;opacity:.32;z-index:-1;pointer-events:none;"></div>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 <button class="mob-toggle" onclick="toggleSidebar()"><i class="ra ra-plain-dagger"></i></button>
 
@@ -373,14 +373,14 @@ function closeSidebar(){
 }
 
 const LEVEL_META = {
-  recruit: {icon:'<img src="static/img/rank-recruit.png" style="width:64px;height:64px;object-fit:contain">', range:'0–300'},
-  warden:  {icon:'<img src="static/img/rank-warden.png"  style="width:64px;height:64px;object-fit:contain">', range:'301–750'},
-  knight:  {icon:'<img src="static/img/rank-knight.png"  style="width:64px;height:64px;object-fit:contain">', range:'751–1300'},
-  hero:    {icon:'<img src="static/img/rank-hero.png"    style="width:64px;height:64px;object-fit:contain">', range:'1301–1900'},
-  legend:  {icon:'<img src="static/img/rank-legend.png"  style="width:64px;height:64px;object-fit:contain">', range:'1901–2600'},
-  lord:    {icon:'<img src="static/img/rank-lord.png"    style="width:64px;height:64px;object-fit:contain">', range:'2601–3350'},
-  deity:   {icon:'<img src="static/img/rank-deity.png"   style="width:64px;height:64px;object-fit:contain">', range:'3351–4050'},
-  titan:   {icon:'<img src="static/img/rank-titan.png"   style="width:64px;height:64px;object-fit:contain">', range:'4051–4500'},
+  recruit: {icon:'<img src="/static/frontend/img/rank-recruit.png" style="width:64px;height:64px;object-fit:contain">', range:'0–300'},
+  warden:  {icon:'<img src="/static/frontend/img/rank-warden.png"  style="width:64px;height:64px;object-fit:contain">', range:'301–750'},
+  knight:  {icon:'<img src="/static/frontend/img/rank-knight.png"  style="width:64px;height:64px;object-fit:contain">', range:'751–1300'},
+  hero:    {icon:'<img src="/static/frontend/img/rank-hero.png"    style="width:64px;height:64px;object-fit:contain">', range:'1301–1900'},
+  legend:  {icon:'<img src="/static/frontend/img/rank-legend.png"  style="width:64px;height:64px;object-fit:contain">', range:'1901–2600'},
+  lord:    {icon:'<img src="/static/frontend/img/rank-lord.png"    style="width:64px;height:64px;object-fit:contain">', range:'2601–3350'},
+  deity:   {icon:'<img src="/static/frontend/img/rank-deity.png"   style="width:64px;height:64px;object-fit:contain">', range:'3351–4050'},
+  titan:   {icon:'<img src="/static/frontend/img/rank-titan.png"   style="width:64px;height:64px;object-fit:contain">', range:'4051–4500'},
 };
 const CHAR_DATA = {
   warrior:    {avatar:'<i class="ra ra-crossed-swords"></i>', name:'Jangchi',      en:'Warrior',    weapons:['<i class="ra ra-sword"></i> Qilich','<i class="ra ra-archer"></i> Nayza','<i class="ra ra-shield"></i> Zirh']},
@@ -455,7 +455,8 @@ async function loadDashboard() {
     };
     setText('levelName',  LEVEL_NAMES[lvl] || lvl);
     setText('levelRange',  lm.range + ' Rating Score');
-    setText('levelIcon',   lm.icon);
+    const _lvIconEl = document.getElementById('levelIcon');
+    if (_lvIconEl) _lvIconEl.innerHTML = lm.icon;
     document.getElementById('xpFill').style.width = lvlPct + '%';
     setText('xpCurrent', rating + ' ball');
     const hiStr = lm.range.split('–')[1] || '300';

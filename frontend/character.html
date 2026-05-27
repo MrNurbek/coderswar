@@ -36,8 +36,8 @@
     .c-knight.active{border-color:#3b82f6;box-shadow:0 0 40px rgba(59,130,246,0.25)}
     .c-ladyknight.active{border-color:#ec4899;box-shadow:0 0 40px rgba(236,72,153,0.25)}
 
-    .char-avatar{font-size:3.8rem;margin-bottom:.8rem;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));transition:transform .3s}
-    .char-card:hover .char-avatar,.char-card.active .char-avatar{transform:scale(1.1) translateY(-4px)}
+    .char-avatar{width:calc(100% + 2.4rem);margin:-1.8rem -1.2rem .85rem;height:185px;object-fit:cover;object-position:top center;border-radius:22px 22px 0 0;display:block;transition:transform .3s}
+    .char-card:hover .char-avatar,.char-card.active .char-avatar{transform:scale(1.04)}
     .char-name{font-size:1rem;font-weight:800;margin-bottom:.2rem}
     .char-en{font-size:.78rem;color:var(--muted);margin-bottom:.7rem}
     .char-tag{display:inline-block;font-size:.72rem;font-weight:600;padding:.2rem .7rem;border-radius:10px;margin-bottom:.6rem}
@@ -60,7 +60,8 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
     .detail-panel.show{display:block}
     .dp-inner{display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap}
-    .dp-avatar{font-size:5rem;filter:drop-shadow(0 8px 20px rgba(108,99,255,0.3))}
+    .dp-avatar{flex-shrink:0}
+    .dp-avatar img{width:190px;height:255px;object-fit:cover;object-position:top center;border-radius:18px;filter:drop-shadow(0 8px 24px rgba(0,0,0,.55));display:block}
     .dp-info{flex:1;min-width:200px}
     .dp-info h2{font-size:1.5rem;font-weight:900;margin-bottom:.2rem}
     .dp-info .dp-en{color:var(--muted);font-size:.9rem;margin-bottom:.8rem}
@@ -122,25 +123,25 @@
 <script>
 if (!Auth.requireAuth()) throw 0;
 const CHARS=[
-  {id:'warrior',name:'Jangchi',en:'Warrior',avatar:'<i class="ra ra-crossed-swords"></i>',tag:'tag-warrior',
+  {id:'warrior',name:'Jangchi',en:'Warrior',img:'/static/frontend/img/warrior.png',tag:'tag-warrior',
    desc:'Kuch va qat\'iyat timsoli. Qiyin vazifalardan qo\'rqmaydi. Har qanday muammoni to\'g\'ridan-to\'g\'ri hal qiladi.',
-   weapons:['<i class="ra ra-sword"></i> Sword','<i class="ra ra-archer"></i> Spear','<i class="ra ra-shield"></i> Armor'],
+   weapons:['⚔️ Sword','🗡️ Spear','🛡️ Armor'],
    stats:{strength:95,speed:60,intelligence:65,defense:80}},
-  {id:'ranger',en:'Ranger',name:'Sarguzashtchi',avatar:'<i class="ra ra-archer"></i>',tag:'tag-ranger',
+  {id:'ranger',en:'Ranger',name:'Sarguzashtchi',img:'/static/frontend/img/ranger.png',tag:'tag-ranger',
    desc:'Tezkorlik va aniqlik timsoli. Eng samarali va qisqa yechim topadi. Kodni optimallashtirishda tengsiz.',
-   weapons:['<i class="ra ra-archer"></i> Spear','👟 Boots','🥋 Light Armor'],
+   weapons:['🏹 Bow','👟 Boots','🥋 Light Armor'],
    stats:{strength:65,speed:95,intelligence:75,defense:55}},
-  {id:'sorceress',name:'Sehrgar Ayol',en:'Sorceress',avatar:'<i class="ra ra-crystal-ball"></i>',tag:'tag-sorceress',
+  {id:'sorceress',name:'Sehrgar Ayol',en:'Sorceress',img:'/static/frontend/img/sorceress.png',tag:'tag-sorceress',
    desc:'Bilim va sehrli tafakkur timsoli. Algoritmlarni sehrga aylantiradi. Kreativ yechimlar topishda ustun.',
-   weapons:['🪄 Wand','💍 Ring'],
+   weapons:['🪄 Wand','💍 Ring','📖 Tome'],
    stats:{strength:45,speed:70,intelligence:98,defense:50}},
-  {id:'knight',name:'Ritsar',en:'Knight',avatar:'<i class="ra ra-shield"></i>',tag:'tag-knight',
+  {id:'knight',name:'Ritsar',en:'Knight',img:'/static/frontend/img/knight.png',tag:'tag-knight',
    desc:'Adolat va himoya timsoli. Jamoani boshqaradi. Murakkab loyihalarni tartibli hal qiladi.',
-   weapons:['<i class="ra ra-sword"></i> Sword','<i class="ra ra-shield"></i> Shield','🏰 Armor'],
+   weapons:['⚔️ Sword','🛡️ Shield','🏰 Full Armor'],
    stats:{strength:80,speed:55,intelligence:70,defense:95}},
-  {id:'ladyknight',name:'Ayol Ritsar',en:'Lady Knight',avatar:'<i class="ra ra-crown"></i>',tag:'tag-ladyknight',
+  {id:'ladyknight',name:'Ayol Ritsar',en:'Lady Knight',img:'/static/frontend/img/lady-knight.png',tag:'tag-ladyknight',
    desc:'Qat\'iyat va himoya timsoli. Barcha cheklovlarni engib o\'tadi. Kuch va aql muvozanatini saqlaydi.',
-   weapons:['<i class="ra ra-sword"></i> Sword','<i class="ra ra-shield"></i> Shield','🏰 Armor','💍 Ring'],
+   weapons:['⚔️ Sword','🛡️ Shield','👑 Crown','💍 Ring'],
    stats:{strength:78,speed:72,intelligence:78,defense:88}}
 ];
 
@@ -154,7 +155,7 @@ function renderChars(){
   grid.innerHTML=CHARS.map(c=>`
     <div class="char-card c-${c.id}" id="card-${c.id}" onclick="pick('${c.id}')">
       <div class="selected-badge">✓ Tanlandi</div>
-      <span class="char-avatar">${c.avatar}</span>
+      <img class="char-avatar" src="${c.img}" alt="${c.name}">
       <div class="char-name">${c.name}</div>
       <div class="char-en">${c.en}</div>
       <span class="char-tag ${c.tag}">${c.en}</span>
@@ -174,8 +175,7 @@ function pick(id){
   document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('active'));
   document.getElementById('card-'+id).classList.add('active');
   const c=CHARS.find(x=>x.id===id);
-  // detail panel
-  document.getElementById('dpAvatar').innerHTML=c.avatar;
+  document.getElementById('dpAvatar').innerHTML=`<img src="${c.img}" alt="${c.name}">`;
   document.getElementById('dpName').textContent=c.name;
   document.getElementById('dpEn').textContent=c.en;
   document.getElementById('dpDesc').textContent=c.desc;
@@ -190,7 +190,7 @@ function pick(id){
   panel.scrollIntoView({behavior:'smooth',block:'nearest'});
   const btn=document.getElementById('confirmBtn');
   btn.classList.add('ready');
-  btn.innerHTML=`${c.avatar} ${c.name}ni tanlash →`;
+  btn.innerHTML=`${c.name}ni tanlash →`;
   document.getElementById('confirmHint').textContent=`${c.name} (${c.en}) tanlandi`;
 }
 

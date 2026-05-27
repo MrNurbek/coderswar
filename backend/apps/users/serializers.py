@@ -90,6 +90,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     fa_avg                 = serializers.SerializerMethodField()
     re_avg                 = serializers.SerializerMethodField()
     completed_topics_count = serializers.SerializerMethodField()
+    group_year             = serializers.SerializerMethodField()
 
     class Meta:
         model  = StudentProfile
@@ -97,6 +98,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
             'user', 'character', 'level', 'rating_score', 'academic_score',
             'current_streak', 'max_streak', 'last_active', 'updated_at', 'level_pct',
             'mo_avg', 'ko_avg', 'fa_avg', 're_avg', 'completed_topics_count',
+            'group_year',
         )
         read_only_fields = ('rating_score', 'academic_score', 'level', 'updated_at')
 
@@ -142,6 +144,11 @@ class StudentProfileSerializer(serializers.ModelSerializer):
 
     def get_completed_topics_count(self, obj):
         return self._score_stats(obj)['cnt'] or 0
+
+    def get_group_year(self, obj):
+        """Talaba guruhining kursi (1, 2, 3...). Guruh topilmasa None."""
+        membership = obj.user.group_memberships.select_related('group').first()
+        return membership.group.year if membership else None
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):

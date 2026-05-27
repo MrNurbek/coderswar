@@ -98,7 +98,9 @@ const Auth = (() => {
     } else if (role === 'teacher') {
       window.location.href = ROUTES.teacherDashboard;
     } else {
-      window.location.href = user?.student_profile ? ROUTES.dashboard : ROUTES.diagnostic;
+      // Personaj tanlanmagan bo'lsa — onboarding (diagnostic → character)
+      const hasCharacter = user?.student_profile?.character;
+      window.location.href = hasCharacter ? ROUTES.dashboard : ROUTES.diagnostic;
     }
   }
 

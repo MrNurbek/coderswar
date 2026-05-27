@@ -295,6 +295,29 @@ class ClanWar(models.Model):
         return f'{self.clan1} vs {self.clan2} [{self.status}]'
 
 
+class ClanApplication(models.Model):
+    """A'zolik arizasi — klan yaratuvchisi tasdiqlaydi yoki rad etadi."""
+
+    class Status(models.TextChoices):
+        PENDING  = 'pending',  'Kutilmoqda'
+        APPROVED = 'approved', 'Qabul qilindi'
+        REJECTED = 'rejected', 'Rad etildi'
+
+    clan        = models.ForeignKey(Clan, on_delete=models.CASCADE, related_name='applications')
+    applicant   = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='clan_applications')
+    status      = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    message     = models.TextField(blank=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('clan', 'applicant')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.applicant} → {self.clan} ({self.status})'
+
+
 class ClanChat(models.Model):
     """Klan ichki chati."""
     clan       = models.ForeignKey(Clan, on_delete=models.CASCADE, related_name='messages')

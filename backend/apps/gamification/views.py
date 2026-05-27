@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 
-from .models import Duel, Clan, ClanMembership, ClanWar, ClanChat, Badge, UserBadge, Equipment, UserEquipment
+from .models import Duel, Clan, ClanMembership, ClanApplication, ClanWar, ClanChat, Badge, UserBadge, Equipment, UserEquipment
 from .serializers import (
     DuelSerializer, DuelCreateSerializer,
     ClanSerializer, ClanDetailSerializer, ClanMembershipSerializer,
@@ -224,6 +224,188 @@ class ClanViewSet(viewsets.ModelViewSet):
         msg = s.save(clan=clan, user=request.user)
         return Response(ClanChatSerializer(msg).data, status=status.HTTP_201_CREATED)
 
+    # ── Membership Applications ───────────────────────────────────────────────
+
+    @action(detail=True, methods=['post'])
+    def apply(self, request, pk=None):
+        """A'zolik arizasi topshirish (2-semestr+ talabalar uchun)."""
+        clan = self.get_object()
+        user = request.user
+
+        if ClanMembership.objects.filter(user=user).exists():
+            return Response({'detail': 'Siz allaqachon klanga a\'zosiz.'}, status=400)
+
+        existing = ClanApplication.objects.filter(
+            clan=clan, applicant=user, status=ClanApplication.Status.PENDING
+        ).first()
+        if existing:
+            return Response({'detail': 'Arizangiz allaqachon kutilmoqda.'}, status=400)
+
+        # Avvalgi rad etilgan arizani yangilash (re-apply)
+        old = ClanApplication.objects.filter(clan=clan, applicant=user).first()
+        if old:
+            from django.utils import timezone
+            old.status = ClanApplication.Status.PENDING
+            old.message = request.data.get('message', '')
+            old.reviewed_at = None
+            old.created_at  # keep original, just reset status
+            ClanApplication.objects.filter(id=old.id).update(
+                status=ClanApplication.Status.PENDING,
+                message=request.data.get('message', ''),
+                reviewed_at=None,
+            )
+            app = old
+        else:
+            app = ClanApplication.objects.create(
+                clan=clan,
+                applicant=user,
+                message=request.data.get('message', ''),
+            )
+
+        try:
+            from apps.social.models import Notification
+            full_name = user.get_full_name() or user.username
+            if clan.leader:
+                Notification.objects.create(
+                    user=clan.leader,
+                    title='📋 Yangi a\'zolik arizasi',
+                    message=f'{full_name} "{clan.name}" klanga qo\'shilishga ariza topshirdi.',
+                    notif_type='clan',
+                    link='/clan.html',
+                )
+        except Exception:
+            pass
+
+        return Response({'detail': 'Ariza muvaffaqiyatli topshirildi.', 'id': app.id})
+
+    @action(detail=True, methods=['get'])
+    def applications(self, request, pk=None):
+        """Kutayotgan arizalar ro'yxati (faqat lider/ofitser ko'radi)."""
+        clan = self.get_object()
+        membership = ClanMembership.objects.filter(clan=clan, user=request.user).first()
+        if not membership or membership.role not in [
+            ClanMembership.Role.LEADER, ClanMembership.Role.OFFICER
+        ]:
+            return Response({'detail': 'Ruxsat yo\'q.'}, status=403)
+
+        apps = ClanApplication.objects.filter(
+            clan=clan, status=ClanApplication.Status.PENDING
+        ).select_related('applicant')
+
+        data = []
+        for app in apps:
+            u = app.applicant
+            avatar_url = None
+            try:
+                if u.avatar:
+                    avatar_url = request.build_absolute_uri(u.avatar.url)
+            except Exception:
+                pass
+            data.append({
+                'id':         app.id,
+                'user': {
+                    'id':        u.id,
+                    'username':  u.username,
+                    'full_name': u.get_full_name() or u.username,
+                    'avatar':    avatar_url,
+                },
+                'message':    app.message,
+                'created_at': app.created_at.isoformat(),
+            })
+        return Response(data)
+
+    @action(detail=True, methods=['post'], url_path=r'applications/(?P<app_id>\d+)/approve')
+    def approve_application(self, request, pk=None, app_id=None):
+        """Arizani qabul qilish."""
+        from django.shortcuts import get_object_or_404
+        from django.utils import timezone
+
+        clan = self.get_object()
+        membership = ClanMembership.objects.filter(clan=clan, user=request.user).first()
+        if not membership or membership.role not in [
+            ClanMembership.Role.LEADER, ClanMembership.Role.OFFICER
+        ]:
+            return Response({'detail': 'Ruxsat yo\'q.'}, status=403)
+
+        app = get_object_or_404(ClanApplication, id=app_id, clan=clan)
+        if app.status != ClanApplication.Status.PENDING:
+            return Response({'detail': 'Ariza allaqachon ko\'rib chiqilgan.'}, status=400)
+
+        if ClanMembership.objects.filter(user=app.applicant).exists():
+            app.status = ClanApplication.Status.REJECTED
+            app.reviewed_at = timezone.now()
+            app.save(update_fields=['status', 'reviewed_at'])
+            return Response({'detail': 'Talaba boshqa klanga a\'zo. Ariza rad etildi.'}, status=400)
+
+        ClanMembership.objects.create(clan=clan, user=app.applicant)
+        app.status = ClanApplication.Status.APPROVED
+        app.reviewed_at = timezone.now()
+        app.save(update_fields=['status', 'reviewed_at'])
+
+        try:
+            from apps.social.models import Notification
+            Notification.objects.create(
+                user=app.applicant,
+                title='🎉 Ariza qabul qilindi!',
+                message=f'Tabriklaymiz! Siz "{clan.name}" klanga a\'zo bo\'ldingiz.',
+                notif_type='clan',
+                link='/clan.html',
+            )
+        except Exception:
+            pass
+
+        return Response({'detail': 'Ariza qabul qilindi. A\'zo qo\'shildi.'})
+
+    @action(detail=True, methods=['post'], url_path=r'applications/(?P<app_id>\d+)/reject')
+    def reject_application(self, request, pk=None, app_id=None):
+        """Arizani rad etish."""
+        from django.shortcuts import get_object_or_404
+        from django.utils import timezone
+
+        clan = self.get_object()
+        membership = ClanMembership.objects.filter(clan=clan, user=request.user).first()
+        if not membership or membership.role not in [
+            ClanMembership.Role.LEADER, ClanMembership.Role.OFFICER
+        ]:
+            return Response({'detail': 'Ruxsat yo\'q.'}, status=403)
+
+        app = get_object_or_404(ClanApplication, id=app_id, clan=clan)
+        if app.status != ClanApplication.Status.PENDING:
+            return Response({'detail': 'Ariza allaqachon ko\'rib chiqilgan.'}, status=400)
+
+        app.status = ClanApplication.Status.REJECTED
+        app.reviewed_at = timezone.now()
+        app.save(update_fields=['status', 'reviewed_at'])
+
+        try:
+            from apps.social.models import Notification
+            Notification.objects.create(
+                user=app.applicant,
+                title='❌ Ariza rad etildi',
+                message=f'"{clan.name}" klani arizangizni rad etdi. Boshqa klanga ariza bering.',
+                notif_type='clan',
+                link='/clan-leaderboard.html',
+            )
+        except Exception:
+            pass
+
+        return Response({'detail': 'Ariza rad etildi.'})
+
+    @action(detail=True, methods=['get'], url_path='my-application')
+    def my_application(self, request, pk=None):
+        """Joriy foydalanuvchining ushbu klanga arizasi holati."""
+        clan = self.get_object()
+        app = ClanApplication.objects.filter(
+            clan=clan, applicant=request.user
+        ).order_by('-created_at').first()
+        if not app:
+            return Response({'status': None})
+        return Response({
+            'status':     app.status,
+            'id':         app.id,
+            'created_at': app.created_at.isoformat(),
+        })
+
 
 # ─── ClanWar ─────────────────────────────────────────────────────────────────
 
@@ -406,17 +588,21 @@ class LeaderboardView(generics.ListAPIView):
         from apps.users.serializers import StudentProfileSerializer
 
         group_id = request.query_params.get('group')
-        qs = StudentProfile.objects.select_related('user').order_by('-rating_score')[:100]
 
         if group_id:
-            qs = StudentProfile.objects.filter(
+            base_qs = StudentProfile.objects.filter(
                 user__group_memberships__group_id=group_id
-            ).select_related('user').order_by('-rating_score')[:100]
+            ).select_related('user')
+        else:
+            base_qs = StudentProfile.objects.select_related('user')
+
+        total_count = base_qs.count()
+        qs = base_qs.order_by('-rating_score')[:100]
 
         data = StudentProfileSerializer(qs, many=True, context={'request': request}).data
         for i, item in enumerate(data):
             item['rank'] = i + 1
-        return Response(data)
+        return Response({'results': data, 'total_count': total_count})
 
 
 class ClanLeaderboardView(generics.ListAPIView):
