@@ -4,12 +4,10 @@ from datetime import timedelta
 from decouple import config
 
 
-# ── BASE DIRS ────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR.parent / 'frontend'
 
 
-# ── SECURITY ─────────────────────────────────────────────────
 SECRET_KEY = config('SECRET_KEY', default='dev-secret-key-change-in-production')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
@@ -17,15 +15,13 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in config(
         'ALLOWED_HOSTS',
-        default='localhost,127.0.0.1,192.168.0.103'
+        default='localhost,127.0.0.1,192.168.0.103,coderswar.uz,www.coderswar.uz'
     ).split(',')
     if host.strip()
 ]
 
 
-# ── APPLICATIONS ─────────────────────────────────────────────
 INSTALLED_APPS = [
-    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,14 +29,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
     'channels',
 
-    # Local apps
     'apps.users',
     'apps.courses',
     'apps.gamification',
@@ -48,7 +42,6 @@ INSTALLED_APPS = [
 ]
 
 
-# ── MIDDLEWARE ───────────────────────────────────────────────
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -65,30 +58,20 @@ MIDDLEWARE = [
 ]
 
 
-# ── URL / WSGI / ASGI ────────────────────────────────────────
 ROOT_URLCONF = 'config.urls'
+AUTH_USER_MODEL = 'users.User'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 
-# ── CUSTOM USER ──────────────────────────────────────────────
-AUTH_USER_MODEL = 'users.User'
-
-
-# ── TEMPLATES ────────────────────────────────────────────────
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
-        # Agar HTML fayllarni Django orqali render qilsangiz,
-        # frontend papkasi ham template sifatida ko‘rinadi.
         'DIRS': [
             FRONTEND_DIR,
         ],
-
         'APP_DIRS': True,
-
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -102,7 +85,6 @@ TEMPLATES = [
 ]
 
 
-# ── DATABASE ─────────────────────────────────────────────────
 DB_ENGINE = config('DB_ENGINE', default='sqlite')
 
 if DB_ENGINE == 'postgresql':
@@ -125,7 +107,6 @@ else:
     }
 
 
-# ── CACHE / REDIS / CHANNELS ─────────────────────────────────
 USE_REDIS = config('USE_REDIS', default=False, cast=bool)
 
 if USE_REDIS:
@@ -160,7 +141,6 @@ else:
     }
 
 
-# ── PASSWORD VALIDATION ──────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -177,7 +157,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# ── REST FRAMEWORK ───────────────────────────────────────────
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -198,7 +177,6 @@ REST_FRAMEWORK = {
 }
 
 
-# ── SIMPLE JWT ───────────────────────────────────────────────
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
@@ -206,7 +184,6 @@ SIMPLE_JWT = {
 }
 
 
-# ── CORS ─────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in config(
@@ -223,7 +200,9 @@ CORS_ALLOWED_ORIGINS = [
             'http://localhost:8000,'
             'http://127.0.0.1:8000,'
             'http://192.168.0.103:8000,'
-            'http://192.168.0.103:5173'
+            'http://192.168.0.103:5173,'
+            'https://coderswar.uz,'
+            'https://www.coderswar.uz'
         )
     ).split(',')
     if origin.strip()
@@ -232,7 +211,6 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 
-# ── CSRF ─────────────────────────────────────────────────────
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in config(
@@ -240,14 +218,15 @@ CSRF_TRUSTED_ORIGINS = [
         default=(
             'http://localhost:8000,'
             'http://127.0.0.1:8000,'
-            'http://192.168.0.103:8000'
+            'http://192.168.0.103:8000,'
+            'https://coderswar.uz,'
+            'https://www.coderswar.uz'
         )
     ).split(',')
     if origin.strip()
 ]
 
 
-# ── EMAIL ────────────────────────────────────────────────────
 EMAIL_BACKEND = config(
     'EMAIL_BACKEND',
     default='django.core.mail.backends.smtp.EmailBackend'
@@ -266,47 +245,29 @@ DEFAULT_FROM_EMAIL = config(
 )
 
 
-# ── EXTERNAL APIS ────────────────────────────────────────────
 JUDGE0_URL = config('JUDGE0_URL', default='http://localhost:2358')
 JUDGE0_API_KEY = config('JUDGE0_API_KEY', default='')
 
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 
 
-# ── STATIC / MEDIA ───────────────────────────────────────────
+# ── STATIC / MEDIA ────────────────────────────────────────────
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Asosiy static papkalar:
+# Bu loyiha uchun prefixli static to‘g‘ri.
+# Sabab: index.html fayli /static/frontend/img/... deb chaqiryapti.
 #
-# 1) backend/static/
-# 2) frontend/static/
+# frontend/static/img/rank-recruit.png
+# collectstaticdan keyin:
+# backend/staticfiles/frontend/img/rank-recruit.png
 #
-# Muhim:
-# Bu yerda ('frontend', FRONTEND_DIR / 'static') ishlatilmaydi.
-# Chunki u holda fayllar /static/frontend/... bo‘lib ketadi.
-#
-# Quyidagi sozlama bilan:
-# frontend/static/images/rank-warden.png
-#
-# mana bunday ochiladi:
-# http://127.0.0.1:8000/static/images/rank-warden.png
+# Brauzerda:
+# https://coderswar.uz/static/frontend/img/rank-recruit.png
+STATICFILES_DIRS = [
+    ('frontend', FRONTEND_DIR / 'static'),
+]
 
-BACKEND_STATIC_DIR = BASE_DIR / 'static'
-FRONTEND_STATIC_DIR = FRONTEND_DIR / 'static'
-
-STATICFILES_DIRS = []
-
-if BACKEND_STATIC_DIR.exists():
-    STATICFILES_DIRS.append(BACKEND_STATIC_DIR)
-
-if FRONTEND_STATIC_DIR.exists():
-    STATICFILES_DIRS.append(FRONTEND_STATIC_DIR)
-
-
-# Localda manifest storage kerak emas.
-# Manifest storage collectstatic qilinmagan fayllarda xatolik chiqarishi mumkin.
-# Shuning uchun DEBUG=True bo‘lganda oddiy StaticFilesStorage ishlatiladi.
 STATICFILES_STORAGE = (
     'django.contrib.staticfiles.storage.StaticFilesStorage'
     if DEBUG
@@ -317,19 +278,15 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# ── INTERNATIONALIZATION ─────────────────────────────────────
 LANGUAGE_CODE = 'uz'
 TIME_ZONE = 'Asia/Tashkent'
 
 USE_I18N = True
 USE_TZ = True
 
-
-# ── DEFAULT PRIMARY KEY ──────────────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# ── PRODUCTION SECURITY ──────────────────────────────────────
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
@@ -339,12 +296,10 @@ if not DEBUG:
 
     X_FRAME_OPTIONS = 'DENY'
 
-    # HTTPS odatda Nginx orqali boshqariladi.
     SECURE_SSL_REDIRECT = False
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
-# ── LOGGING ──────────────────────────────────────────────────
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
