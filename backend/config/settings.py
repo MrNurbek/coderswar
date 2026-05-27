@@ -265,7 +265,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Brauzerda:
 # https://coderswar.uz/static/frontend/img/rank-recruit.png
 STATICFILES_DIRS = [
-    ('frontend', FRONTEND_DIR / 'static'),
+    FRONTEND_DIR / 'static',
 ]
 
 STATICFILES_STORAGE = (
